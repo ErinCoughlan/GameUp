@@ -1,2 +1,17 @@
 bin
+
+# Generated files
+bin/
+gen/
+
+# App metadata
 .metadata
+
+# Other stuff
+*.pkc
+*.idx
+.project
+*.classpath
+cachedir
+.DS_Store
+._.DS_Store
