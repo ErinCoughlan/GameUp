@@ -63,7 +63,7 @@ public class GameUpInterface {
 		// TODO Make this use the API, whenever that gets done
 		List<Game> games = new ArrayList<Game>();
 		Game g = new Game(jsonGame);
-		for (int i=0; i<5; i++) {
+		for (int i=0; i<10; i++) {
 			games.add(g);
 		}
 		

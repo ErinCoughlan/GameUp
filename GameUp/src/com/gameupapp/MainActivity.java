@@ -63,7 +63,6 @@ public class MainActivity extends Activity implements OnGameClicked {
 		GameFragment fragment = (GameFragment) getFragmentManager()
 				.findFragmentById(R.id.games);
 		if (fragment != null) {
-			Log.d("fragment", "not null, " + Integer.toString(gameList.size()));
 			fragment.update(gameList);
 		}
 	}
