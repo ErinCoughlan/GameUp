@@ -14,12 +14,15 @@ public final class R {
         public static final int baseball=0x7f020000;
         public static final int basketball=0x7f020001;
         public static final int football=0x7f020002;
-        public static final int ic_launcher=0x7f020003;
-        public static final int logo_square=0x7f020004;
-        public static final int soccer=0x7f020005;
-        public static final int tennis=0x7f020006;
-        public static final int unknown_icon=0x7f020007;
-        public static final int volleyball=0x7f020008;
+        public static final int gradient_bg=0x7f020003;
+        public static final int gradient_bg_hover=0x7f020004;
+        public static final int ic_launcher=0x7f020005;
+        public static final int list_selector=0x7f020006;
+        public static final int logo_square=0x7f020007;
+        public static final int soccer=0x7f020008;
+        public static final int tennis=0x7f020009;
+        public static final int unknown_icon=0x7f02000a;
+        public static final int volleyball=0x7f02000b;
     }
     public static final class id {
         public static final int gameLocation=0x7f070005;
