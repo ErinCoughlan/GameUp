@@ -8,7 +8,6 @@ import com.gameupapp.GameFragment.OnGameClicked;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.util.Log;
 import android.view.Menu;
 
 public class MainActivity extends Activity implements OnGameClicked {

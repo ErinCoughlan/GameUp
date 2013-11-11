@@ -8,4 +8,8 @@
     <string name="sign_up">Sign Up</string>
     <string name="access_sport_icon">Sport icon for game</string>
 
+    <color name="nice_blue">#33b5e5</color>
+    <color name="nice_blue_dark">#0099cc</color>
+    <color name="transparent">#00000000</color>
+
 </resources>
