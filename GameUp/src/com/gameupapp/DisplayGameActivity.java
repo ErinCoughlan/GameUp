@@ -1,5 +1,7 @@
 package com.gameupapp;
 
+import java.util.Locale;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -9,9 +11,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class DisplayGameActivity extends Activity {
+	
+	private GameUpInterface gameup;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +27,16 @@ public class DisplayGameActivity extends Activity {
 		Intent intent = getIntent();
 		String gameId = intent.getStringExtra(MainActivity.GAME_ID);
 		String userId = intent.getStringExtra(MainActivity.USER);
+		
+		// GameUp instance
+		gameup = GameUpInterface.getInstance(userId);
+		gameup.registerObserver(this);
+		Game g = gameup.getGame(gameId);
+		
+		// Set info based on game
+		if (g != null) {
+			setGameInfo(g);
+		}
 	
 		// TODO: Change the button text depending on if the person joined the game
 		
@@ -34,6 +49,42 @@ public class DisplayGameActivity extends Activity {
             	dialog.show();
             }
         });
+	}
+	
+	private void setGameInfo(Game g) {
+		TextView timestamp = (TextView) this.findViewById(R.id.gameTimestamp);
+		TextView location = (TextView) this.findViewById(R.id.gameLocation);
+		TextView players = (TextView) this.findViewById(R.id.gamePlayers);
+		TextView sport = (TextView) this.findViewById(R.id.gameSport);
+		ImageView sportIcon = (ImageView) this.findViewById(R.id.gameSportIcon);
+		
+		// check to see if each individual textview is null.
+		// if not, assign some text!
+		if (timestamp != null){
+			String date = GameAdapter.convertToDate(g.getTimestamp());
+			timestamp.setText(date);
+		}
+		
+		if (location != null){
+			location.setText(g.getLocation());
+		}
+		
+		if (players != null){
+			String str = g.getPlayersJoined() + " out of " + g.getTotalPlayers();
+			players.setText(str);
+		}
+		
+		if (sport != null){
+			sport.setText(g.getSport());
+		}
+		
+		if (sportIcon != null){
+			String s = g.getSport().toLowerCase(Locale.US);
+			int id = GameAdapter.getResId(s, this.getBaseContext(), R.drawable.class);
+			if (id != -1) {
+				sportIcon.setBackgroundResource(id);
+			}
+		}
 	}
 	
 	private AlertDialog createJoinGameAlert(int message) {
@@ -51,6 +102,7 @@ public class DisplayGameActivity extends Activity {
     	builder.setView(v)
     	       .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {
+		        	   // TODO: send a request to gameUp
 		               finish();
 		           }
     	});

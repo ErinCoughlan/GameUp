@@ -114,7 +114,7 @@ public class GameAdapter extends ArrayAdapter<Game> {
 		return this.objects.indexOf(game);
 	}
 
-	public String convertToDate(long time){
+	public static String convertToDate(long time){
 		time = time * 1000;
 		Date date = new Date(time);
 		DateFormat format = new SimpleDateFormat("EEE., MMM d '\n@' h:mm a", Locale.getDefault());

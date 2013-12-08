@@ -11,6 +11,7 @@ import android.util.Log;
 
 public class GameUpInterface {
 	private List<Activity> observers = new ArrayList<Activity>();
+	private List<Game> gameList = new ArrayList<Game>();
 	
 	private String gameString = "{'body': 'Hello this is a game'," +
 							"'sport': 'Basketball'," +
@@ -132,6 +133,20 @@ public class GameUpInterface {
 		
 		Log.d("games", "number of games: " + games.size());
 		
+		// TODO: Remove later
+		gameList = games;
+		
 		return games;
+	}
+	
+	public Game getGame(String gameId) {
+		// TODO Make this use the API, whenever that gets done
+		for (Game g : gameList) {
+			if (g.getGameId().equals(gameId)) {
+				return g;
+			}
+		}
+		// Game was not found; return an error
+		return null;
 	}
 }
