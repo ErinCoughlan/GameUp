@@ -8,8 +8,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -25,6 +27,9 @@ public class DisplayGameActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_display_game);
+		
+		// Back button in app
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		// TODO: Change the button text depending on if the person joined the game
 		
@@ -127,6 +132,17 @@ public class DisplayGameActivity extends Activity {
 		Intent result = new Intent();
 		setResult(Activity.RESULT_OK, result);
 		finish();
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    switch (item.getItemId()) {
+	    // Respond to the action bar's Up/Home button
+	    case android.R.id.home:
+	        NavUtils.navigateUpFromSameTask(this);
+	        return true;
+	    }
+	    return super.onOptionsItemSelected(item);
 	}
 	
 	@Override
