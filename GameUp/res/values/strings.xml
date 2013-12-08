@@ -12,4 +12,8 @@
     <color name="nice_blue_dark">#0099cc</color>
     <color name="transparent">#00000000</color>
 
+    <string name="join">Join Game</string>
+    <string name="main_activity_display_message">GameUp</string>
+    <string name="display_activity_display_message">Join Game</string>
+
 </resources>

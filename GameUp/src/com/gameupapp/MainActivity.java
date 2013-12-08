@@ -7,10 +7,14 @@ import com.gameupapp.GameFragment.OnGameClicked;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.Menu;
 
 public class MainActivity extends Activity implements OnGameClicked {
+	
+	// Intent information ids
+	static String GAME_ID = "game_id";
 
 	// General info about user and app
 	private String USER_ID = "Erin";
@@ -68,7 +72,12 @@ public class MainActivity extends Activity implements OnGameClicked {
 
 	@Override
 	public void onGameClicked(Game gameClicked, int position) {
-		// TODO Go to a new activity for the specific game
+		// Go to a new activity for the specific game
+		Intent intent = new Intent(this, DisplayGameActivity.class);
+		Game game = gameList.get(position);
+		String gameId = game.getGameId();
+		intent.putExtra(GAME_ID, gameId);
+		startActivity(intent);
 	}
 	
 	@Override
