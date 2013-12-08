@@ -15,6 +15,7 @@ public class MainActivity extends Activity implements OnGameClicked {
 	
 	// Intent information ids
 	static String GAME_ID = "game_id";
+	static String USER = "user";
 
 	// General info about user and app
 	private String USER_ID = "Erin";
@@ -77,6 +78,7 @@ public class MainActivity extends Activity implements OnGameClicked {
 		Game game = gameList.get(position);
 		String gameId = game.getGameId();
 		intent.putExtra(GAME_ID, gameId);
+		intent.putExtra(USER, USER_ID);
 		startActivity(intent);
 	}
 	
@@ -94,7 +96,6 @@ public class MainActivity extends Activity implements OnGameClicked {
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString("user_id", USER_ID);
 		editor.apply();
-
 	}
 
 }
