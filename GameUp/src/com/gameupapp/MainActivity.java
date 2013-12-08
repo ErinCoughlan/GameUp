@@ -73,13 +73,25 @@ public class MainActivity extends Activity implements OnGameClicked {
 
 	@Override
 	public void onGameClicked(Game gameClicked, int position) {
-		// Go to a new activity for the specific game
-		Intent intent = new Intent(this, DisplayGameActivity.class);
 		Game game = gameList.get(position);
 		String gameId = game.getGameId();
+		
+		// Go to a new activity for the specific game
+		Intent intent = new Intent();
+		intent.setClass(MainActivity.this, DisplayGameActivity.class);
 		intent.putExtra(GAME_ID, gameId);
 		intent.putExtra(USER, USER_ID);
-		startActivity(intent);
+		startActivityForResult(intent, 0);
+	}
+	
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode == Activity.RESULT_OK) {
+			if (requestCode == 0) {
+				if (gameup != null) {
+					startGameUp();
+				}
+			}
+		}
 	}
 	
 	@Override
@@ -91,7 +103,7 @@ public class MainActivity extends Activity implements OnGameClicked {
 			gameup.removeObserver(this);
 		}
 
-		// Save the current location of the slider
+		// Save the user_id and similar shared variables
 		SharedPreferences settings = getSharedPreferences("settings", 0);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString("user_id", USER_ID);

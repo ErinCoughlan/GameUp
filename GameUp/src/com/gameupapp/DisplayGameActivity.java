@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,27 +18,14 @@ import android.widget.TextView;
 public class DisplayGameActivity extends Activity {
 	
 	private GameUpInterface gameup;
+	private String USER_ID;
+	private String GAME_ID;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_display_game);
-		
-		// Get the game id so we can retrieve info
-		Intent intent = getIntent();
-		String gameId = intent.getStringExtra(MainActivity.GAME_ID);
-		String userId = intent.getStringExtra(MainActivity.USER);
-		
-		// GameUp instance
-		gameup = GameUpInterface.getInstance(userId);
-		gameup.registerObserver(this);
-		Game g = gameup.getGame(gameId);
-		
-		// Set info based on game
-		if (g != null) {
-			setGameInfo(g);
-		}
-	
+
 		// TODO: Change the button text depending on if the person joined the game
 		
 		// Set up the join/unjoin button
@@ -49,6 +37,28 @@ public class DisplayGameActivity extends Activity {
             	dialog.show();
             }
         });
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+
+		// Get the game id so we can retrieve info
+		Intent intent = getIntent();
+		GAME_ID = intent.getStringExtra(MainActivity.GAME_ID);
+		USER_ID = intent.getStringExtra(MainActivity.USER);
+		
+		// GameUp instance
+		gameup = GameUpInterface.getInstance(USER_ID);
+		gameup.registerObserver(this);
+		
+		Game g = gameup.getGame(GAME_ID);
+		
+		// Set info based on game
+		if (g != null) {
+			setGameInfo(g);
+		}
+
 	}
 	
 	private void setGameInfo(Game g) {
@@ -103,10 +113,35 @@ public class DisplayGameActivity extends Activity {
     	       .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {
 		        	   // TODO: send a request to gameUp
+		        	   Intent result = new Intent();
+		       		   setResult(Activity.RESULT_OK, result);
 		               finish();
 		           }
     	});
     	
     	return builder.create();
+	}
+	
+	@Override
+	public void onBackPressed() {
+		Intent result = new Intent();
+		setResult(Activity.RESULT_OK, result);
+		finish();
+	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
+
+		// Clear the observers
+		if (gameup != null) {
+			gameup.removeObserver(this);
+		}
+
+		// Save the current location of the slider
+		SharedPreferences settings = getSharedPreferences("settings", 0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString("user_id", USER_ID);
+		editor.apply();
 	}
 }
