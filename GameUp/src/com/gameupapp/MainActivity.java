@@ -7,9 +7,13 @@ import com.gameupapp.GameFragment.OnGameClicked;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.widget.Button;
 
 public class MainActivity extends Activity implements OnGameClicked {
 	
@@ -21,6 +25,17 @@ public class MainActivity extends Activity implements OnGameClicked {
 	private String USER_ID = "Erin";
 	private GameUpInterface gameup;
 	
+	// Response from activites
+	/*
+	private static enum intentId {
+		DETAIL, CREATE
+	};
+	*/
+	// TODO: Find a better way or move to a different file
+	private int detailId = 0;
+	private int createId = 1;
+
+	
 	private List<Game> gameList = new ArrayList<Game>();
 
 	@Override
@@ -29,6 +44,14 @@ public class MainActivity extends Activity implements OnGameClicked {
 		setContentView(R.layout.activity_main);
 		
 		displayGames();
+		
+		// Set up on clicks for creating new games
+		final Button button = (Button) findViewById(R.id.new_game);
+		button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	onCreateClicked();
+            }
+        });
 	}
 	
 	@Override
@@ -42,7 +65,7 @@ public class MainActivity extends Activity implements OnGameClicked {
 		// Simplify interactions if we don't have a registered user
 		if (USER_ID == null) {
 			// TODO Determine what needs to be shown with and without a user
-		}
+		}		
 		
 		startGameUp();
 	}
@@ -60,7 +83,6 @@ public class MainActivity extends Activity implements OnGameClicked {
 
 		gameList = gameup.getGames();
 		displayGames();
-		
 	}
 	
 	
@@ -82,7 +104,15 @@ public class MainActivity extends Activity implements OnGameClicked {
 		intent.setClass(MainActivity.this, DisplayGameActivity.class);
 		intent.putExtra(GAME_ID, gameId);
 		intent.putExtra(USER, USER_ID);
-		startActivityForResult(intent, 0);
+		startActivityForResult(intent, detailId);
+	}
+	
+	public void onCreateClicked() {
+		// Go to a new activity for the specific game
+		Intent intent = new Intent();
+		intent.setClass(MainActivity.this, CreateGameActivity.class);
+		intent.putExtra(USER, USER_ID);
+		startActivityForResult(intent, createId);
 	}
 	
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
