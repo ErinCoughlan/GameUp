@@ -60,6 +60,7 @@ public class MainActivity extends Activity implements OnGameClicked {
 
 		gameList = gameup.getGames();
 		displayGames();
+		
 	}
 	
 	

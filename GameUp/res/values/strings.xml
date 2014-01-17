@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="main_activity_display_message">GameUp</string>
+    <string name="display_activity_display_message">Join Game</string>
+    <string name="create_activity_display_message">Create Game</string>
     <string name="app_name">GameUp</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
@@ -8,18 +11,18 @@
     <string name="sign_up">Sign Up</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="join">Join Game</string>
+    <string name="unjoin">Unjoin Game</string>
+    <string name="create">Create Game</string>
+    <string name="alert_success_join">Congrats! \n You successfully joined the game!</string>
+    <string name="alert_success_unjoin">Congrats! \n You successfully unjoined the game!</string>
+    <string name="alert_success_create">Congrats! \n You successfully created a game!</string>
     <string name="access_sport_icon">Sport icon for game</string>
     <string name="access_map">Map to the game location</string>
     <string name="access_success">Success icon</string>
-    <string name="alert_success_join">Congrats! \n You successfully joined the game!</string>
-    <string name="alert_success_unjoin">Congrats! \n You successfully unjoined the game!</string>
 
     <color name="nice_blue">#33b5e5</color>
     <color name="nice_blue_dark">#0099cc</color>
     <color name="transparent">#00000000</color>
-
-    <string name="join">Join Game</string>
-    <string name="main_activity_display_message">GameUp</string>
-    <string name="display_activity_display_message">Join Game</string>
 
 </resources>
