@@ -4,7 +4,9 @@
     <string name="main_activity_display_message">GameUp</string>
     <string name="display_activity_display_message">Join Game</string>
     <string name="create_activity_display_message">Create Game</string>
+    <string name="login_activity_display_message">Login</string>
     <string name="app_name">GameUp</string>
+    <string name="app_id">388247841278612</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
     <string name="new_game">New Game</string>
@@ -25,6 +27,8 @@
     <string name="choose_players_prompt">Number of Players:</string>
     <string name="choose_start_time_prompt">Start time:</string>
     <string name="choose_end_time_prompt">End time:</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
     
     
     <string-array name="sports_array">

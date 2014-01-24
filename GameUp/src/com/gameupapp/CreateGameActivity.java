@@ -117,7 +117,6 @@ public class CreateGameActivity extends Activity {
 			gameup.removeObserver(this);
 		}
 
-		// Save the current location of the slider
 		SharedPreferences settings = getSharedPreferences("settings", 0);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString("user_id", USER_ID);
