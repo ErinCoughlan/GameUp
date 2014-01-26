@@ -1,9 +1,9 @@
 package com.gameupapp;
 
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -11,13 +11,11 @@ import java.util.Locale;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -25,18 +23,16 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 public class CreateGameActivity extends Activity {
 	
 	private GameUpInterface gameup;
 	private String USER_ID;
-	private String GAME_ID;
+	private boolean loggedIn;
 	
 	// Spinner stuff
 	private Spinner sportSpinner;
@@ -44,9 +40,9 @@ public class CreateGameActivity extends Activity {
 	
 	// TODO: I18n?
     private SimpleDateFormat dateFormatter = new SimpleDateFormat(
-            "MMM dd, yyyy");
+            "MMM dd, yyyy", Locale.US);
     private SimpleDateFormat timeFormatter = new SimpleDateFormat(
-            "h:mm a");
+            "h:mm a", Locale.US);
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -81,9 +77,9 @@ public class CreateGameActivity extends Activity {
 	public void onStart() {
 		super.onStart();
 
-		// Get the game id so we can retrieve info
 		Intent intent = getIntent();
-		USER_ID = intent.getStringExtra(MainActivity.USER);
+		USER_ID = intent.getStringExtra(AppConstant.USER);
+		loggedIn = intent.getBooleanExtra(AppConstant.LOGIN, false);
 		
 		// GameUp instance
 		gameup = GameUpInterface.getInstance(USER_ID);
@@ -116,30 +112,24 @@ public class CreateGameActivity extends Activity {
 		if (gameup != null) {
 			gameup.removeObserver(this);
 		}
-
-		SharedPreferences settings = getSharedPreferences("settings", 0);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putString("user_id", USER_ID);
-		editor.apply();
 	}
 	
 	private void initSportSpinner() {
 		sportSpinner = (Spinner) findViewById(R.id.sport_spinner);
 
 		// Custom choices
-		List<CharSequence> choices = new ArrayList<CharSequence>();
+		List<String> choices = new ArrayList<String>();
 		
-		// TODO: Get choices from API and order alphabetically
-		choices.add("Baseball");
-		choices.add("Basketball");
-		choices.add("Football");
-		choices.add("Soccer");
-		choices.add("Tennis");
-		choices.add("Volleyball");
+		// TODO: Get choices from API
+		choices.addAll(AppConstant.sports);
+		
+		Collections.sort(choices);
+		
+		// TODO: Add New button has special interactions
 		choices.add("Add New");
 
 		// Create an ArrayAdapter with custom choices
-		ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, R.drawable.spinner_item, choices);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.drawable.spinner_item, choices);
 
 		// Specify the layout to use when the list of choices appears
 		adapter.setDropDownViewResource(R.drawable.spinner_dropdown_item);
@@ -148,9 +138,7 @@ public class CreateGameActivity extends Activity {
 		sportSpinner.setAdapter(adapter);
 		sportSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-				Log.d("spinner", sportSpinner.getSelectedItem().toString());
 				updateSportsIcon();
-		        
 			}
 
 			public void onNothingSelected(AdapterView<?> parent) {
@@ -162,13 +150,14 @@ public class CreateGameActivity extends Activity {
 		locationSpinner = (Spinner) findViewById(R.id.location_spinner);
 
 		// Custom choices
-		List<CharSequence> choices = new ArrayList<CharSequence>();
+		List<String> choices = new ArrayList<String>();
 		
-		// TODO: Get choices from API and order alphabetically
+		// TODO: Get choices from API and set up Add New interactions
+		Collections.sort(choices);
 		choices.add("Add New");
 
 		// Create an ArrayAdapter with custom choices
-		ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, R.drawable.spinner_item, choices);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.drawable.spinner_item, choices);
 
 		// Specify the layout to use when the list of choices appears
 		adapter.setDropDownViewResource(R.drawable.spinner_dropdown_item);
@@ -194,9 +183,7 @@ public class CreateGameActivity extends Activity {
 	private AlertDialog createGameAlert(int message) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		
-		// Get the layout inflater
 	    LayoutInflater inflater = this.getLayoutInflater();
-	    
 	    View v = inflater.inflate(R.layout.success_dialog, null);
 	    TextView tv = (TextView) v.findViewById(R.id.dialog_message);
 	    if (tv != null) {
@@ -208,7 +195,9 @@ public class CreateGameActivity extends Activity {
 		           public void onClick(DialogInterface dialog, int id) {
 		        	   // TODO: send a request to gameUp
 		        	   Intent result = new Intent();
-		       		   setResult(Activity.RESULT_OK, result);
+		        	   result.putExtra(AppConstant.USER, USER_ID);
+		        	   result.putExtra(AppConstant.LOGIN, loggedIn);
+		        	   setResult(Activity.RESULT_OK, result);
 		               finish();
 		           }
     	});
@@ -226,28 +215,12 @@ public class CreateGameActivity extends Activity {
 		ImageView sportIcon = (ImageView) findViewById(R.id.game_sport_icon);
         String s = sportSpinner.getSelectedItem().toString().toLowerCase(Locale.US);
         if (sportIcon != null) {
-			int resId = getResId(s, getBaseContext(), R.drawable.class);
+			int resId = HelperFunction.getResId(s, getBaseContext(), R.drawable.class);
 			if (resId != -1) {
 				sportIcon.setBackgroundResource(resId);
 			} else {
 				sportIcon.setBackgroundResource(R.drawable.unknown_icon);
 			}
         }
-	}
-	
-	/**
-	 * Finds the id of a resource given its string name, class, and context.
-	 * Returns -1 if no resource is found.
-	 * 
-	 * Usage: getResId("icon", context, Drawable.class);
-	 */
-	public static int getResId(String variableName, Context context, Class<?> c) {
-	    try {
-	        Field idField = c.getDeclaredField(variableName);
-	        return idField.getInt(idField);
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return -1;
-	    } 
 	}
 }

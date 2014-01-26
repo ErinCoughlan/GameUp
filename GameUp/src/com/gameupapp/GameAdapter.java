@@ -1,6 +1,5 @@
 package com.gameupapp;
 
-import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -94,7 +93,7 @@ public class GameAdapter extends ArrayAdapter<Game> {
 			
 			if (sportIcon != null){
 				String s = i.getSport().toLowerCase(Locale.US);
-				int id = getResId(s, context, R.drawable.class);
+				int id = HelperFunction.getResId(s, context, R.drawable.class);
 				if (id != -1) {
 					sportIcon.setBackgroundResource(id);
 				}
@@ -120,21 +119,5 @@ public class GameAdapter extends ArrayAdapter<Game> {
 		format.setTimeZone(TimeZone.getDefault());
 		String formatted = format.format(date);
 		return formatted;
-	}
-	
-	/**
-	 * Finds the id of a resource given its string name, class, and context.
-	 * Returns -1 if no resource is found.
-	 * 
-	 * Usage: getResId("icon", context, Drawable.class);
-	 */
-	public static int getResId(String variableName, Context context, Class<?> c) {
-	    try {
-	        Field idField = c.getDeclaredField(variableName);
-	        return idField.getInt(idField);
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return -1;
-	    } 
 	}
 }

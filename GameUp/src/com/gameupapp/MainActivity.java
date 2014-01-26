@@ -10,28 +10,15 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends Activity implements OnGameClicked {
-
-	// Intent information ids
-	static String GAME_ID = "game_id";
-	static String USER = "user";
-
 	// General info about user and app
 	private String USER_ID = null;
+	private boolean loggedIn = false;
 	private GameUpInterface gameup;
-
-	// Response from activites
-	// TODO: Find a better way or move to a different file
-	private final int detailId = 0;
-	private final int createId = 1;
-	private final int loginId = 2;
-
 
 	private List<Game> gameList = new ArrayList<Game>();
 
@@ -64,16 +51,8 @@ public class MainActivity extends Activity implements OnGameClicked {
 	public void onStart() {
 		super.onStart();
 
-		// Restore preferences
-		SharedPreferences settings = getSharedPreferences("settings", 0);
-		USER_ID = settings.getString("user_id", null);
-
-		// Simplify interactions if we don't have a registered user
-		if (USER_ID == null) {
-			// TODO Determine what needs to be shown with and without a user
-		}		
-
 		startGameUp();
+		updateScreen();
 	}
 
 	@Override
@@ -108,50 +87,73 @@ public class MainActivity extends Activity implements OnGameClicked {
 		// Go to a new activity for the specific game
 		Intent intent = new Intent();
 		intent.setClass(MainActivity.this, DisplayGameActivity.class);
-		intent.putExtra(GAME_ID, gameId);
-		intent.putExtra(USER, USER_ID);
-		startActivityForResult(intent, detailId);
+		intent.putExtra(AppConstant.GAME, gameId);
+		intent.putExtra(AppConstant.USER, USER_ID);
+		intent.putExtra(AppConstant.LOGIN, loggedIn);
+		startActivityForResult(intent, AppConstant.DETAIL_ID);
 	}
 
 	public void onCreateClicked() {
-		// Go to a new activity for the specific game
+		// Go to a new activity for creating game
 		Intent intent = new Intent();
 		intent.setClass(MainActivity.this, CreateGameActivity.class);
-		intent.putExtra(USER, USER_ID);
-		startActivityForResult(intent, createId);
+		intent.putExtra(AppConstant.USER, USER_ID);
+		intent.putExtra(AppConstant.LOGIN, loggedIn);
+		startActivityForResult(intent, AppConstant.CREATE_ID);
 	}
 
 	public void onLoginClicked() {
-		// Go to a new activity for the specific game
+		// Go to a new activity for logging in and out
 		Intent intent = new Intent();
 		intent.setClass(MainActivity.this, LoginActivity.class);
-		intent.putExtra(USER, USER_ID);
-		startActivityForResult(intent, loginId);
+		intent.putExtra(AppConstant.USER, USER_ID);
+		intent.putExtra(AppConstant.LOGIN, loggedIn);
+		startActivityForResult(intent, AppConstant.LOGIN_ID);
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == Activity.RESULT_OK) {
 			switch (requestCode) {
-			case detailId:
-				if (gameup != null) {
-					startGameUp();
+			case AppConstant.DETAIL_ID:
+				USER_ID = data.getStringExtra(AppConstant.USER);
+				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
+				updateScreen();
+				break;
+			case AppConstant.CREATE_ID:
+				USER_ID = data.getStringExtra(AppConstant.USER);
+				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
+				updateScreen();
+				break;
+			case AppConstant.LOGIN_ID:
+				USER_ID = data.getStringExtra(AppConstant.USER);
+				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
+				updateScreen();
+				
+				
+				if (loggedIn) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(this)
+						.setTitle("Welcome!")
+						.setMessage("Join or create a game " + USER_ID)
+						.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								dialog.cancel();
+							}
+					});
+					builder.show();
+				} else if (!loggedIn) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(this)
+						.setTitle("Goodbye!")
+						.setMessage("Thanks for playing " + USER_ID)
+						.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								dialog.cancel();
+							}
+					});
+					builder.show();
 				}
 				break;
-			case createId:
-				break;
-			case loginId:
-				USER_ID = data.getStringExtra("userId");
-				Log.d("facebook", "returned from login: " + USER_ID);
-				AlertDialog.Builder builder = new AlertDialog.Builder(this)
-				.setTitle("Welcome!")
-				.setMessage("Join or create a game " + USER_ID)
-				.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.cancel();
-					}
-				});
-				builder.show();
 			}
 		}
 	}
@@ -164,12 +166,16 @@ public class MainActivity extends Activity implements OnGameClicked {
 		if (gameup != null) {
 			gameup.removeObserver(this);
 		}
-
-		// Save the user_id and similar shared variables
-		SharedPreferences settings = getSharedPreferences("settings", 0);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putString("user_id", USER_ID);
-		editor.apply();
+	}
+	
+	private void updateScreen() {
+		// Simplify interactions if we don't have a registered user
+		final Button loginButton = (Button) findViewById(R.id.login);
+		if (loggedIn) {
+			loginButton.setText(R.string.logout);
+		} else {
+			loginButton.setText(R.string.sign_up);
+		}
 	}
 
 }

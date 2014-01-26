@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
 
 import com.facebook.LoggingBehavior;
 import com.facebook.Request;
@@ -17,11 +15,11 @@ import com.facebook.SessionState;
 import com.facebook.Settings;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
-import com.facebook.widget.LoginButton;
 
 public class LoginActivity extends Activity {
 	private GameUpInterface gameup;
 	private String USER_ID;
+	private boolean loggedIn;
 
 	private Session.StatusCallback callback = new Session.StatusCallback() {
 	    @Override
@@ -63,7 +61,8 @@ public class LoginActivity extends Activity {
 		super.onStart();
 		// Get the game id so we can retrieve info
 		Intent intent = getIntent();
-		USER_ID = intent.getStringExtra(MainActivity.USER);
+		USER_ID = intent.getStringExtra(AppConstant.USER);
+		loggedIn = intent.getBooleanExtra(AppConstant.LOGIN, false);
 
 		// GameUp instance
 		gameup = GameUpInterface.getInstance(USER_ID);
@@ -136,17 +135,31 @@ public class LoginActivity extends Activity {
 	}
 
 	private void onSessionStateChange(Session session, SessionState state, Exception exception) {
-		Log.d("facebook", "onSessionStateChange");
-		Log.d("facebook", state.name());
 		if (state.isOpened()) {	
 			Log.d("facebook", "state opened");
 			// Request user data and show the results
 			Request.newMeRequest(session, new Request.GraphUserCallback() {
 				@Override
 				public void onCompleted(GraphUser user, Response response) {
-					Log.d("facebook", "about to return to main");
+					USER_ID = user.getName();
+					loggedIn = true;
 					Intent result = new Intent();
-					result.putExtra("userId", user.getName());
+					result.putExtra(AppConstant.USER, USER_ID);
+					result.putExtra(AppConstant.LOGIN, loggedIn);
+					setResult(Activity.RESULT_OK, result);
+					finish();
+				}
+			}).executeAsync();
+		} else if (state.isClosed()) {	
+			Log.d("facebook", "state closed");
+			// Request user data and show the results
+			Request.newMeRequest(session, new Request.GraphUserCallback() {
+				@Override
+				public void onCompleted(GraphUser user, Response response) {
+					loggedIn = false;
+					Intent result = new Intent();
+					result.putExtra(AppConstant.USER, USER_ID);
+					result.putExtra(AppConstant.LOGIN, loggedIn);
 					setResult(Activity.RESULT_OK, result);
 					finish();
 				}

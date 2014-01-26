@@ -22,6 +22,7 @@ public class DisplayGameActivity extends Activity {
 	private GameUpInterface gameup;
 	private String USER_ID;
 	private String GAME_ID;
+	private boolean loggedIn;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +51,9 @@ public class DisplayGameActivity extends Activity {
 
 		// Get the game id so we can retrieve info
 		Intent intent = getIntent();
-		GAME_ID = intent.getStringExtra(MainActivity.GAME_ID);
-		USER_ID = intent.getStringExtra(MainActivity.USER);
+		GAME_ID = intent.getStringExtra(AppConstant.GAME);
+		USER_ID = intent.getStringExtra(AppConstant.USER);
+		loggedIn = intent.getBooleanExtra(AppConstant.LOGIN, false);
 		
 		// GameUp instance
 		gameup = GameUpInterface.getInstance(USER_ID);
@@ -95,7 +97,7 @@ public class DisplayGameActivity extends Activity {
 		
 		if (sportIcon != null){
 			String s = g.getSport().toLowerCase(Locale.US);
-			int id = GameAdapter.getResId(s, this.getBaseContext(), R.drawable.class);
+			int id = HelperFunction.getResId(s, this.getBaseContext(), R.drawable.class);
 			if (id != -1) {
 				sportIcon.setBackgroundResource(id);
 			}
@@ -119,6 +121,8 @@ public class DisplayGameActivity extends Activity {
 		           public void onClick(DialogInterface dialog, int id) {
 		        	   // TODO: send a request to gameUp
 		        	   Intent result = new Intent();
+		        	   result.putExtra(AppConstant.USER, USER_ID);
+		        	   result.putExtra(AppConstant.LOGIN, loggedIn);
 		       		   setResult(Activity.RESULT_OK, result);
 		               finish();
 		           }
