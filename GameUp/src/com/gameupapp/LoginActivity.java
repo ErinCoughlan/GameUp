@@ -2,17 +2,16 @@ package com.gameupapp;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.facebook.LoggingBehavior;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
-import com.facebook.Settings;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
 
@@ -35,34 +34,20 @@ public class LoginActivity extends Activity {
 		setContentView(R.layout.activity_login);
 		uiHelper = new UiLifecycleHelper(this, callback);
 	    uiHelper.onCreate(savedInstanceState);
+	    
+		// Restore preferences
+		SharedPreferences settings = getSharedPreferences("settings", 0);
+		loggedIn = settings.getBoolean(AppConstant.LOGIN, false);
+		USER_ID = settings.getString(AppConstant.USER, null);
+		Log.d("login", "(login create) user_id: " + USER_ID + " is loggedIn " + loggedIn);
 
 		// Back button in app
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-
-		Settings.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
-
-		Session session = Session.getActiveSession();
-		if (session == null) {
-			if (savedInstanceState != null) {
-				session = Session.restoreSession(this, null, callback, savedInstanceState);
-			}
-			if (session == null) {
-				session = new Session(this);
-			}
-			Session.setActiveSession(session);
-			if (session.getState().equals(SessionState.CREATED_TOKEN_LOADED)) {
-				session.openForRead(new Session.OpenRequest(this).setCallback(callback));
-			}
-		}
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
-		// Get the game id so we can retrieve info
-		Intent intent = getIntent();
-		USER_ID = intent.getStringExtra(AppConstant.USER);
-		loggedIn = intent.getBooleanExtra(AppConstant.LOGIN, false);
 
 		// GameUp instance
 		gameup = GameUpInterface.getInstance(USER_ID);
@@ -75,12 +60,22 @@ public class LoginActivity extends Activity {
 	public void onStop() {
 		super.onStop();
 		uiHelper.onStop();
+		
 		// Clear the observers
 		if (gameup != null) {
 			gameup.removeObserver(this);
 		}
 
 		Session.getActiveSession().removeCallback(callback);
+		
+		// Save the user_id and similar shared variables
+		SharedPreferences settings = getSharedPreferences("settings", 0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putBoolean(AppConstant.LOGIN, loggedIn);
+		editor.putString(AppConstant.USER, USER_ID);
+		editor.apply();
+		
+		Log.d("login", "(login stop) user_id: " + USER_ID + " is loggedIn " + loggedIn);
 	}
 	
 	@Override
@@ -104,7 +99,7 @@ public class LoginActivity extends Activity {
 	@Override
 	public void onBackPressed() {
 		Intent result = new Intent();
-		setResult(Activity.RESULT_OK, result);
+		setResult(Activity.RESULT_CANCELED, result);
 		finish();
 	}
 
@@ -132,38 +127,42 @@ public class LoginActivity extends Activity {
 		uiHelper.onSaveInstanceState(outState);
 		Session session = Session.getActiveSession();
 		Session.saveSession(session, outState);
-	}
+	}	
 
 	private void onSessionStateChange(Session session, SessionState state, Exception exception) {
-		if (state.isOpened()) {	
-			Log.d("facebook", "state opened");
-			// Request user data and show the results
-			Request.newMeRequest(session, new Request.GraphUserCallback() {
-				@Override
-				public void onCompleted(GraphUser user, Response response) {
-					USER_ID = user.getName();
-					loggedIn = true;
-					Intent result = new Intent();
-					result.putExtra(AppConstant.USER, USER_ID);
-					result.putExtra(AppConstant.LOGIN, loggedIn);
-					setResult(Activity.RESULT_OK, result);
-					finish();
-				}
-			}).executeAsync();
-		} else if (state.isClosed()) {	
-			Log.d("facebook", "state closed");
-			// Request user data and show the results
-			Request.newMeRequest(session, new Request.GraphUserCallback() {
-				@Override
-				public void onCompleted(GraphUser user, Response response) {
-					loggedIn = false;
-					Intent result = new Intent();
-					result.putExtra(AppConstant.USER, USER_ID);
-					result.putExtra(AppConstant.LOGIN, loggedIn);
-					setResult(Activity.RESULT_OK, result);
-					finish();
-				}
-			}).executeAsync();
+		Log.d("facebook", "session state change");
+		if (state.isClosed()) {
+			Log.d("facebook", "state is now closed");
+			logOut();
+		} else if (state.isOpened()) {
+			Log.d("facebook", "state is now open");
+			logIn(session);
 		}
+	}
+	
+	private void logIn(Session session) {
+		// Request user data and show the results
+		Request.newMeRequest(session, new Request.GraphUserCallback() {
+			@Override
+			public void onCompleted(GraphUser user, Response response) {
+				Log.d("facebook", user.getFirstName());
+				USER_ID = user.getFirstName();
+				loggedIn = true;
+				Intent result = new Intent();
+				result.putExtra(AppConstant.USER, USER_ID);
+				result.putExtra(AppConstant.LOGIN, loggedIn);
+				setResult(Activity.RESULT_OK, result);
+				finish();
+			}
+		}).executeAsync();
+	}
+	
+	private void logOut() {
+		loggedIn = false;
+		Intent result = new Intent();
+		result.putExtra(AppConstant.USER, USER_ID);
+		result.putExtra(AppConstant.LOGIN, loggedIn);
+		setResult(Activity.RESULT_OK, result);
+		finish();
 	}
 }

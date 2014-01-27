@@ -234,8 +234,6 @@ containing a value of this type.
     }
     public static final class id {
         public static final int authButton=0x7f04001b;
-        public static final int buttonCreate=0x7f040012;
-        public static final int buttonJoin=0x7f04001a;
         public static final int com_facebook_login_activity_progress_bar=0x7f040022;
         public static final int com_facebook_picker_activity_circle=0x7f040021;
         public static final int com_facebook_picker_checkbox=0x7f040024;
@@ -256,6 +254,7 @@ containing a value of this type.
         public static final int com_facebook_usersettingsfragment_login_button=0x7f040034;
         public static final int com_facebook_usersettingsfragment_logo_image=0x7f040032;
         public static final int com_facebook_usersettingsfragment_profile_name=0x7f040033;
+        public static final int createButton=0x7f040012;
         public static final int dialog_message=0x7f040035;
         public static final int edittext_players=0x7f040011;
         public static final int end=0x7f04000a;
@@ -272,6 +271,7 @@ containing a value of this type.
         public static final int gameUpText=0x7f04001c;
         public static final int game_sport_icon=0x7f040003;
         public static final int games=0x7f04001f;
+        public static final int joinButton=0x7f04001a;
         public static final int large=0x7f040002;
         public static final int location_spinner=0x7f04000f;
         public static final int login=0x7f04001d;

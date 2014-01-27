@@ -179,11 +179,10 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/buttonCreate"
+        android:id="@+id/createButton"
         android:layout_width="fill_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
-        android:onClick="showSuccessDialog"
         android:text="@string/create" />
 
 </RelativeLayout>

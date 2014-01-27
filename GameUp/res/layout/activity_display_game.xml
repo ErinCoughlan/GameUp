@@ -96,7 +96,7 @@
     </TextView>
 
 	<Button
-	    android:id="@+id/buttonJoin"
+	    android:id="@+id/joinButton"
 	    android:layout_width="fill_parent"
         android:layout_height="60dp"
 	    android:text="@string/join" />

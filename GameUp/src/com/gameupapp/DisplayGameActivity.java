@@ -29,20 +29,15 @@ public class DisplayGameActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_display_game);
 		
+		// Restore preferences
+		SharedPreferences settings = getSharedPreferences("settings", 0);
+		loggedIn = settings.getBoolean(AppConstant.LOGIN, false);
+		USER_ID = settings.getString(AppConstant.USER, null);
+		Log.d("login", "(display create) user: " + USER_ID + " loggedIn = " + loggedIn);
+		updateView();
+		
 		// Back button in app
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-
-		// TODO: Change the button text depending on if the person joined the game
-		
-		// Set up the join/unjoin button
-		final Button button = (Button) findViewById(R.id.buttonJoin);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-            	// TODO: Determine which string to show
-            	AlertDialog dialog = createJoinGameAlert(R.string.alert_success_join);
-            	dialog.show();
-            }
-        });
 	}
 	
 	@Override
@@ -52,8 +47,6 @@ public class DisplayGameActivity extends Activity {
 		// Get the game id so we can retrieve info
 		Intent intent = getIntent();
 		GAME_ID = intent.getStringExtra(AppConstant.GAME);
-		USER_ID = intent.getStringExtra(AppConstant.USER);
-		loggedIn = intent.getBooleanExtra(AppConstant.LOGIN, false);
 		
 		// GameUp instance
 		gameup = GameUpInterface.getInstance(USER_ID);
@@ -104,7 +97,7 @@ public class DisplayGameActivity extends Activity {
 		}
 	}
 	
-	private AlertDialog createJoinGameAlert(int message) {
+	private AlertDialog createGameAlert(int message) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		
 		// Get the layout inflater
@@ -157,11 +150,58 @@ public class DisplayGameActivity extends Activity {
 		if (gameup != null) {
 			gameup.removeObserver(this);
 		}
-
-		// Save the current location of the slider
+		
+		// Save the user_id and similar shared variables
 		SharedPreferences settings = getSharedPreferences("settings", 0);
 		SharedPreferences.Editor editor = settings.edit();
-		editor.putString("user_id", USER_ID);
+		editor.putBoolean(AppConstant.LOGIN, loggedIn);
+		editor.putString(AppConstant.USER, USER_ID);
 		editor.apply();
+	}
+	
+	private void updateView() {
+		// Set up the join/unjoin button
+		final Button button = (Button) findViewById(R.id.joinButton);
+		if (loggedIn) {
+			button.setText(R.string.join);
+	        button.setOnClickListener(new View.OnClickListener() {
+	            public void onClick(View v) {
+	            	// TODO: Determine which string to show
+	            	AlertDialog dialog = createGameAlert(R.string.alert_success_join);
+	            	dialog.show();
+	            }
+	        });
+		} else {
+			button.setText(R.string.sign_up);
+			button.setOnClickListener(new View.OnClickListener() {
+	            public void onClick(View v) {
+	            	// Go to a new activity for logging in and out
+	        		Intent intent = new Intent();
+	        		intent.setClass(DisplayGameActivity.this, LoginActivity.class);
+	        		intent.putExtra(AppConstant.USER, USER_ID);
+	        		intent.putExtra(AppConstant.LOGIN, loggedIn);
+	        		startActivityForResult(intent, AppConstant.LOGIN_ID);
+	            }
+	        });
+		}
+	}
+	
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode == Activity.RESULT_OK) {
+			switch (requestCode) {
+			case AppConstant.LOGIN_ID:
+				USER_ID = data.getStringExtra(AppConstant.USER);
+				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
+				
+				Log.d("login", "(display activity) user: " + USER_ID + " loggedIn = " + loggedIn);
+				
+				// Finish joining the game if login is successful
+				if (loggedIn) {
+					AlertDialog dialog = createGameAlert(R.string.alert_success_join);
+	            	dialog.show();
+					break;
+				}
+			}
+		}
 	}
 }

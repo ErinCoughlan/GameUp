@@ -49,6 +49,13 @@ public class CreateGameActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_create_game);
 		
+		// Restore preferences
+		SharedPreferences settings = getSharedPreferences("settings", 0);
+		loggedIn = settings.getBoolean(AppConstant.LOGIN, false);
+		USER_ID = settings.getString(AppConstant.USER, null);
+		Log.d("login", "(display create) user: " + USER_ID + " loggedIn = " + loggedIn);
+		updateView();
+		
 		// Back button in app
 		getActionBar().setDisplayHomeAsUpEnabled(true);
         
@@ -76,10 +83,6 @@ public class CreateGameActivity extends Activity {
 	@Override
 	public void onStart() {
 		super.onStart();
-
-		Intent intent = getIntent();
-		USER_ID = intent.getStringExtra(AppConstant.USER);
-		loggedIn = intent.getBooleanExtra(AppConstant.LOGIN, false);
 		
 		// GameUp instance
 		gameup = GameUpInterface.getInstance(USER_ID);
@@ -112,6 +115,13 @@ public class CreateGameActivity extends Activity {
 		if (gameup != null) {
 			gameup.removeObserver(this);
 		}
+		
+		// Save the user_id and similar shared variables
+		SharedPreferences settings = getSharedPreferences("settings", 0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putBoolean(AppConstant.LOGIN, loggedIn);
+		editor.putString(AppConstant.USER, USER_ID);
+		editor.apply();
 	}
 	
 	private void initSportSpinner() {
@@ -222,5 +232,51 @@ public class CreateGameActivity extends Activity {
 				sportIcon.setBackgroundResource(R.drawable.unknown_icon);
 			}
         }
+	}
+	
+	private void updateView() {
+		// Set up the create button
+		final Button button = (Button) findViewById(R.id.createButton);
+		if (loggedIn) {
+			button.setText(R.string.create);
+	        button.setOnClickListener(new View.OnClickListener() {
+	            public void onClick(View v) {
+	            	// TODO: Determine which string to show
+	            	AlertDialog dialog = createGameAlert(R.string.alert_success_join);
+	            	dialog.show();
+	            }
+	        });
+		} else {
+			button.setText(R.string.sign_up);
+			button.setOnClickListener(new View.OnClickListener() {
+	            public void onClick(View v) {
+	            	// Go to a new activity for logging in and out
+	        		Intent intent = new Intent();
+	        		intent.setClass(CreateGameActivity.this, LoginActivity.class);
+	        		intent.putExtra(AppConstant.USER, USER_ID);
+	        		intent.putExtra(AppConstant.LOGIN, loggedIn);
+	        		startActivityForResult(intent, AppConstant.LOGIN_ID);
+	            }
+	        });
+		}
+	}
+	
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode == Activity.RESULT_OK) {
+			switch (requestCode) {
+			case AppConstant.LOGIN_ID:
+				USER_ID = data.getStringExtra(AppConstant.USER);
+				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
+				
+				Log.d("login", "(create activity) user: " + USER_ID + " loggedIn = " + loggedIn);
+				
+				// Finish joining the game if login is successful
+				if (loggedIn) {
+					AlertDialog dialog = createGameAlert(R.string.alert_success_join);
+	            	dialog.show();
+					break;
+				}
+			}
+		}
 	}
 }

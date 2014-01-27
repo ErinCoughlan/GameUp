@@ -3,6 +3,10 @@ package com.gameupapp;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facebook.LoggingBehavior;
+import com.facebook.Session;
+import com.facebook.SessionState;
+import com.facebook.Settings;
 import com.gameupapp.GameFragment.OnGameClicked;
 
 import android.os.Bundle;
@@ -10,6 +14,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -21,14 +27,46 @@ public class MainActivity extends Activity implements OnGameClicked {
 	private GameUpInterface gameup;
 
 	private List<Game> gameList = new ArrayList<Game>();
+	
+	// Facebook stuff
+	private Session.StatusCallback callback = new Session.StatusCallback() {
+	    @Override
+	    public void call(Session session, SessionState state, Exception exception) {
+	        Log.d("facebook", "state is opened: " + Boolean.toString(state.isOpened()));
+	    }
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		setContentView(R.layout.activity_main);
-
-		displayGames();
+		
+		// Restore preferences
+		SharedPreferences settings = getSharedPreferences("settings", 0);
+		loggedIn = settings.getBoolean(AppConstant.LOGIN, false);
+		USER_ID = settings.getString(AppConstant.USER, null);
+		Log.d("login", "(main create) user_id: " + USER_ID + " is loggedIn " + loggedIn);
+		
+		// Logging into Facebook if active previously logged in
+		Settings.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
+		
+		if (loggedIn) {
+			Log.d("facebook", "logged in - restoring session");
+			Session session = Session.getActiveSession();
+			if (session == null) {
+				Log.d("facebook", "session is null");
+				if (savedInstanceState != null) {
+					session = Session.restoreSession(this, null, callback, savedInstanceState);
+				}
+				if (session == null) {
+					session = new Session(this);
+				}
+				Session.setActiveSession(session);
+				if (session.getState().equals(SessionState.CREATED_TOKEN_LOADED)) {
+					session.openForRead(new Session.OpenRequest(this).setCallback(callback));
+				}
+			}
+		}
 
 		// Set up on click for creating new games
 		final Button button = (Button) findViewById(R.id.new_game);
@@ -50,9 +88,10 @@ public class MainActivity extends Activity implements OnGameClicked {
 	@Override
 	public void onStart() {
 		super.onStart();
-
+		
 		startGameUp();
-		updateScreen();
+		displayGames();
+		updateView();
 	}
 
 	@Override
@@ -117,23 +156,23 @@ public class MainActivity extends Activity implements OnGameClicked {
 			case AppConstant.DETAIL_ID:
 				USER_ID = data.getStringExtra(AppConstant.USER);
 				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
-				updateScreen();
+				updateView();
 				break;
 			case AppConstant.CREATE_ID:
 				USER_ID = data.getStringExtra(AppConstant.USER);
 				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
-				updateScreen();
+				updateView();
 				break;
 			case AppConstant.LOGIN_ID:
 				USER_ID = data.getStringExtra(AppConstant.USER);
 				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
-				updateScreen();
-				
+				Log.d("login", "(main result) user_id: " + USER_ID + " is loggedIn " + loggedIn);
+				updateView();
 				
 				if (loggedIn) {
 					AlertDialog.Builder builder = new AlertDialog.Builder(this)
 						.setTitle("Welcome!")
-						.setMessage("Join or create a game " + USER_ID)
+						.setMessage("Join or create a game " + USER_ID + ".")
 						.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
@@ -144,7 +183,7 @@ public class MainActivity extends Activity implements OnGameClicked {
 				} else if (!loggedIn) {
 					AlertDialog.Builder builder = new AlertDialog.Builder(this)
 						.setTitle("Goodbye!")
-						.setMessage("Thanks for playing " + USER_ID)
+						.setMessage("Thanks for playing " + USER_ID + ".")
 						.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
@@ -166,9 +205,16 @@ public class MainActivity extends Activity implements OnGameClicked {
 		if (gameup != null) {
 			gameup.removeObserver(this);
 		}
+
+		// Save the user_id and similar shared variables
+		SharedPreferences settings = getSharedPreferences("settings", 0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putBoolean(AppConstant.LOGIN, loggedIn);
+		editor.putString(AppConstant.USER, USER_ID);
+		editor.apply();
 	}
 	
-	private void updateScreen() {
+	private void updateView() {
 		// Simplify interactions if we don't have a registered user
 		final Button loginButton = (Button) findViewById(R.id.login);
 		if (loggedIn) {
