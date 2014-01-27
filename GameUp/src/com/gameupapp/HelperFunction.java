@@ -1,6 +1,11 @@
 package com.gameupapp;
 
 import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import android.content.Context;
 
@@ -20,6 +25,18 @@ public class HelperFunction {
 	        e.printStackTrace();
 	        return -1;
 	    } 
+	}
+	
+	/**
+	 * Converts a unix timestamp to a localized date time.
+	 */
+	public static String convertToDate(long time){
+		time = time * 1000;
+		Date date = new Date(time);
+		DateFormat format = new SimpleDateFormat("EEE., MMM d '\n@' h:mm a", Locale.getDefault());
+		format.setTimeZone(TimeZone.getDefault());
+		String formatted = format.format(date);
+		return formatted;
 	}
 
 }

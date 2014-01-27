@@ -1,11 +1,7 @@
 package com.gameupapp;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import com.gameupapp.R;
 
@@ -19,7 +15,6 @@ import android.widget.TextView;
 
 public class GameAdapter extends ArrayAdapter<Game> {
 
-	// declaring our ArrayList of items
 	private List<Game> objects;
 	private int layout;
 	private Context context;
@@ -74,7 +69,7 @@ public class GameAdapter extends ArrayAdapter<Game> {
 			// check to see if each individual textview is null.
 			// if not, assign some text!
 			if (timestamp != null){
-				String date = convertToDate(i.getTimestamp());
+				String date = HelperFunction.convertToDate(i.getTimestamp());
 				timestamp.setText(date);
 			}
 			
@@ -110,14 +105,5 @@ public class GameAdapter extends ArrayAdapter<Game> {
 
 	public int getPosition(Game game){
 		return this.objects.indexOf(game);
-	}
-
-	public static String convertToDate(long time){
-		time = time * 1000;
-		Date date = new Date(time);
-		DateFormat format = new SimpleDateFormat("EEE., MMM d '\n@' h:mm a", Locale.getDefault());
-		format.setTimeZone(TimeZone.getDefault());
-		String formatted = format.format(date);
-		return formatted;
 	}
 }

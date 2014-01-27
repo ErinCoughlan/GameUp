@@ -1,5 +1,7 @@
 package com.gameupapp;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -99,17 +101,12 @@ public class DisplayGameActivity extends Activity implements
 		// check to see if each individual textview is null.
 		// if not, assign some text!
 		if (timestamp != null){
-			String date = GameAdapter.convertToDate(g.getTimestamp());
+			String date = HelperFunction.convertToDate(g.getTimestamp());
 			timestamp.setText(date);
 		}
 		
 		if (location != null){
 			location.setText(g.getLocation());
-		}
-		
-		if (players != null){
-			String str = g.getPlayersJoined() + " out of " + g.getTotalPlayers();
-			players.setText(str);
 		}
 		
 		if (sport != null){
@@ -122,6 +119,28 @@ public class DisplayGameActivity extends Activity implements
 			if (id != -1) {
 				sportIcon.setBackgroundResource(id);
 			}
+		}
+		
+		int joined = g.getPlayersJoined();
+		int total = g.getTotalPlayers();
+		if (players != null){
+			String str = joined + " out of " + total;
+			players.setText(str);
+		}
+		
+		// TODO: Change to actual player profiles
+		List<Integer> playerList = new ArrayList<Integer>();
+		for (int i = 0; i < joined; i++) {
+			playerList.add(AppConstant.PLAYER);
+		}
+		for (int i = 0; i < total - joined; i++) {
+			playerList.add(AppConstant.PLAYER_ABSENT);
+		}
+		
+		ImageFragment fragment = (ImageFragment) getFragmentManager()
+				.findFragmentById(R.id.playerGridView);
+		if (fragment != null) {
+			fragment.update(playerList);
 		}
 	}
 	

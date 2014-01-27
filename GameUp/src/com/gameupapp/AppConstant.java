@@ -27,4 +27,13 @@ public class AppConstant {
     static final int
             CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     static final int MAP_ZOOM = 18;
+    
+    // Debug list of player images
+    static final Integer[] PLAYERS = {
+    	R.drawable.player, R.drawable.player,
+    	R.drawable.player_absent, R.drawable.player_absent
+    };
+    
+    static final Integer PLAYER = R.drawable.player;
+    static final Integer PLAYER_ABSENT = R.drawable.player_absent;
 }
