@@ -19,4 +19,12 @@ public class AppConstant {
 	static final List<String> sports = Arrays.asList(
 			"Baseball", "Basketball", "Football", "Soccer",
 			"Tennis", "Volleyball", "Frisbee");
+	
+	/*
+     * Define a request code to send to Google Play services
+     * This code is returned in Activity.onActivityResult
+     */
+    static final int
+            CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+    static final int MAP_ZOOM = 18;
 }

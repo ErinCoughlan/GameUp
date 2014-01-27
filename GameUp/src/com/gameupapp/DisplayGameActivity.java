@@ -2,11 +2,23 @@ package com.gameupapp;
 
 import java.util.Locale;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
@@ -17,12 +29,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class DisplayGameActivity extends Activity {
+public class DisplayGameActivity extends Activity implements
+		GooglePlayServicesClient.ConnectionCallbacks,
+		GooglePlayServicesClient.OnConnectionFailedListener {
 	
 	private GameUpInterface gameup;
 	private String USER_ID;
 	private String GAME_ID;
 	private boolean loggedIn;
+	
+	private LocationClient mLocationClient;
+	private Location mCurrentLocation;
+	private GoogleMap map;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +56,21 @@ public class DisplayGameActivity extends Activity {
 		
 		// Back button in app
 		getActionBar().setDisplayHomeAsUpEnabled(true);
+		
+		// Create a client for location in maps
+		mLocationClient = new LocationClient(this, this, this);
+		FragmentManager fm = getFragmentManager();
+        MapFragment mf = (MapFragment) fm.findFragmentById(R.id.gameMap);
+        map = mf.getMap();
+        map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 	}
 	
 	@Override
 	public void onStart() {
 		super.onStart();
+		
+		// Connect maps and get current location
+		mLocationClient.connect();
 
 		// Get the game id so we can retrieve info
 		Intent intent = getIntent();
@@ -145,6 +173,9 @@ public class DisplayGameActivity extends Activity {
 	@Override
 	protected void onStop() {
 		super.onStop();
+		
+		// Disconnecting maps
+        mLocationClient.disconnect();
 
 		// Clear the observers
 		if (gameup != null) {
@@ -204,4 +235,75 @@ public class DisplayGameActivity extends Activity {
 			}
 		}
 	}
+
+	/*
+     * Called by Location Services when the request to connect the
+     * client finishes successfully. At this point, you can
+     * request the current location or start periodic updates
+     */
+    @Override
+    public void onConnected(Bundle dataBundle) {
+        // Display the connection status
+        Log.d("maps", "Connected");
+        
+        mCurrentLocation = mLocationClient.getLastLocation();
+
+        //map.setMyLocationEnabled(true);
+        //Location location = map.getMyLocation();
+
+        if (mCurrentLocation != null) {
+            LatLng myLocation = new LatLng(mCurrentLocation.getLatitude(),
+            		mCurrentLocation.getLongitude());
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, AppConstant.MAP_ZOOM));
+    		map.addMarker(new MarkerOptions()
+                    .title("Current Location")
+                    .position(myLocation));
+        }
+
+    }
+
+    /*
+     * Called by Location Services if the connection to the
+     * location client drops because of an error.
+     */
+    @Override
+    public void onDisconnected() {
+        // Display the connection status
+        Log.d("maps", "Disconnected. Please re-connect.");
+    }
+
+    /*
+     * Called by Location Services if the attempt to
+     * Location Services fails.
+     */
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        /*
+         * Google Play services can resolve some errors it detects.
+         * If the error has a resolution, try sending an Intent to
+         * start a Google Play services activity that can resolve
+         * error.
+         */
+        if (connectionResult.hasResolution()) {
+            try {
+                // Start an Activity that tries to resolve the error
+                connectionResult.startResolutionForResult(
+                        this,
+                        AppConstant.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+                /*
+                 * Thrown if Google Play services canceled the original
+                 * PendingIntent
+                 */
+            } catch (IntentSender.SendIntentException e) {
+                // Log the error
+                e.printStackTrace();
+            }
+        } else {
+            /*
+             * If no resolution is available, display a dialog to the
+             * user with the error.
+             */
+            //showErrorDialog(connectionResult.getErrorCode());
+        }
+    }
 }
