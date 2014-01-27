@@ -29,17 +29,6 @@
     <string name="choose_end_time_prompt">End time:</string>
     <string name="login">Login</string>
     <string name="logout">Logout</string>
-    
-    
-    <string-array name="sports_array">
-        <item>Basketball</item>
-        <item>Baseball</item>
-        <item>Football</item>
-        <item>Soccer</item>
-        <item>Tennis</item>
-        <item>Volleyball</item>
-        <item>Add New</item>
-    </string-array>
 
     <color name="nice_blue">#33b5e5</color>
     <color name="nice_blue_dark">#0099cc</color>
