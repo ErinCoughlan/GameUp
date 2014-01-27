@@ -458,7 +458,7 @@ containing a value of this type.
         public static final int gameDistance=0x7f05001b;
         public static final int gameLocation=0x7f050019;
         public static final int gameMap=0x7f05001c;
-        public static final int gamePlayers=0x7f05001f;
+        public static final int gamePlayers=0x7f05001e;
         public static final int gamePlayersJoined=0x7f05001d;
         public static final int gameSport=0x7f050018;
         public static final int gameSportIcon=0x7f050017;
@@ -477,7 +477,7 @@ containing a value of this type.
         public static final int normal=0x7f050001;
         public static final int photogridview=0x7f05003b;
         public static final int picker_subtitle=0x7f050035;
-        public static final int playerGridView=0x7f05001e;
+        public static final int playerGridView=0x7f05001f;
         public static final int satellite=0x7f050002;
         public static final int small=0x7f050005;
         public static final int sport_spinner=0x7f050009;

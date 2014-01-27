@@ -124,7 +124,7 @@ public class DisplayGameActivity extends Activity implements
 		int joined = g.getPlayersJoined();
 		int total = g.getTotalPlayers();
 		if (players != null){
-			String str = joined + " out of " + total;
+			String str = "(" + joined + " out of " + total + ")";
 			players.setText(str);
 		}
 		
