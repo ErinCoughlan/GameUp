@@ -27,6 +27,7 @@ public class AppConstant {
     static final int
             CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     static final int MAP_ZOOM = 18;
+    static final int RQS_GooglePlayServices = 1;
     
     // Debug list of player images
     static final Integer[] PLAYERS = {

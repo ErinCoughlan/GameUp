@@ -71,7 +71,7 @@
                 <TextView
                     android:id="@+id/start_text_time"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="@string/choose_start_time_prompt"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -79,14 +79,14 @@
                 <Button
                     android:id="@+id/start_date_picker"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:onClick="showDatePickerDialog" />
 
                 <Button
                     android:id="@+id/start_time_picker"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:onClick="showTimePickerDialog" />
             </LinearLayout>
@@ -103,7 +103,7 @@
                 <TextView
                     android:id="@+id/end_text_time"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="@string/choose_end_time_prompt"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -111,14 +111,14 @@
                 <Button
                     android:id="@+id/end_date_picker"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:onClick="showDatePickerDialog" />
 
                 <Button
                     android:id="@+id/end_time_picker"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:onClick="showTimePickerDialog" />
             </LinearLayout>

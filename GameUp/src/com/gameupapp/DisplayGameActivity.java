@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -29,6 +30,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class DisplayGameActivity extends Activity implements
@@ -58,13 +60,25 @@ public class DisplayGameActivity extends Activity implements
 		
 		// Back button in app
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-		
-		// Create a client for location in maps
-		mLocationClient = new LocationClient(this, this, this);
-		FragmentManager fm = getFragmentManager();
-        MapFragment mf = (MapFragment) fm.findFragmentById(R.id.gameMap);
-        map = mf.getMap();
-        map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        
+		int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        try {
+            if (status != ConnectionResult.SUCCESS) {
+            	GooglePlayServicesUtil.getErrorDialog(status, this,
+            			AppConstant.RQS_GooglePlayServices).show();
+            	LinearLayout mapView = (LinearLayout) findViewById(R.id.gameMapView);
+            	mapView.setVisibility(View.INVISIBLE);
+            }
+            
+            // Create a client for location in maps
+    		mLocationClient = new LocationClient(this, this, this);
+    		FragmentManager fm = getFragmentManager();
+            MapFragment mf = (MapFragment) fm.findFragmentById(R.id.gameMap);
+            map = mf.getMap();
+            map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        } catch (Exception e) {
+            Log.e("Error: GooglePlayServiceUtil: ", "" + e);
+        }
 	}
 	
 	@Override
