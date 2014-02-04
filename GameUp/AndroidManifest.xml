@@ -31,24 +31,21 @@
         </activity>
         <activity
             android:name="com.gameupapp.DisplayGameActivity"
-            android:label="@string/display_activity_display_message"
-            android:parentActivityName="com.gameupapp.MainActivity" >
+            android:label="@string/display_activity_display_message" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.gameupapp.MainActivity" />
         </activity>
         <activity
             android:name="com.gameupapp.CreateGameActivity"
-            android:label="@string/create_activity_display_message"
-            android:parentActivityName="com.gameupapp.MainActivity" >
+            android:label="@string/create_activity_display_message" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.gameupapp.MainActivity" />
         </activity>
         <activity
             android:name="com.gameupapp.LoginActivity"
-            android:label="@string/login_activity_display_message"
-            android:parentActivityName="com.gameupapp.MainActivity" >
+            android:label="@string/login_activity_display_message" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.gameupapp.MainActivity" />
