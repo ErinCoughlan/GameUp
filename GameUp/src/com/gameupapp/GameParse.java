@@ -69,5 +69,12 @@ public class GameParse extends ParseObject {
 		return false;
 	}
 	
+	public void setSport(String sport) {
+		put("sport", sport);
+	}
+	
+	public String getSport() {
+		return getString("sport");
+	}
 	
 }

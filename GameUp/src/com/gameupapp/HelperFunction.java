@@ -9,6 +9,9 @@ import java.util.TimeZone;
 
 import android.content.Context;
 
+import com.parse.Parse;
+import com.parse.ParseGeoPoint;
+
 public class HelperFunction {
 	
 	/**
@@ -37,6 +40,19 @@ public class HelperFunction {
 		format.setTimeZone(TimeZone.getDefault());
 		String formatted = format.format(date);
 		return formatted;
+	}
+	
+	public static String convertToDate(Date date) {
+		DateFormat format = new SimpleDateFormat("EEE., MMM d '\n@' h:mm a", Locale.getDefault());
+		String outDate = format.format(date);
+		return outDate;
+	}
+	
+	public static String convertParseGeoToString(ParseGeoPoint location) {
+		double latitude = location.getLatitude();
+		double longitude = location.getLongitude();
+		String locationStr = latitude + ", " + longitude;
+		return locationStr;
 	}
 
 }
