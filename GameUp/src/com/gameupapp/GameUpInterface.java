@@ -8,6 +8,11 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.parse.ParseQuery;
+import com.parse.ParseObject;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+
 import android.app.Activity;
 import android.util.Log;
 
@@ -165,15 +170,25 @@ public class GameUpInterface {
 		return games;
 	}
 	
-	public Game getGame(String gameId) {
-		// TODO Make this use the API, whenever that gets done
-		if (DEBUG) {
-			for (Game g : gameList) {
-				if (g.getGameId().equals(gameId)) {
-					return g;
+	/**
+	 * 
+	 * @param gameId Unique identifier for the desired game
+	 * @return a ParseQuery containing exactly the requested game
+	 */
+	public ParseQuery<GameParse> getGame(String gameId) {
+		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
+		query.whereEqualTo("gameID", gameId);
+		query.getFirstInBackground(new GetCallback<GameParse>() {
+			@Override
+			public void done(GameParse object, ParseException e) {
+				if (object == null) {
+					Log.d("getGame", "Game lookup by id failed.");
+				} else {
+					Log.d("getGame", "Game lookup by id succeeded.");
 				}
 			}
-		}
+		});
+		
 		// Game was not found; return an error
 		return null;
 	}

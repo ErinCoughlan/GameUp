@@ -16,7 +16,6 @@ public class GameParse extends ParseObject {
 		put("gameID", gameID);
 	}
 	
-
 	/**
 	 * 
 	 * @param latitude Double representing latitude, -90.0 to 90.0
@@ -37,7 +36,6 @@ public class GameParse extends ParseObject {
 		return (Date) get("dateTime"); 
 	}
 	
-	// TODO figure out typing 
 	public void setDateTime(Date dateTime) {
 		put("dateTime", dateTime);
 	}
