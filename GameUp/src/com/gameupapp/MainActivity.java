@@ -9,6 +9,9 @@ import com.facebook.SessionState;
 import com.facebook.Settings;
 import com.gameupapp.GameFragment.OnGameClicked;
 
+import com.parse.Parse;
+import com.parse.ParseObject;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -40,6 +43,13 @@ public class MainActivity extends Activity implements OnGameClicked {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		// Register GameParse subclass
+		ParseObject.registerSubclass(GameParse.class);
+		// Set Parse up with our app key
+		Parse.initialize(this, "a0k4KhDMvl3Mz2CUDcDMLAgnt5uaCLuIBxK41NGa", "3EJKdG7SuoK89gkFkN1rcDNbFvIgN71iH0mJyfDC");
+		
+
 		
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences("settings", 0);
