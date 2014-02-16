@@ -29,7 +29,7 @@ public class MainActivity extends Activity implements OnGameClicked {
 	private boolean loggedIn = false;
 	private GameUpInterface gameup;
 
-	private List<Game> gameList = new ArrayList<Game>();
+	private List<GameParse> gameList = new ArrayList<GameParse>();
 	
 	// Facebook stuff
 	private Session.StatusCallback callback = new Session.StatusCallback() {
@@ -129,9 +129,11 @@ public class MainActivity extends Activity implements OnGameClicked {
 	}
 
 	@Override
-	public void onGameClicked(Game gameClicked, int position) {
-		Game game = gameList.get(position);
-		String gameId = game.getGameId();
+	public void onGameClicked(GameParse gameClicked, int position) {
+		GameParse game = gameList.get(position);
+		
+		// TODO I've been using capital ID and just noticed everything else is Id. I need to fix mine.
+		String gameId = game.getGameID();
 
 		// Go to a new activity for the specific game
 		Intent intent = new Intent();

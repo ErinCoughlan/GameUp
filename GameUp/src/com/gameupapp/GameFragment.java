@@ -17,11 +17,11 @@ import android.widget.ListView;
 public class GameFragment extends ListFragment {
 
 	private GameAdapter adapter;
-	private ArrayList<Game> gameList;
+	private ArrayList<GameParse> gameList;
 	private Context context;
 
 	public interface OnGameClicked {
-		public void onGameClicked(Game gameClicked, int position);
+		public void onGameClicked(GameParse gameClicked, int position);
 	}
 
 	OnGameClicked gameClickedListener;
@@ -36,7 +36,7 @@ public class GameFragment extends ListFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		gameList = new ArrayList<Game>();
+		gameList = new ArrayList<GameParse>();
 	}
 
 	@Override
@@ -64,12 +64,12 @@ public class GameFragment extends ListFragment {
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-		Game gameClicked = (Game) adapter.getItem(position);
+		GameParse gameClicked = (GameParse) adapter.getItem(position);
 
 		gameClickedListener.onGameClicked(gameClicked, position);
 	}
 
-	public void update(List<Game> list) {
+	public void update(List<GameParse> list) {
 
 		// Must use clear and add for notifyDataSetChanged to work correctly
 		gameList.clear();

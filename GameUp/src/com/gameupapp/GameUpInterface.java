@@ -144,11 +144,18 @@ public class GameUpInterface {
 		observers.clear();
 	}
 	
-	public List<Game> getGames() {
-		// TODO Make this use the API, whenever that gets done
-		List<Game> games = new ArrayList<Game>();
+	public List<GameParse> getGames() {
+		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
+		query.setLimit(10);
+		// TODO Make this work in a background thread
+		List<GameParse> games = new ArrayList<GameParse>();
 		
-		if (DEBUG) {
+		try {
+			games = query.find();
+		} catch (ParseException e) {
+			Log.d("getGames", "Exception finding games");
+		}
+		/*if (DEBUG) {
 			Game g = new Game(jsonGame);
 			games.add(g);
 			g = new Game(jsonGame2);
@@ -163,7 +170,7 @@ public class GameUpInterface {
 			games.add(g);
 			
 			gameList = games;
-		}
+		}*/
 		
 		Log.d("games", "number of games: " + games.size());
 		

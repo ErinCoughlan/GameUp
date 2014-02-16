@@ -13,9 +13,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class GameAdapter extends ArrayAdapter<Game> {
+public class GameAdapter extends ArrayAdapter<GameParse> {
 
-	private List<Game> objects;
+	private List<GameParse> objects;
 	private int layout;
 	private Context context;
 
@@ -23,7 +23,7 @@ public class GameAdapter extends ArrayAdapter<Game> {
 	 * the only variable we care about now is ArrayList<Item> objects,
 	 * because it is the list of objects we want to display.
 	 */
-	public GameAdapter(Context context, int textViewResourceId, List<Game> gamesList) {
+	public GameAdapter(Context context, int textViewResourceId, List<GameParse> gamesList) {
 		super(context, textViewResourceId, gamesList);
 		this.objects = gamesList;
 		this.layout = textViewResourceId;
@@ -53,7 +53,7 @@ public class GameAdapter extends ArrayAdapter<Game> {
 		 * 
 		 * Therefore, i refers to the current Item object.
 		 */
-		Game i = objects.get(position);
+		GameParse i = objects.get(position);
 
 		if (i != null) {
 
@@ -69,18 +69,18 @@ public class GameAdapter extends ArrayAdapter<Game> {
 			// check to see if each individual textview is null.
 			// if not, assign some text!
 			if (timestamp != null){
-				String date = HelperFunction.convertToDate(i.getTimestamp());
+				String date = HelperFunction.convertToDate(i.getDateTime());
 				timestamp.setText(date);
 			}
 			
 			if (location != null){
-				location.setText(i.getLocation());
+				String locationString = HelperFunction.convertParseGeoToString(i.getLocation());
+				location.setText(locationString);
 			}
 			
-			if (players != null){
-				String str = i.getPlayersJoined() + " out of " + i.getTotalPlayers();
-				players.setText(str);
-			}
+			int joined = i.getCurrentPlayerCount();
+			int maxPlayers = i.getMaxPlayers();
+			
 			
 			if (sport != null){
 				sport.setText(i.getSport());
@@ -99,11 +99,11 @@ public class GameAdapter extends ArrayAdapter<Game> {
 		return v;
 	}
 
-	public List<Game> getGames(){
+	public List<GameParse> getGames(){
 		return this.objects;
 	}
 
-	public int getPosition(Game game){
+	public int getPosition(GameParse game){
 		return this.objects.indexOf(game);
 	}
 }
