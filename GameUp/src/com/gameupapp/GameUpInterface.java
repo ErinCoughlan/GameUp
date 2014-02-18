@@ -24,8 +24,6 @@ public class GameUpInterface {
 	private int orderBy = 0;
 	private int numComments = 20;
 
-	private boolean DEBUG = true;
-
 	private static GameUpInterface instance;
 	//private HttpTaskProvider httpTaskProvider;
 	
@@ -143,7 +141,7 @@ public class GameUpInterface {
 		// TODO Make this use the API, whenever that gets done
 		List<Game> games = new ArrayList<Game>();
 		
-		if (DEBUG) {
+		if (AppConstant.DEBUG) {
 			Game g = new Game(jsonGame);
 			games.add(g);
 			g = new Game(jsonGame2);
@@ -167,7 +165,7 @@ public class GameUpInterface {
 	
 	public Game getGame(String gameId) {
 		// TODO Make this use the API, whenever that gets done
-		if (DEBUG) {
+		if (AppConstant.DEBUG) {
 			for (Game g : gameList) {
 				if (g.getGameId().equals(gameId)) {
 					return g;
