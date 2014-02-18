@@ -6,7 +6,8 @@
     <string name="create_activity_display_message">Create Game</string>
     <string name="login_activity_display_message">Login</string>
     <string name="app_name">GameUp</string>
-    <string name="app_id">388247841278612</string>
+    <string name="fb_app_id">388247841278612</string>
+    <string name="map_api_key">AIzaSyB_Hh3iDwK7kgxnmZpHMD27wlXxRvpXBBE</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
     <string name="new_game">New Game</string>

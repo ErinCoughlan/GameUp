@@ -524,13 +524,12 @@ containing a value of this type.
         public static final int activity_main=0x7f0a0000;
     }
     public static final class string {
-        public static final int access_map=0x7f060047;
-        public static final int access_sport_icon=0x7f060046;
-        public static final int access_success=0x7f060048;
-        public static final int alert_success_create=0x7f060045;
-        public static final int alert_success_join=0x7f060043;
-        public static final int alert_success_unjoin=0x7f060044;
-        public static final int app_id=0x7f060038;
+        public static final int access_map=0x7f060048;
+        public static final int access_sport_icon=0x7f060047;
+        public static final int access_success=0x7f060049;
+        public static final int alert_success_create=0x7f060046;
+        public static final int alert_success_join=0x7f060044;
+        public static final int alert_success_unjoin=0x7f060045;
         public static final int app_name=0x7f060037;
         /**   Title for notification shown when GooglePlayServices needs to be
         enabled for a application to work. [CHAR LIMIT=70] 
@@ -555,12 +554,12 @@ containing a value of this type.
         [CHAR LIMIT=70] 
          */
         public static final int auth_client_using_bad_version_title=0x7f060014;
-        public static final int cancel=0x7f06003e;
-        public static final int choose_end_time_prompt=0x7f06004d;
-        public static final int choose_location_prompt=0x7f06004a;
-        public static final int choose_players_prompt=0x7f06004b;
-        public static final int choose_sport_prompt=0x7f060049;
-        public static final int choose_start_time_prompt=0x7f06004c;
+        public static final int cancel=0x7f06003f;
+        public static final int choose_end_time_prompt=0x7f06004e;
+        public static final int choose_location_prompt=0x7f06004b;
+        public static final int choose_players_prompt=0x7f06004c;
+        public static final int choose_sport_prompt=0x7f06004a;
+        public static final int choose_start_time_prompt=0x7f06004d;
         public static final int com_facebook_choose_friends=0x7f060029;
         public static final int com_facebook_dialogloginactivity_ok_button=0x7f06001a;
         public static final int com_facebook_internet_permission_error_message=0x7f06002d;
@@ -657,21 +656,23 @@ containing a value of this type.
         /**  Long form sign-in button text [CHAR LIMIT=30] 
          */
         public static final int common_signin_button_text_long=0x7f060013;
-        public static final int create=0x7f060041;
+        public static final int create=0x7f060042;
         public static final int create_activity_display_message=0x7f060035;
         public static final int display_activity_display_message=0x7f060034;
-        public static final int hello_world=0x7f060039;
-        public static final int join=0x7f06003f;
-        public static final int login=0x7f06004e;
+        public static final int fb_app_id=0x7f060038;
+        public static final int hello_world=0x7f06003a;
+        public static final int join=0x7f060040;
+        public static final int login=0x7f06004f;
         public static final int login_activity_display_message=0x7f060036;
-        public static final int logout=0x7f06004f;
+        public static final int logout=0x7f060050;
         public static final int main_activity_display_message=0x7f060033;
-        public static final int menu_settings=0x7f06003a;
-        public static final int new_game=0x7f06003b;
-        public static final int ok=0x7f06003d;
-        public static final int players_joined=0x7f060042;
-        public static final int sign_up=0x7f06003c;
-        public static final int unjoin=0x7f060040;
+        public static final int map_api_key=0x7f060039;
+        public static final int menu_settings=0x7f06003b;
+        public static final int new_game=0x7f06003c;
+        public static final int ok=0x7f06003e;
+        public static final int players_joined=0x7f060043;
+        public static final int sign_up=0x7f06003d;
+        public static final int unjoin=0x7f060041;
     }
     public static final class style {
         /** 
