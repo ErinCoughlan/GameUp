@@ -429,7 +429,7 @@ containing a value of this type.
         public static final int volleyball=0x7f020050;
     }
     public static final class id {
-        public static final int authButton=0x7f050022;
+        public static final int authButton=0x7f050023;
         public static final int com_facebook_login_activity_progress_bar=0x7f050029;
         public static final int com_facebook_picker_activity_circle=0x7f050028;
         public static final int com_facebook_picker_checkbox=0x7f05002b;
@@ -468,7 +468,7 @@ containing a value of this type.
         public static final int gameTimestamp=0x7f05001a;
         public static final int game_sport_icon=0x7f050007;
         public static final int games=0x7f050026;
-        public static final int gameupLogo=0x7f050023;
+        public static final int gameupLogo=0x7f050022;
         public static final int hybrid=0x7f050004;
         public static final int joinButton=0x7f050021;
         public static final int large=0x7f050006;
