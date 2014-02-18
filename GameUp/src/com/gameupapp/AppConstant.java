@@ -35,6 +35,8 @@ public class AppConstant {
     	R.drawable.player_absent, R.drawable.player_absent
     };
     
+    static final int NUM_GAMES = 20;
+    
     static final Integer PLAYER = R.drawable.player;
     static final Integer PLAYER_ABSENT = R.drawable.player_absent;
 }

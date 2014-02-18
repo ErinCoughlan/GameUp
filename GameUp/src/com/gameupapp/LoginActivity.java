@@ -16,7 +16,6 @@ import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
 
 public class LoginActivity extends Activity {
-	private GameUpInterface gameup;
 	private String USER_ID;
 	private boolean loggedIn;
 
@@ -49,10 +48,6 @@ public class LoginActivity extends Activity {
 	public void onStart() {
 		super.onStart();
 
-		// GameUp instance
-		gameup = GameUpInterface.getInstance(USER_ID);
-		gameup.registerObserver(this);
-
 		Session.getActiveSession().addCallback(callback);
 	}
 
@@ -60,11 +55,6 @@ public class LoginActivity extends Activity {
 	public void onStop() {
 		super.onStop();
 		uiHelper.onStop();
-		
-		// Clear the observers
-		if (gameup != null) {
-			gameup.removeObserver(this);
-		}
 
 		Session.getActiveSession().removeCallback(callback);
 		

@@ -29,8 +29,7 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 public class CreateGameActivity extends Activity {
-	
-	private GameUpInterface gameup;
+
 	private String USER_ID;
 	private boolean loggedIn;
 	
@@ -83,10 +82,6 @@ public class CreateGameActivity extends Activity {
 	@Override
 	public void onStart() {
 		super.onStart();
-		
-		// GameUp instance
-		gameup = GameUpInterface.getInstance(USER_ID);
-		gameup.registerObserver(this);
 	}
 	
 	@Override
@@ -110,11 +105,6 @@ public class CreateGameActivity extends Activity {
 	@Override
 	protected void onStop() {
 		super.onStop();
-
-		// Clear the observers
-		if (gameup != null) {
-			gameup.removeObserver(this);
-		}
 		
 		// Save the user_id and similar shared variables
 		SharedPreferences settings = getSharedPreferences("settings", 0);
