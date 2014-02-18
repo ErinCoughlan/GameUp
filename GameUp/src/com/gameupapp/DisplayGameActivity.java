@@ -106,6 +106,8 @@ public class DisplayGameActivity extends Activity implements
 		// Set info based on game
 		if (g != null) {
 			setGameInfo(g);
+		} else {
+			Log.d("getGame", "Game was null");
 		}
 
 	}
@@ -116,7 +118,7 @@ public class DisplayGameActivity extends Activity implements
 		TextView players = (TextView) this.findViewById(R.id.gamePlayers);
 		TextView sport = (TextView) this.findViewById(R.id.gameSport);
 		ImageView sportIcon = (ImageView) this.findViewById(R.id.gameSportIcon);
-		
+		Log.d("gameSpecificView", "Foo");
 		// check to see if each individual textview is null.
 		// if not, assign some text!
 		if (timestamp != null){
@@ -142,6 +144,7 @@ public class DisplayGameActivity extends Activity implements
 		}
 		
 		int joined = g.getCurrentPlayerCount();
+		Log.d("gameSpecificView", "joined: " + joined);
 		int maxPlayers = g.getMaxPlayers();
 		if (players != null){
 			String str = "(" + joined + " out of " + maxPlayers + ")";

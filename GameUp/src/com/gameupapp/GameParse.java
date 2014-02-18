@@ -30,14 +30,36 @@ public class GameParse extends ParseObject {
 		return getParseGeoPoint("location");
 	}
 	
-	// TODO figure out relevant type returned by get("dateTime");
-	//		I don't know if this cast is legit
+	/**
+	 * @deprecated Use start and end time instead
+	 * @return Date object for the start date/time of a game
+	 */
 	public Date getDateTime() {
-		return (Date) get("dateTime"); 
+		return (Date) get("startDateTime"); 
 	}
 	
+	/**
+	 * @deprecated Use start and end time instead
+	 * @param dateTime Date object with the start date/time of a game
+	 */
 	public void setDateTime(Date dateTime) {
-		put("dateTime", dateTime);
+		put("startDateTime", dateTime);
+	}
+	
+	public Date getStartDateTime() {
+		return (Date) get("startDateTime");
+	}
+	
+	public void setStartDateTime(Date dateTime) {
+		put("startDateTime", dateTime);
+	}
+	
+	public Date getEndDateTime() {
+		return (Date) get("endDateTime");
+	}
+	
+	public void setEndDateTime(Date dateTime) {
+		put("endDateTime", dateTime);
 	}
 	
 	public void setMaxPlayers(int maxCount) {
@@ -77,4 +99,11 @@ public class GameParse extends ParseObject {
 		return getString("sport");
 	}
 	
+	public String getReadableLocation() {
+		return getString("readableLocation");
+	}
+	
+	public void setReadableLocation(String location) {
+		put("readableLocation", location);
+	}
 }

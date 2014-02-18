@@ -17,7 +17,7 @@ import android.app.Activity;
 import android.util.Log;
 
 public class GameUpInterface {
-	private List<Game> gameList;
+	private List<GameParse> gameList;
 	private Collection<Activity> observers;
 	
 	// Information for database/server
@@ -172,6 +172,7 @@ public class GameUpInterface {
 			gameList = games;
 		}*/
 		
+		gameList = games;
 		Log.d("games", "number of games: " + games.size());
 		
 		return games;
@@ -188,8 +189,9 @@ public class GameUpInterface {
 		query.whereEqualTo("gameID", gameId);
 		try {
 			game = query.getFirst();
+			return game;
 		} catch(ParseException e) {
-			Log.d("getGame", "lookup game by ID failed");
+			Log.d("getGame", "lookup game with ID " + gameId +" failed");
 		}
 		
 		// Game was not found; return an error
