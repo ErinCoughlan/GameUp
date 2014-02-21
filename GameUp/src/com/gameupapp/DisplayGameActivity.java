@@ -6,9 +6,6 @@ import java.util.Locale;
 
 import com.parse.Parse;
 import com.parse.ParseQuery;
-import com.parse.GetCallback;
-import com.parse.ParseObject;
-import com.parse.ParseException;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -45,6 +42,7 @@ public class DisplayGameActivity extends Activity implements
 		GooglePlayServicesClient.ConnectionCallbacks,
 		GooglePlayServicesClient.OnConnectionFailedListener {
 	
+	private GameUpInterface gameup;
 	private String USER_ID;
 	private String GAME_ID;
 	private boolean loggedIn;
@@ -99,17 +97,19 @@ public class DisplayGameActivity extends Activity implements
 		Intent intent = getIntent();
 		GAME_ID = intent.getStringExtra(AppConstant.GAME);
 		
+		// GameUp instance
+		gameup = GameUpInterface.getInstance(USER_ID);
+		gameup.registerObserver(this);
+		
+		GameParse g = gameup.getGame(GAME_ID);
 		
 		// Set info based on game
-		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
-		query.whereContains("gameID", GAME_ID);
-		query.getFirstInBackground(new GetCallback<GameParse>() {
-			@Override
-			public void done(GameParse result, ParseException e) {
-				setGameInfo(result);
-			}
-		});
-		
+		if (g != null) {
+			setGameInfo(g);
+		} else {
+			Log.d("getGame", "Game was null");
+		}
+
 	}
 	
 	private void setGameInfo(GameParse g) {
@@ -218,6 +218,11 @@ public class DisplayGameActivity extends Activity implements
 		
 		// Disconnecting maps
         mLocationClient.disconnect();
+
+		// Clear the observers
+		if (gameup != null) {
+			gameup.removeObserver(this);
+		}
 		
 		// Save the user_id and similar shared variables
 		SharedPreferences settings = getSharedPreferences("settings", 0);

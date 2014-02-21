@@ -9,11 +9,8 @@ import com.facebook.SessionState;
 import com.facebook.Settings;
 import com.gameupapp.GameFragment.OnGameClicked;
 
-import com.parse.FindCallback;
 import com.parse.Parse;
-import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -30,6 +27,7 @@ public class MainActivity extends Activity implements OnGameClicked {
 	// General info about user and app
 	private String USER_ID = null;
 	private boolean loggedIn = false;
+	private GameUpInterface gameup;
 
 	private List<GameParse> gameList = new ArrayList<GameParse>();
 	
@@ -114,17 +112,10 @@ public class MainActivity extends Activity implements OnGameClicked {
 	}
 
 	public void startGameUp() {
-		// TODO don't do the query twice, just do it in one class and pass it to the other
-		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
-		query.setLimit(AppConstant.NUM_GAMES);
-		query.findInBackground(new FindCallback<GameParse>() {
-			@Override
-			public void done(List<GameParse> results, ParseException e) {
-				gameList.clear();
-				gameList.addAll(results);
-			}
-		});
-		
+		gameup = GameUpInterface.getInstance(USER_ID);
+		gameup.registerObserver(this);
+
+		gameList = gameup.getGames();
 		displayGames();
 	}
 
@@ -133,7 +124,7 @@ public class MainActivity extends Activity implements OnGameClicked {
 		GameFragment fragment = (GameFragment) getFragmentManager()
 				.findFragmentById(R.id.games);
 		if (fragment != null) {
-			fragment.update();
+			fragment.update(gameList);
 		}
 	}
 
@@ -223,6 +214,9 @@ public class MainActivity extends Activity implements OnGameClicked {
 		super.onStop();
 
 		// Clear the observers
+		if (gameup != null) {
+			gameup.removeObserver(this);
+		}
 
 		// Save the user_id and similar shared variables
 		SharedPreferences settings = getSharedPreferences("settings", 0);

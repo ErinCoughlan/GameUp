@@ -4,15 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gameupapp.R;
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseQuery;
 
 import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,27 +69,13 @@ public class GameFragment extends ListFragment {
 		gameClickedListener.onGameClicked(gameClicked, position);
 	}
 
-	public void update() {
+	public void update(List<GameParse> list) {
 
 		// Must use clear and add for notifyDataSetChanged to work correctly
-		/*gameList.clear();
+		gameList.clear();
 		gameList.addAll(list);
-		 */
-		
-		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
-		query.setLimit(AppConstant.NUM_GAMES);
-		
-		query.findInBackground(new FindCallback<GameParse>() {
-			@Override
-			public void done(List<GameParse> results, ParseException e) {
-				gameList.clear();
-				gameList.addAll(results);
-				adapter.notifyDataSetChanged();
-				Log.d("update", "finished done");
-			}
-		});
-		
-		
+
+		adapter.notifyDataSetChanged();
 
 	}
 
