@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Fragment;
-import android.graphics.Point;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

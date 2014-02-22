@@ -50,7 +50,7 @@ public class CreateGameActivity extends Activity {
 		setContentView(R.layout.activity_create_game);
 		
 		// Restore preferences
-		SharedPreferences settings = getSharedPreferences("settings", 0);
+		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		loggedIn = settings.getBoolean(AppConstant.LOGIN, false);
 		USER_ID = settings.getString(AppConstant.USER, null);
 		Log.d("login", "(display create) user: " + USER_ID + " loggedIn = " + loggedIn);
@@ -117,7 +117,7 @@ public class CreateGameActivity extends Activity {
 		}
 		
 		// Save the user_id and similar shared variables
-		SharedPreferences settings = getSharedPreferences("settings", 0);
+		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putBoolean(AppConstant.LOGIN, loggedIn);
 		editor.putString(AppConstant.USER, USER_ID);

@@ -20,6 +20,9 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 
+import com.parse.Parse;
+import com.parse.ParseFacebookUtils;
+
 public class MainActivity extends Activity implements OnGameClicked {
 	// General info about user and app
 	private String USER_ID = null;
@@ -40,6 +43,11 @@ public class MainActivity extends Activity implements OnGameClicked {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		// Parse information
+		Parse.initialize(this, "Ch9hDZ0YLYlSVy9xuShaz4kG6AAf7Ps0kzI1Ijun",
+				"wd2ozF5YLRn619sr3FEEsc4SmRwbSoQ8DhZaKdH9");
+		ParseFacebookUtils.initialize(getString(R.string.fb_app_id));
 		
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences("settings", 0);
@@ -207,7 +215,7 @@ public class MainActivity extends Activity implements OnGameClicked {
 		}
 
 		// Save the user_id and similar shared variables
-		SharedPreferences settings = getSharedPreferences("settings", 0);
+		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putBoolean(AppConstant.LOGIN, loggedIn);
 		editor.putString(AppConstant.USER, USER_ID);

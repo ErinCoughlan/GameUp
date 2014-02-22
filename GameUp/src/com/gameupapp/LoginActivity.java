@@ -1,5 +1,7 @@
 package com.gameupapp;
 
+import java.util.Arrays;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,6 +16,11 @@ import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
+import com.parse.LogInCallback;
+import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
+import com.parse.ParseFacebookUtils.Permissions;
+import com.parse.ParseUser;
 
 public class LoginActivity extends Activity {
 	private GameUpInterface gameup;
@@ -36,7 +43,7 @@ public class LoginActivity extends Activity {
 	    uiHelper.onCreate(savedInstanceState);
 	    
 		// Restore preferences
-		SharedPreferences settings = getSharedPreferences("settings", 0);
+		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		loggedIn = settings.getBoolean(AppConstant.LOGIN, false);
 		USER_ID = settings.getString(AppConstant.USER, null);
 		Log.d("login", "(login create) user_id: " + USER_ID + " is loggedIn " + loggedIn);
@@ -117,6 +124,8 @@ public class LoginActivity extends Activity {
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
+		ParseFacebookUtils.finishAuthentication(requestCode, resultCode, data);
+
 		uiHelper.onActivityResult(requestCode, resultCode, data);
 		Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
 	}
@@ -141,7 +150,28 @@ public class LoginActivity extends Activity {
 	}
 	
 	private void logIn(Session session) {
+		ParseFacebookUtils.logIn(Arrays.asList("email", Permissions.Friends.ABOUT_ME), this, new LogInCallback() {
+				@Override
+				public void done(ParseUser user, ParseException e) {
+					if (user == null) {
+						Log.d("facebook", "User cancelled the Facebook login");
+						Intent result = new Intent();
+						result.putExtra(AppConstant.USER, USER_ID);
+						result.putExtra(AppConstant.LOGIN, loggedIn);
+						setResult(Activity.RESULT_CANCELED, result);
+						finish();
+					} else if (user.isNew()) {
+						Log.d("facebook", "User signed up and logggin in through Facebook!");
+					} else {
+						Log.d("facebook", "User logged in through Facebook@");
+					}
+					
+				}
+			});
+		
 		// Request user data and show the results
+		// TODO: Determine if this login information can be stored with Parse
+		//       instead of being passed around using SharedPrefs
 		Request.newMeRequest(session, new Request.GraphUserCallback() {
 			@Override
 			public void onCompleted(GraphUser user, Response response) {

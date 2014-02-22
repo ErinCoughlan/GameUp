@@ -6,6 +6,7 @@ import java.util.List;
 public class AppConstant {
 	// Debug information
 	static final boolean DEBUG = true;
+	static final String SHARED_PREF = "settings";
 
 	// Intent information ids
 	static final String GAME = "game";
