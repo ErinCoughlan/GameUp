@@ -76,7 +76,7 @@ public class LoginActivity extends Activity {
 		Session.getActiveSession().removeCallback(callback);
 		
 		// Save the user_id and similar shared variables
-		SharedPreferences settings = getSharedPreferences("settings", 0);
+		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putBoolean(AppConstant.LOGIN, loggedIn);
 		editor.putString(AppConstant.USER, USER_ID);
