@@ -134,16 +134,14 @@ public class LoginActivity extends Activity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		uiHelper.onSaveInstanceState(outState);
-		//Session session = Session.getActiveSession();
-		//Session.saveSession(session, outState);
+		Session session = Session.getActiveSession();
+		Session.saveSession(session, outState);
 	}	
 
 	private void onSessionStateChange(Session session, SessionState state, Exception exception) {
 		if (state.isClosed()) {
-			Log.d("login", "state is now closed");
 			logOut();
 		} else if (state.isOpened()) {
-			Log.d("login", "state is now open");
 			logIn(session);
 		}
 	}

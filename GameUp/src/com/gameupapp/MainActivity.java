@@ -22,6 +22,7 @@ import android.widget.Button;
 
 import com.parse.Parse;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseUser;
 
 public class MainActivity extends Activity implements OnGameClicked {
 	// General info about user and app
@@ -174,6 +175,9 @@ public class MainActivity extends Activity implements OnGameClicked {
 				USER_ID = data.getStringExtra(AppConstant.USER);
 				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
 				updateView();
+				
+				ParseUser user = ParseUser.getCurrentUser();
+				// Get the user's name using ParseUser
 				
 				if (loggedIn) {
 					AlertDialog.Builder builder = new AlertDialog.Builder(this)
