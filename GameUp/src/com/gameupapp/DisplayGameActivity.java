@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import com.parse.Parse;
+import com.parse.ParseQuery;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -33,6 +36,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+
+// TODO Convert this (and Game generally) to using Parse
 public class DisplayGameActivity extends Activity implements
 		GooglePlayServicesClient.ConnectionCallbacks,
 		GooglePlayServicesClient.OnConnectionFailedListener {
@@ -96,31 +101,34 @@ public class DisplayGameActivity extends Activity implements
 		gameup = GameUpInterface.getInstance(USER_ID);
 		gameup.registerObserver(this);
 		
-		Game g = gameup.getGame(GAME_ID);
+		GameParse g = gameup.getGame(GAME_ID);
 		
 		// Set info based on game
 		if (g != null) {
 			setGameInfo(g);
+		} else {
+			Log.d("getGame", "Game was null");
 		}
 
 	}
 	
-	private void setGameInfo(Game g) {
+	private void setGameInfo(GameParse g) {
 		TextView timestamp = (TextView) this.findViewById(R.id.gameTimestamp);
 		TextView location = (TextView) this.findViewById(R.id.gameLocation);
 		TextView players = (TextView) this.findViewById(R.id.gamePlayers);
 		TextView sport = (TextView) this.findViewById(R.id.gameSport);
 		ImageView sportIcon = (ImageView) this.findViewById(R.id.gameSportIcon);
-		
+		Log.d("gameSpecificView", "Foo");
 		// check to see if each individual textview is null.
 		// if not, assign some text!
 		if (timestamp != null){
-			String date = HelperFunction.convertToDate(g.getTimestamp());
+			String date = HelperFunction.convertToDate(g.getDateTime());
 			timestamp.setText(date);
 		}
 		
 		if (location != null){
-			location.setText(g.getLocation());
+			String locationString = HelperFunction.convertParseGeoToString(g.getLocation());
+			location.setText(locationString);
 		}
 		
 		if (sport != null){
@@ -135,10 +143,11 @@ public class DisplayGameActivity extends Activity implements
 			}
 		}
 		
-		int joined = g.getPlayersJoined();
-		int total = g.getTotalPlayers();
+		int joined = g.getCurrentPlayerCount();
+		Log.d("gameSpecificView", "joined: " + joined);
+		int maxPlayers = g.getMaxPlayers();
 		if (players != null){
-			String str = "(" + joined + " out of " + total + ")";
+			String str = "(" + joined + " out of " + maxPlayers + ")";
 			players.setText(str);
 		}
 		
@@ -147,7 +156,7 @@ public class DisplayGameActivity extends Activity implements
 		for (int i = 0; i < joined; i++) {
 			playerList.add(AppConstant.PLAYER);
 		}
-		for (int i = 0; i < total - joined; i++) {
+		for (int i = 0; i < maxPlayers - joined; i++) {
 			playerList.add(AppConstant.PLAYER_ABSENT);
 		}
 		

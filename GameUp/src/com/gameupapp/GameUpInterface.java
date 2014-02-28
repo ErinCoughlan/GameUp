@@ -8,11 +8,16 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.parse.ParseQuery;
+import com.parse.ParseObject;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+
 import android.app.Activity;
 import android.util.Log;
 
 public class GameUpInterface {
-	private List<Game> gameList;
+	private List<GameParse> gameList;
 	private Collection<Activity> observers;
 	
 	private String USER_ID;
@@ -133,10 +138,18 @@ public class GameUpInterface {
 		observers.clear();
 	}
 	
-	public List<Game> getGames() {
-		// TODO Make this use the API, whenever that gets done
-		List<Game> games = new ArrayList<Game>();
+	public List<GameParse> getGames() {
+		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
+		query.setLimit(10);
+		// TODO Make this work in a background thread
+		List<GameParse> games = new ArrayList<GameParse>();
 		
+		try {
+			games = query.find();
+		} catch (ParseException e) {
+			Log.d("getGames", "Exception finding games");
+		}
+		/*
 		if (AppConstant.DEBUG) {
 			Game g = new Game(jsonGame);
 			games.add(g);
@@ -152,22 +165,30 @@ public class GameUpInterface {
 			games.add(g);
 			
 			gameList = games;
-		}
+		}*/
 		
+		gameList = games;
 		Log.d("games", "number of games: " + games.size());
 		
 		return games;
 	}
 	
-	public Game getGame(String gameId) {
-		// TODO Make this use the API, whenever that gets done
-		if (AppConstant.DEBUG) {
-			for (Game g : gameList) {
-				if (g.getGameId().equals(gameId)) {
-					return g;
-				}
-			}
+	/**
+	 * 
+	 * @param gameId Unique identifier for the desired game
+	 * @return a GameParse object representing the desired game
+	 */
+	public GameParse getGame(String gameId) {
+		GameParse game;
+		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
+		query.whereEqualTo("gameID", gameId);
+		try {
+			game = query.getFirst();
+			return game;
+		} catch(ParseException e) {
+			Log.d("getGame", "lookup game with ID " + gameId +" failed");
 		}
+		
 		// Game was not found; return an error
 		return null;
 	}

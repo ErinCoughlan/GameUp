@@ -9,6 +9,9 @@ import com.facebook.SessionState;
 import com.facebook.Settings;
 import com.gameupapp.GameFragment.OnGameClicked;
 
+import com.parse.Parse;
+import com.parse.ParseObject;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -30,7 +33,7 @@ public class MainActivity extends Activity implements OnGameClicked {
 	private boolean loggedIn = false;
 	private GameUpInterface gameup;
 
-	private List<Game> gameList = new ArrayList<Game>();
+	private List<GameParse> gameList = new ArrayList<GameParse>();
 	
 	// Facebook stuff
 	private Session.StatusCallback callback = new Session.StatusCallback() {
@@ -46,9 +49,17 @@ public class MainActivity extends Activity implements OnGameClicked {
 		setContentView(R.layout.activity_main);
 		
 		// Parse information
-		Parse.initialize(this, "yYt3t3sH7XMU81BXgvYaXnWEsoahXCJb5dhupvP5",
-				"dZCnn1DrZJMXyZOkZ7pbM7Z0ePwTyIJsZzgY77FU");
+		// Register GameParse subclass
+		ParseObject.registerSubclass(GameParse.class);
+		// Erin's Parse
+		//Parse.initialize(this, "yYt3t3sH7XMU81BXgvYaXnWEsoahXCJb5dhupvP5",
+		//		"dZCnn1DrZJMXyZOkZ7pbM7Z0ePwTyIJsZzgY77FU");
+		// Phil's Parse
+		Parse.initialize(this, "a0k4KhDMvl3Mz2CUDcDMLAgnt5uaCLuIBxK41NGa",
+				"3EJKdG7SuoK89gkFkN1rcDNbFvIgN71iH0mJyfDC");
+
 		ParseFacebookUtils.initialize(getString(R.string.fb_app_id));
+		// Set Parse up with our app key
 		
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences("settings", 0);
@@ -127,9 +138,11 @@ public class MainActivity extends Activity implements OnGameClicked {
 	}
 
 	@Override
-	public void onGameClicked(Game gameClicked, int position) {
-		Game game = gameList.get(position);
-		String gameId = game.getGameId();
+	public void onGameClicked(GameParse gameClicked, int position) {
+		GameParse game = gameList.get(position);
+		
+		// TODO I've been using capital ID and just noticed everything else is Id. I need to fix mine.
+		String gameId = game.getGameID();
 
 		// Go to a new activity for the specific game
 		Intent intent = new Intent();
