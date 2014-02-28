@@ -147,6 +147,7 @@ public class LoginActivity extends Activity {
 			public void onCompleted(GraphUser user, Response response) {
 				Log.d("facebook", user.getFirstName());
 				USER_ID = user.getFirstName();
+				Log.d("facebook id", user.getId());
 				loggedIn = true;
 				Intent result = new Intent();
 				result.putExtra(AppConstant.USER, USER_ID);

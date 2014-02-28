@@ -29,8 +29,6 @@ public class GameUpInterface {
 	private int orderBy = 0;
 	private int numComments = 20;
 
-	private boolean DEBUG = true;
-
 	private static GameUpInterface instance;
 	//private HttpTaskProvider httpTaskProvider;
 	
@@ -155,7 +153,8 @@ public class GameUpInterface {
 		} catch (ParseException e) {
 			Log.d("getGames", "Exception finding games");
 		}
-		/*if (DEBUG) {
+		/*
+		if (AppConstant.DEBUG) {
 			Game g = new Game(jsonGame);
 			games.add(g);
 			g = new Game(jsonGame2);

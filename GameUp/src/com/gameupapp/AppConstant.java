@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class AppConstant {
+	// Debug information
+	static final boolean DEBUG = true;
 
 	// Intent information ids
 	static final String GAME = "game";
@@ -28,13 +30,9 @@ public class AppConstant {
             CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     static final int MAP_ZOOM = 18;
     static final int RQS_GooglePlayServices = 1;
-    
-    // Debug list of player images
-    static final Integer[] PLAYERS = {
-    	R.drawable.player, R.drawable.player,
-    	R.drawable.player_absent, R.drawable.player_absent
-    };
-    
+
+    // Image ids for player
+    // TODO: use profile pictures for players
     static final Integer PLAYER = R.drawable.player;
     static final Integer PLAYER_ABSENT = R.drawable.player_absent;
 }
