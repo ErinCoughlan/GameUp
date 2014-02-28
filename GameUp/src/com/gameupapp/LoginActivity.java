@@ -19,7 +19,6 @@ import com.facebook.model.GraphUser;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
-import com.parse.ParseFacebookUtils.Permissions;
 import com.parse.ParseUser;
 
 public class LoginActivity extends Activity {
@@ -46,7 +45,6 @@ public class LoginActivity extends Activity {
 		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		loggedIn = settings.getBoolean(AppConstant.LOGIN, false);
 		USER_ID = settings.getString(AppConstant.USER, null);
-		Log.d("login", "(login create) user_id: " + USER_ID + " is loggedIn " + loggedIn);
 
 		// Back button in app
 		getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -81,8 +79,6 @@ public class LoginActivity extends Activity {
 		editor.putBoolean(AppConstant.LOGIN, loggedIn);
 		editor.putString(AppConstant.USER, USER_ID);
 		editor.apply();
-		
-		Log.d("login", "(login stop) user_id: " + USER_ID + " is loggedIn " + loggedIn);
 	}
 	
 	@Override
@@ -124,33 +120,36 @@ public class LoginActivity extends Activity {
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		ParseFacebookUtils.finishAuthentication(requestCode, resultCode, data);
-
+		
 		uiHelper.onActivityResult(requestCode, resultCode, data);
 		Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
+		
+		// Finish auth with Parse if we executed a login (and the user isn't linked yet)
+		if (requestCode == AppConstant.FB_REQUEST) {
+	        ParseFacebookUtils.finishAuthentication(requestCode, resultCode, data);
+		}
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		uiHelper.onSaveInstanceState(outState);
-		Session session = Session.getActiveSession();
-		Session.saveSession(session, outState);
+		//Session session = Session.getActiveSession();
+		//Session.saveSession(session, outState);
 	}	
 
 	private void onSessionStateChange(Session session, SessionState state, Exception exception) {
-		Log.d("facebook", "session state change");
 		if (state.isClosed()) {
-			Log.d("facebook", "state is now closed");
+			Log.d("login", "state is now closed");
 			logOut();
 		} else if (state.isOpened()) {
-			Log.d("facebook", "state is now open");
+			Log.d("login", "state is now open");
 			logIn(session);
 		}
 	}
 	
 	private void logIn(Session session) {
-		ParseFacebookUtils.logIn(Arrays.asList("email", Permissions.Friends.ABOUT_ME), this, new LogInCallback() {
+		ParseFacebookUtils.logIn(this, new LogInCallback() {
 				@Override
 				public void done(ParseUser user, ParseException e) {
 					if (user == null) {
@@ -161,9 +160,9 @@ public class LoginActivity extends Activity {
 						setResult(Activity.RESULT_CANCELED, result);
 						finish();
 					} else if (user.isNew()) {
-						Log.d("facebook", "User signed up and logggin in through Facebook!");
+						Log.d("facebook", "User signed up and logged in through Facebook!");
 					} else {
-						Log.d("facebook", "User logged in through Facebook@");
+						Log.d("facebook", "User logged in through Facebook!");
 					}
 					
 				}
@@ -175,7 +174,7 @@ public class LoginActivity extends Activity {
 		Request.newMeRequest(session, new Request.GraphUserCallback() {
 			@Override
 			public void onCompleted(GraphUser user, Response response) {
-				Log.d("facebook", user.getFirstName());
+				Log.d("facebook", user.getName());
 				USER_ID = user.getFirstName();
 				Log.d("facebook id", user.getId());
 				loggedIn = true;
@@ -186,6 +185,7 @@ public class LoginActivity extends Activity {
 				finish();
 			}
 		}).executeAsync();
+		
 	}
 	
 	private void logOut() {

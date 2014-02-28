@@ -45,15 +45,14 @@ public class MainActivity extends Activity implements OnGameClicked {
 		setContentView(R.layout.activity_main);
 		
 		// Parse information
-		Parse.initialize(this, "Ch9hDZ0YLYlSVy9xuShaz4kG6AAf7Ps0kzI1Ijun",
-				"wd2ozF5YLRn619sr3FEEsc4SmRwbSoQ8DhZaKdH9");
+		Parse.initialize(this, "yYt3t3sH7XMU81BXgvYaXnWEsoahXCJb5dhupvP5",
+				"dZCnn1DrZJMXyZOkZ7pbM7Z0ePwTyIJsZzgY77FU");
 		ParseFacebookUtils.initialize(getString(R.string.fb_app_id));
 		
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences("settings", 0);
 		loggedIn = settings.getBoolean(AppConstant.LOGIN, false);
 		USER_ID = settings.getString(AppConstant.USER, null);
-		Log.d("login", "(main create) user_id: " + USER_ID + " is loggedIn " + loggedIn);
 		
 		// Logging into Facebook if active previously logged in
 		Settings.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
@@ -174,7 +173,6 @@ public class MainActivity extends Activity implements OnGameClicked {
 			case AppConstant.LOGIN_ID:
 				USER_ID = data.getStringExtra(AppConstant.USER);
 				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
-				Log.d("login", "(main result) user_id: " + USER_ID + " is loggedIn " + loggedIn);
 				updateView();
 				
 				if (loggedIn) {

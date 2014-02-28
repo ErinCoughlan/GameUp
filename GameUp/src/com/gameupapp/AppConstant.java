@@ -36,4 +36,7 @@ public class AppConstant {
     // TODO: use profile pictures for players
     static final Integer PLAYER = R.drawable.player;
     static final Integer PLAYER_ABSENT = R.drawable.player_absent;
+    
+    // Parse RequestCodes
+    static final int FB_REQUEST = 32665;
 }
