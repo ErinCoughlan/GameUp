@@ -59,7 +59,6 @@ public class MainActivity extends Activity implements OnGameClicked {
 				"3EJKdG7SuoK89gkFkN1rcDNbFvIgN71iH0mJyfDC");
 
 		ParseFacebookUtils.initialize(getString(R.string.fb_app_id));
-		// Set Parse up with our app key
 		
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences("settings", 0);
