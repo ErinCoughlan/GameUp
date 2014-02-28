@@ -6,8 +6,6 @@
     tools:context=".DisplayGameActivity" >
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
@@ -22,8 +20,6 @@
             android:contentDescription="@string/access_sport_icon" />
 
         <LinearLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -47,8 +43,6 @@
         </LinearLayout>
 
         <LinearLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -76,8 +70,6 @@
     </LinearLayout>
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/gameMapView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -85,7 +77,6 @@
         android:orientation="vertical" >
 
         <fragment
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/gameMap"
             android:name="com.google.android.gms.maps.MapFragment"
             android:layout_width="match_parent"
@@ -93,49 +84,66 @@
     </LinearLayout>
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="vertical" >
-
-        <LinearLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:id="@+id/gamePlayersJoined"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginRight="10dp"
-                android:gravity="center"
-                android:text="@string/players_joined"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textSize="30sp" >
-            </TextView>
-
-            <TextView
-                android:id="@+id/gamePlayers"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textSize="20sp" >
-            </TextView>
-        </LinearLayout>
-
-        <fragment
-            android:id="@+id/playerGridView"
-            android:name="com.gameupapp.ImageFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp" />
-    </LinearLayout>
+        
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_margin="10dp"
+	        android:orientation="horizontal" >
+	
+	        <TextView
+	            android:id="@+id/gamePlayersJoined"
+	            android:layout_width="wrap_content"
+	            android:layout_height="match_parent"
+	            android:layout_marginRight="10dp"
+	            android:gravity="center"
+	            android:text="@string/players_joined"
+	            android:textAppearance="?android:attr/textAppearanceLarge"
+	            android:textSize="30sp" >
+	        </TextView>
+	
+	        <TextView
+	            android:id="@+id/gamePlayers"
+	            android:layout_width="wrap_content"
+	            android:layout_height="match_parent"
+	            android:gravity="center"
+	            android:textAppearance="?android:attr/textAppearanceLarge"
+	            android:textSize="20sp" >
+	        </TextView>
+	    </LinearLayout>
+	    
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_margin="10dp"
+	        android:orientation="horizontal" >
+	
+	        <TextView
+	            android:id="@+id/gameAbilityLevelText"
+	            android:layout_width="wrap_content"
+	            android:layout_height="match_parent"
+	            android:layout_marginRight="10dp"
+	            android:gravity="center"
+	            android:text="@string/ability_level"
+	            android:textAppearance="?android:attr/textAppearanceLarge"
+	            android:textSize="30sp" >
+	        </TextView>
+	
+	        <TextView
+	            android:id="@+id/gameAbilityLevel"
+	            android:layout_width="wrap_content"
+	            android:layout_height="match_parent"
+	            android:gravity="center"
+	            android:text="Beginner"
+	            android:textAppearance="?android:attr/textAppearanceLarge"
+	            android:textSize="20sp" >
+	        </TextView>
+	    </LinearLayout>
+	</LinearLayout>
 
     <Button
         android:id="@+id/joinButton"

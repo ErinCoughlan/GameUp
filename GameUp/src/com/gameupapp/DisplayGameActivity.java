@@ -151,7 +151,10 @@ public class DisplayGameActivity extends Activity implements
 			players.setText(str);
 		}
 		
-		// TODO: Change to actual player profiles
+		// TODO: Add Ability Level information
+		
+		// TODO: Move to a new activity if someone wants more information
+		/*
 		List<Integer> playerList = new ArrayList<Integer>();
 		for (int i = 0; i < joined; i++) {
 			playerList.add(AppConstant.PLAYER);
@@ -165,6 +168,7 @@ public class DisplayGameActivity extends Activity implements
 		if (fragment != null) {
 			fragment.update(playerList);
 		}
+		*/
 	}
 	
 	private AlertDialog createGameAlert(int message) {

@@ -62,7 +62,6 @@ public class GameAdapter extends ArrayAdapter<GameParse> {
 
 			TextView timestamp = (TextView) v.findViewById(R.id.gameTimestamp);
 			TextView location = (TextView) v.findViewById(R.id.gameLocation);
-			TextView players = (TextView) v.findViewById(R.id.gamePlayers);
 			TextView sport = (TextView) v.findViewById(R.id.gameSport);
 			ImageView sportIcon = (ImageView) v.findViewById(R.id.gameSportIcon);
 
@@ -77,9 +76,6 @@ public class GameAdapter extends ArrayAdapter<GameParse> {
 				String locationString = HelperFunction.convertParseGeoToString(i.getLocation());
 				location.setText(locationString);
 			}
-			
-			int joined = i.getCurrentPlayerCount();
-			int maxPlayers = i.getMaxPlayers();
 			
 			
 			if (sport != null){
