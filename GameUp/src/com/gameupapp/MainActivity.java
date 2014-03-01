@@ -67,7 +67,6 @@ public class MainActivity extends Activity implements OnGameClicked {
 		
 		// Logging into Facebook if active previously logged in
 		Settings.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
-		
 		if (loggedIn) {
 			Log.d("facebook", "logged in - restoring session");
 			Session session = Session.getActiveSession();
