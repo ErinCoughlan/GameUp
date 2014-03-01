@@ -87,6 +87,8 @@ public class GameAdapter extends ArrayAdapter<GameParse> {
 				int id = HelperFunction.getResId(s, context, R.drawable.class);
 				if (id != -1) {
 					sportIcon.setBackgroundResource(id);
+				} else {
+					sportIcon.setBackgroundResource(AppConstant.UNKNOWN_IMG);
 				}
 			}
 		}

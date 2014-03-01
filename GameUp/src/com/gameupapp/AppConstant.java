@@ -37,6 +37,8 @@ public class AppConstant {
     static final Integer PLAYER = R.drawable.player;
     static final Integer PLAYER_ABSENT = R.drawable.player_absent;
     
+    static final Integer UNKNOWN_IMG = R.drawable.unknown_icon;
+    
     // Parse RequestCodes
     static final int FB_REQUEST = 32665;
 }

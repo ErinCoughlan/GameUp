@@ -59,6 +59,8 @@ public class LoginActivity extends Activity {
 		gameup.registerObserver(this);
 
 		Session.getActiveSession().addCallback(callback);
+		
+		Log.d("login", "at least I'm starting");
 	}
 
 	@Override
@@ -140,8 +142,10 @@ public class LoginActivity extends Activity {
 
 	private void onSessionStateChange(Session session, SessionState state, Exception exception) {
 		if (state.isClosed()) {
+			Log.d("login", "state is closed");
 			logOut();
 		} else if (state.isOpened()) {
+			Log.d("login", "state is opened");
 			logIn(session);
 		}
 	}
@@ -174,7 +178,7 @@ public class LoginActivity extends Activity {
 			public void onCompleted(GraphUser user, Response response) {
 				Log.d("facebook", user.getName());
 				USER_ID = user.getFirstName();
-				Log.d("facebook id", user.getId());
+				Log.d("facebook", user.getId());
 				loggedIn = true;
 				Intent result = new Intent();
 				result.putExtra(AppConstant.USER, USER_ID);

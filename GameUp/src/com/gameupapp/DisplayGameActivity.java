@@ -60,7 +60,6 @@ public class DisplayGameActivity extends Activity implements
 		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		loggedIn = settings.getBoolean(AppConstant.LOGIN, false);
 		USER_ID = settings.getString(AppConstant.USER, null);
-		Log.d("login", "(display create) user: " + USER_ID + " loggedIn = " + loggedIn);
 		updateView();
 		
 		// Back button in app
