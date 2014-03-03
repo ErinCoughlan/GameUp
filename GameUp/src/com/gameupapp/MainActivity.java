@@ -23,6 +23,10 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 
+import com.parse.Parse;
+import com.parse.ParseFacebookUtils;
+import com.parse.ParseUser;
+
 public class MainActivity extends Activity implements OnGameClicked {
 	// General info about user and app
 	private String USER_ID = null;
@@ -44,22 +48,25 @@ public class MainActivity extends Activity implements OnGameClicked {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		// Parse information
 		// Register GameParse subclass
 		ParseObject.registerSubclass(GameParse.class);
-		// Set Parse up with our app key
-		Parse.initialize(this, "a0k4KhDMvl3Mz2CUDcDMLAgnt5uaCLuIBxK41NGa", "3EJKdG7SuoK89gkFkN1rcDNbFvIgN71iH0mJyfDC");
-		
+		// Erin's Parse
+		//Parse.initialize(this, "yYt3t3sH7XMU81BXgvYaXnWEsoahXCJb5dhupvP5",
+		//		"dZCnn1DrZJMXyZOkZ7pbM7Z0ePwTyIJsZzgY77FU");
+		// Phil's Parse
+		Parse.initialize(this, "a0k4KhDMvl3Mz2CUDcDMLAgnt5uaCLuIBxK41NGa",
+				"3EJKdG7SuoK89gkFkN1rcDNbFvIgN71iH0mJyfDC");
 
+		ParseFacebookUtils.initialize(getString(R.string.fb_app_id));
 		
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences("settings", 0);
 		loggedIn = settings.getBoolean(AppConstant.LOGIN, false);
 		USER_ID = settings.getString(AppConstant.USER, null);
-		Log.d("login", "(main create) user_id: " + USER_ID + " is loggedIn " + loggedIn);
 		
 		// Logging into Facebook if active previously logged in
 		Settings.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
-		
 		if (loggedIn) {
 			Log.d("facebook", "logged in - restoring session");
 			Session session = Session.getActiveSession();
@@ -178,8 +185,10 @@ public class MainActivity extends Activity implements OnGameClicked {
 			case AppConstant.LOGIN_ID:
 				USER_ID = data.getStringExtra(AppConstant.USER);
 				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
-				Log.d("login", "(main result) user_id: " + USER_ID + " is loggedIn " + loggedIn);
 				updateView();
+				
+				ParseUser user = ParseUser.getCurrentUser();
+				// Get the user's name using ParseUser
 				
 				if (loggedIn) {
 					AlertDialog.Builder builder = new AlertDialog.Builder(this)
@@ -219,7 +228,7 @@ public class MainActivity extends Activity implements OnGameClicked {
 		}
 
 		// Save the user_id and similar shared variables
-		SharedPreferences settings = getSharedPreferences("settings", 0);
+		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putBoolean(AppConstant.LOGIN, loggedIn);
 		editor.putString(AppConstant.USER, USER_ID);

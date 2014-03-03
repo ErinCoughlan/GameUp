@@ -1,5 +1,7 @@
 package com.gameupapp;
 
+import java.util.Arrays;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,6 +16,10 @@ import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
+import com.parse.LogInCallback;
+import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
+import com.parse.ParseUser;
 
 public class LoginActivity extends Activity {
 	private GameUpInterface gameup;
@@ -36,10 +42,9 @@ public class LoginActivity extends Activity {
 	    uiHelper.onCreate(savedInstanceState);
 	    
 		// Restore preferences
-		SharedPreferences settings = getSharedPreferences("settings", 0);
+		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		loggedIn = settings.getBoolean(AppConstant.LOGIN, false);
 		USER_ID = settings.getString(AppConstant.USER, null);
-		Log.d("login", "(login create) user_id: " + USER_ID + " is loggedIn " + loggedIn);
 
 		// Back button in app
 		getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -54,6 +59,8 @@ public class LoginActivity extends Activity {
 		gameup.registerObserver(this);
 
 		Session.getActiveSession().addCallback(callback);
+		
+		Log.d("login", "at least I'm starting");
 	}
 
 	@Override
@@ -69,13 +76,11 @@ public class LoginActivity extends Activity {
 		Session.getActiveSession().removeCallback(callback);
 		
 		// Save the user_id and similar shared variables
-		SharedPreferences settings = getSharedPreferences("settings", 0);
+		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putBoolean(AppConstant.LOGIN, loggedIn);
 		editor.putString(AppConstant.USER, USER_ID);
 		editor.apply();
-		
-		Log.d("login", "(login stop) user_id: " + USER_ID + " is loggedIn " + loggedIn);
 	}
 	
 	@Override
@@ -117,8 +122,14 @@ public class LoginActivity extends Activity {
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
+		
 		uiHelper.onActivityResult(requestCode, resultCode, data);
 		Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
+		
+		// Finish auth with Parse if we executed a login (and the user isn't linked yet)
+		if (requestCode == AppConstant.FB_REQUEST) {
+	        ParseFacebookUtils.finishAuthentication(requestCode, resultCode, data);
+		}
 	}
 
 	@Override
@@ -130,24 +141,44 @@ public class LoginActivity extends Activity {
 	}	
 
 	private void onSessionStateChange(Session session, SessionState state, Exception exception) {
-		Log.d("facebook", "session state change");
 		if (state.isClosed()) {
-			Log.d("facebook", "state is now closed");
+			Log.d("login", "state is closed");
 			logOut();
 		} else if (state.isOpened()) {
-			Log.d("facebook", "state is now open");
+			Log.d("login", "state is opened");
 			logIn(session);
 		}
 	}
 	
 	private void logIn(Session session) {
+		ParseFacebookUtils.logIn(this, new LogInCallback() {
+				@Override
+				public void done(ParseUser user, ParseException e) {
+					if (user == null) {
+						Log.d("facebook", "User cancelled the Facebook login");
+						Intent result = new Intent();
+						result.putExtra(AppConstant.USER, USER_ID);
+						result.putExtra(AppConstant.LOGIN, loggedIn);
+						setResult(Activity.RESULT_CANCELED, result);
+						finish();
+					} else if (user.isNew()) {
+						Log.d("facebook", "User signed up and logged in through Facebook!");
+					} else {
+						Log.d("facebook", "User logged in through Facebook!");
+					}
+					
+				}
+			});
+		
 		// Request user data and show the results
+		// TODO: Determine if this login information can be stored with Parse
+		//       instead of being passed around using SharedPrefs
 		Request.newMeRequest(session, new Request.GraphUserCallback() {
 			@Override
 			public void onCompleted(GraphUser user, Response response) {
-				Log.d("facebook", user.getFirstName());
+				Log.d("facebook", user.getName());
 				USER_ID = user.getFirstName();
-				Log.d("facebook id", user.getId());
+				Log.d("facebook", user.getId());
 				loggedIn = true;
 				Intent result = new Intent();
 				result.putExtra(AppConstant.USER, USER_ID);
@@ -156,6 +187,7 @@ public class LoginActivity extends Activity {
 				finish();
 			}
 		}).executeAsync();
+		
 	}
 	
 	private void logOut() {

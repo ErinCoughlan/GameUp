@@ -62,7 +62,6 @@ public class GameAdapter extends ArrayAdapter<GameParse> {
 
 			TextView timestamp = (TextView) v.findViewById(R.id.gameTimestamp);
 			TextView location = (TextView) v.findViewById(R.id.gameLocation);
-			TextView players = (TextView) v.findViewById(R.id.gamePlayers);
 			TextView sport = (TextView) v.findViewById(R.id.gameSport);
 			ImageView sportIcon = (ImageView) v.findViewById(R.id.gameSportIcon);
 
@@ -78,9 +77,6 @@ public class GameAdapter extends ArrayAdapter<GameParse> {
 				location.setText(locationString);
 			}
 			
-			int joined = i.getCurrentPlayerCount();
-			int maxPlayers = i.getMaxPlayers();
-			
 			
 			if (sport != null){
 				sport.setText(i.getSport());
@@ -91,6 +87,8 @@ public class GameAdapter extends ArrayAdapter<GameParse> {
 				int id = HelperFunction.getResId(s, context, R.drawable.class);
 				if (id != -1) {
 					sportIcon.setBackgroundResource(id);
+				} else {
+					sportIcon.setBackgroundResource(AppConstant.UNKNOWN_IMG);
 				}
 			}
 		}

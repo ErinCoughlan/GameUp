@@ -20,9 +20,6 @@ public class GameUpInterface {
 	private List<GameParse> gameList;
 	private Collection<Activity> observers;
 	
-	// Information for database/server
-	private String BASE_URL = "http://134.173.43.64:5000";
-	
 	private String USER_ID;
 	
 	// Filtering
@@ -30,7 +27,6 @@ public class GameUpInterface {
 	private int numComments = 20;
 
 	private static GameUpInterface instance;
-	//private HttpTaskProvider httpTaskProvider;
 	
 	private String gameString = "{'body': 'Hello this is a game'," +
 							"'sport': 'Basketball'," +

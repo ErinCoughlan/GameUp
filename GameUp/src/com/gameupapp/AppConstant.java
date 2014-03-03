@@ -6,6 +6,7 @@ import java.util.List;
 public class AppConstant {
 	// Debug information
 	static final boolean DEBUG = true;
+	static final String SHARED_PREF = "settings";
 
 	// Intent information ids
 	static final String GAME = "game";
@@ -35,4 +36,9 @@ public class AppConstant {
     // TODO: use profile pictures for players
     static final Integer PLAYER = R.drawable.player;
     static final Integer PLAYER_ABSENT = R.drawable.player_absent;
+    
+    static final Integer UNKNOWN_IMG = R.drawable.unknown_icon;
+    
+    // Parse RequestCodes
+    static final int FB_REQUEST = 32665;
 }

@@ -25,7 +25,6 @@ public class HelperFunction {
 	        Field idField = c.getDeclaredField(variableName);
 	        return idField.getInt(idField);
 	    } catch (Exception e) {
-	        e.printStackTrace();
 	        return -1;
 	    } 
 	}
@@ -36,14 +35,14 @@ public class HelperFunction {
 	public static String convertToDate(long time){
 		time = time * 1000;
 		Date date = new Date(time);
-		DateFormat format = new SimpleDateFormat("EEE., MMM d '\n' h:mm a", Locale.getDefault());
+		DateFormat format = new SimpleDateFormat("EEE., MMM d '\n'h:mm a", Locale.getDefault());
 		format.setTimeZone(TimeZone.getDefault());
 		String formatted = format.format(date);
 		return formatted;
 	}
 	
 	public static String convertToDate(Date date) {
-		DateFormat format = new SimpleDateFormat("EEE., MMM d '\n@' h:mm a", Locale.getDefault());
+		DateFormat format = new SimpleDateFormat("EEE., MMM d '\n'h:mm a", Locale.getDefault());
 		String outDate = format.format(date);
 		return outDate;
 	}

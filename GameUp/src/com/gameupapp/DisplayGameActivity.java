@@ -57,10 +57,9 @@ public class DisplayGameActivity extends Activity implements
 		setContentView(R.layout.activity_display_game);
 		
 		// Restore preferences
-		SharedPreferences settings = getSharedPreferences("settings", 0);
+		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		loggedIn = settings.getBoolean(AppConstant.LOGIN, false);
 		USER_ID = settings.getString(AppConstant.USER, null);
-		Log.d("login", "(display create) user: " + USER_ID + " loggedIn = " + loggedIn);
 		updateView();
 		
 		// Back button in app
@@ -151,7 +150,10 @@ public class DisplayGameActivity extends Activity implements
 			players.setText(str);
 		}
 		
-		// TODO: Change to actual player profiles
+		// TODO: Add Ability Level information
+		
+		// TODO: Move to a new activity if someone wants more information
+		/*
 		List<Integer> playerList = new ArrayList<Integer>();
 		for (int i = 0; i < joined; i++) {
 			playerList.add(AppConstant.PLAYER);
@@ -165,6 +167,7 @@ public class DisplayGameActivity extends Activity implements
 		if (fragment != null) {
 			fragment.update(playerList);
 		}
+		*/
 	}
 	
 	private AlertDialog createGameAlert(int message) {
@@ -225,7 +228,7 @@ public class DisplayGameActivity extends Activity implements
 		}
 		
 		// Save the user_id and similar shared variables
-		SharedPreferences settings = getSharedPreferences("settings", 0);
+		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putBoolean(AppConstant.LOGIN, loggedIn);
 		editor.putString(AppConstant.USER, USER_ID);
