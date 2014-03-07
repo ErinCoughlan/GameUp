@@ -6,7 +6,6 @@ import java.util.Locale;
 
 import com.parse.Parse;
 import com.parse.ParseQuery;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -25,6 +24,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
@@ -100,15 +100,39 @@ public class DisplayGameActivity extends Activity implements
 		gameup = GameUpInterface.getInstance(USER_ID);
 		gameup.registerObserver(this);
 		
-		GameParse g = gameup.getGame(GAME_ID);
 		
 		// Set info based on game
-		if (g != null) {
-			setGameInfo(g);
-		} else {
-			Log.d("getGame", "Game was null");
-		}
+		
+		
+		new SetGame().doInBackground(GAME_ID);
 
+	}
+	
+	private class SetGame extends AsyncTask<String, Integer, Void> {
+		GameParse g;
+		
+		@Override
+		protected Void doInBackground(String... gameID) {
+			Log.d("DisplayGame", "Setting game async");
+			g = gameup.getGame(gameID[0]);
+
+			return null;
+		}
+		
+		@Override
+		protected void onProgressUpdate(Integer...progress) {
+			// TODO set progress percent here
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			if(g != null) {
+				setGameInfo(g);
+				Log.d("DisplayGame", "Set game async");
+			} else {
+				Log.d("DisplayGame", "Failed to get game by id");
+			}
+		}
 	}
 	
 	private void setGameInfo(GameParse g) {
