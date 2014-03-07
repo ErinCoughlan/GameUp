@@ -107,7 +107,6 @@ public class MainActivity extends Activity implements OnGameClicked {
 		super.onStart();
 		
 		startGameUp();
-		displayGames();
 		updateView();
 	}
 
