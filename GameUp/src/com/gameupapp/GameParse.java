@@ -1,19 +1,19 @@
 package com.gameupapp;
 import java.util.Date;
 
+import android.util.Log;
+
+import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseClassName;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseQuery;
 
 @ParseClassName("GameParse")
 public class GameParse extends ParseObject {
 	
 	public String getGameID() {
-		return getString("gameID");
-	}
-	
-	public void setGameID(String gameID) {
-		put("gameID", gameID);
+		return getString("objectID");
 	}
 	
 	/**
@@ -62,12 +62,12 @@ public class GameParse extends ParseObject {
 		put("endDateTime", dateTime);
 	}
 	
-	public void setMaxPlayers(int maxCount) {
-		put("maxPlayers", maxCount);
+	public void setMaxPlayerCount(int maxCount) {
+		put("maxPlayerCount", maxCount);
 	}
 	
-	public int getMaxPlayers() {
-		return getInt("maxPlayers");
+	public int getMaxPlayerCount() {
+		return getInt("maxPlayerCount");
 	}
 	
 	public int getCurrentPlayerCount() { 
@@ -80,7 +80,7 @@ public class GameParse extends ParseObject {
 	
 	// TODO this should take in a player account or something
 	public boolean addPlayer() {
-		int maxCount = getMaxPlayers();
+		int maxCount = getMaxPlayerCount();
 		int currentCount = getCurrentPlayerCount();
 		if(currentCount < maxCount) {
 			setCurrentPlayerCount(currentCount + 1);
@@ -92,18 +92,42 @@ public class GameParse extends ParseObject {
 	}
 	
 	public void setSport(String sport) {
-		put("sport", sport);
+		ParseQuery<Sport> sportQuery = ParseQuery.getQuery(Sport.class);
+		sportQuery.whereEqualTo("sport", sport);
+		Sport parseSport;
+		try {
+			parseSport = sportQuery.getFirst();
+		} catch (ParseException e) {
+			Log.e("GameParse setSport", "Failed to lookup sport", e);
+			return;
+		}
+		put("sport", parseSport);
 	}
 	
+	
 	public String getSport() {
-		return getString("sport");
+		Sport sport = (Sport) getParseObject("sport");
+		try {
+			sport.fetchIfNeeded();
+		} catch (ParseException e) {
+			Log.e("GameParse getSport", "Couldn't fetch sport from server");
+		}
+		return sport.getName();
 	}
 	
 	public String getReadableLocation() {
-		return getString("readableLocation");
+		return getString("readableocation");
 	}
 	
 	public void setReadableLocation(String location) {
 		put("readableLocation", location);
+	}
+	
+	public int getAbilityLevel() {
+		return getInt("abilityLevel");
+	}
+	
+	public void setAbilityLevel(int level) {
+		put("abilityLevel", level);
 	}
 }

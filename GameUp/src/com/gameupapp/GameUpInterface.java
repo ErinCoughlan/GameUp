@@ -143,7 +143,7 @@ public class GameUpInterface {
 		query.setLimit(10);
 		// TODO Make this work in a background thread
 		List<GameParse> games = new ArrayList<GameParse>();
-		
+		query.include("sport");
 		try {
 			games = query.find();
 		} catch (ParseException e) {
@@ -181,6 +181,7 @@ public class GameUpInterface {
 	public GameParse getGame(String gameId) {
 		GameParse game;
 		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
+		query.include("sport");
 		query.whereEqualTo("gameID", gameId);
 		try {
 			game = query.getFirst();

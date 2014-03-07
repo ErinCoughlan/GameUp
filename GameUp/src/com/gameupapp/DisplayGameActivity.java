@@ -156,7 +156,7 @@ public class DisplayGameActivity extends Activity implements
 		
 		int joined = g.getCurrentPlayerCount();
 		Log.d("gameSpecificView", "joined: " + joined);
-		int maxPlayers = g.getMaxPlayers();
+		int maxPlayers = g.getMaxPlayerCount();
 		if (players != null){
 			String str = joined + " out of " + maxPlayers;
 			players.setText(str);
