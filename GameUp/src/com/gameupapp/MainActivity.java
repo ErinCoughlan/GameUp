@@ -8,10 +8,10 @@ import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.Settings;
 import com.gameupapp.GameFragment.OnGameClicked;
-
 import com.parse.Parse;
 import com.parse.ParseObject;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -122,11 +122,37 @@ public class MainActivity extends Activity implements OnGameClicked {
 		gameup = GameUpInterface.getInstance(USER_ID);
 		gameup.registerObserver(this);
 
-		gameList = gameup.getGames();
-		displayGames();
+		new SetGameList().execute();
 	}
 
 
+	private class SetGameList extends AsyncTask<Void, Integer, Void> {
+		List<GameParse> gs;
+		
+		@Override
+		protected Void doInBackground(Void... params) {
+			Log.d("DisplayGame", "Setting gameList async");
+			gs = gameup.getGames();
+			return null;
+		}
+		
+		@Override
+		protected void onProgressUpdate(Integer...progress) {
+			// TODO set progress percent here
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			if(gs != null) {
+				gameList = gs;
+				Log.d("MainActivity", "Set gameList async");
+				displayGames();
+			} else {
+				Log.d("MainActivity", "Failed to get gameList");
+			}
+		}
+	}
+	
 	public void displayGames() {
 		GameFragment fragment = (GameFragment) getFragmentManager()
 				.findFragmentById(R.id.games);
