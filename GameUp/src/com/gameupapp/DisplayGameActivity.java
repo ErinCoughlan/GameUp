@@ -99,8 +99,9 @@ public class DisplayGameActivity extends Activity implements
 		
 		// Set info based on game
 		
-		
-		new SetGame().doInBackground(GAME_ID);
+		//GameParse g = gameup.getGame(GAME_ID);
+		//setGameInfo(g);
+		new SetGame().execute(GAME_ID);
 
 	}
 	
