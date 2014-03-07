@@ -167,7 +167,6 @@ public class MainActivity extends Activity implements OnGameClicked {
 		
 		// TODO I've been using capital ID and just noticed everything else is Id. I need to fix mine.
 		String gameId = game.getGameID();
-		Log.d("GameID", gameId);
 		// Go to a new activity for the specific game
 		Intent intent = new Intent();
 		intent.setClass(MainActivity.this, DisplayGameActivity.class);
