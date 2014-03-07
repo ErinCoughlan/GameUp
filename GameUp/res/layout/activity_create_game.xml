@@ -48,6 +48,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:completionThreshold="1"
+                android:inputType="textAutoComplete|textAutoCorrect"
                 tools:listitem="@android:layout/simple_spinner_item" />
         </LinearLayout>
 
