@@ -68,13 +68,14 @@ public class GameAdapter extends ArrayAdapter<GameParse> {
 			// check to see if each individual textview is null.
 			// if not, assign some text!
 			if (timestamp != null){
-				String date = HelperFunction.convertToDate(i.getDateTime());
+				String date = HelperFunction.convertToDate(i.getStartDateTime());
 				timestamp.setText(date);
 			}
 			
 			if (location != null){
-				String locationString = HelperFunction.convertParseGeoToString(i.getLocation());
-				location.setText(locationString);
+				//String locationString = HelperFunction.convertParseGeoToString(i.getLocation());
+				//location.setText(locationString);
+				location.setText("0.1 miles away");
 			}
 			
 			

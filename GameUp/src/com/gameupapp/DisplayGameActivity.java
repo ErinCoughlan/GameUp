@@ -1,9 +1,5 @@
 package com.gameupapp;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
 import com.parse.Parse;
 import com.parse.ParseQuery;
 
@@ -116,12 +112,11 @@ public class DisplayGameActivity extends Activity implements
 		TextView location = (TextView) this.findViewById(R.id.gameLocation);
 		TextView players = (TextView) this.findViewById(R.id.gamePlayers);
 		TextView sport = (TextView) this.findViewById(R.id.gameSport);
-		ImageView sportIcon = (ImageView) this.findViewById(R.id.gameSportIcon);
-		Log.d("gameSpecificView", "Foo");
+		
 		// check to see if each individual textview is null.
 		// if not, assign some text!
 		if (timestamp != null){
-			String date = HelperFunction.convertToDate(g.getDateTime());
+			String date = HelperFunction.convertToDate(g.getStartDateTime(), g.getEndDateTime());
 			timestamp.setText(date);
 		}
 		
@@ -134,40 +129,16 @@ public class DisplayGameActivity extends Activity implements
 			sport.setText(g.getSport());
 		}
 		
-		if (sportIcon != null){
-			String s = g.getSport().toLowerCase(Locale.US);
-			int id = HelperFunction.getResId(s, this.getBaseContext(), R.drawable.class);
-			if (id != -1) {
-				sportIcon.setBackgroundResource(id);
-			}
-		}
-		
 		int joined = g.getCurrentPlayerCount();
 		Log.d("gameSpecificView", "joined: " + joined);
 		int maxPlayers = g.getMaxPlayers();
 		if (players != null){
-			String str = "(" + joined + " out of " + maxPlayers + ")";
+			String str = joined + " out of " + maxPlayers;
 			players.setText(str);
 		}
 		
 		// TODO: Add Ability Level information
-		
-		// TODO: Move to a new activity if someone wants more information
-		/*
-		List<Integer> playerList = new ArrayList<Integer>();
-		for (int i = 0; i < joined; i++) {
-			playerList.add(AppConstant.PLAYER);
-		}
-		for (int i = 0; i < maxPlayers - joined; i++) {
-			playerList.add(AppConstant.PLAYER_ABSENT);
-		}
-		
-		ImageFragment fragment = (ImageFragment) getFragmentManager()
-				.findFragmentById(R.id.playerGridView);
-		if (fragment != null) {
-			fragment.update(playerList);
-		}
-		*/
+
 	}
 	
 	private AlertDialog createGameAlert(int message) {

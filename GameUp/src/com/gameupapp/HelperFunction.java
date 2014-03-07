@@ -47,6 +47,14 @@ public class HelperFunction {
 		return outDate;
 	}
 	
+	public static String convertToDate(Date date1, Date date2) {
+		DateFormat format = new SimpleDateFormat("EEE., MMM d h:mm a", Locale.getDefault());
+		DateFormat shortFormat = new SimpleDateFormat("h:mm a", Locale.getDefault());
+		String startDate = format.format(date1);
+		String endDate = shortFormat.format(date2);
+		return startDate + " - \n" + endDate;
+	}
+	
 	public static String convertParseGeoToString(ParseGeoPoint location) {
 		double latitude = location.getLatitude();
 		double longitude = location.getLongitude();

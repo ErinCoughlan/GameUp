@@ -17,7 +17,7 @@
     <string name="join">Join Game</string>
     <string name="unjoin">Unjoin Game</string>
     <string name="create">Create Game</string>
-    <string name="players_joined">Players Joined</string>
+    <string name="players_joined">Players Joined:</string>
     <string name="ability_level">Ability Level:</string>
     <string name="alert_success_join">Congrats! \n You successfully joined the game!</string>
     <string name="alert_success_unjoin">Congrats! \n You successfully unjoined the game!</string>

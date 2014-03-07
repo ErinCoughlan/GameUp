@@ -14,8 +14,6 @@
         android:contentDescription="@string/access_sport_icon" />
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
