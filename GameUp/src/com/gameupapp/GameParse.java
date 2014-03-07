@@ -13,7 +13,7 @@ import com.parse.ParseQuery;
 public class GameParse extends ParseObject {
 	
 	public String getGameID() {
-		return getString("objectID");
+		return getObjectId();
 	}
 	
 	/**

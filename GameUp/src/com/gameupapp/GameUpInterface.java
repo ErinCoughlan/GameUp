@@ -138,39 +138,21 @@ public class GameUpInterface {
 		observers.clear();
 	}
 	
+	/**
+	 *  TODO filter on "isn't already in the past"
+	 * @return The first 10 games in the DB
+	 */
 	public List<GameParse> getGames() {
 		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
 		query.setLimit(10);
-		// TODO Make this work in a background thread
-		List<GameParse> games = new ArrayList<GameParse>();
-		query.include("sport");
-		try {
-			games = query.find();
-		} catch (ParseException e) {
-			Log.d("getGames", "Exception finding games");
-		}
-		/*
-		if (AppConstant.DEBUG) {
-			Game g = new Game(jsonGame);
-			games.add(g);
-			g = new Game(jsonGame2);
-			games.add(g);
-			g = new Game(jsonGame3);
-			games.add(g);
-			g = new Game(jsonGame4);
-			games.add(g);
-			g = new Game(jsonGame5);
-			games.add(g);
-			g = new Game(jsonGame6);
-			games.add(g);
-			
-			gameList = games;
-		}*/
 		
-		gameList = games;
-		Log.d("games", "number of games: " + games.size());
+		// This is just a really, really general filter, so we can still use
+		// filterGamesWithQuery
+		gameList = filterGamesWithQuery(query);
 		
-		return games;
+		Log.d("games", "number of games: " + gameList.size());
+		
+		return gameList;
 	}
 	
 	/**
@@ -182,7 +164,9 @@ public class GameUpInterface {
 		GameParse game;
 		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
 		query.include("sport");
-		query.whereEqualTo("gameID", gameId);
+		query.whereEqualTo("objectId", gameId);
+		
+		// Can't use filter method because we only want one.
 		try {
 			game = query.getFirst();
 			return game;
@@ -193,7 +177,11 @@ public class GameUpInterface {
 		// Game was not found; return an error
 		return null;
 	}
-	
+	/**
+	 * TODO Filter on "isn't already in the past"
+	 * @param sportName Name of the sport to be selected
+	 * @return A list with the first 10 games of that sport.
+	 */
 	public List<GameParse> getGamesWithSportName(String sportName) {
 		List<GameParse> games;
 		ParseQuery<Sport> sportQuery = ParseQuery.getQuery(Sport.class);
@@ -202,13 +190,21 @@ public class GameUpInterface {
 		gameQuery.whereMatchesQuery("sport", sportQuery);
 		gameQuery.setLimit(10);
 		
+		games = filterGamesWithQuery(gameQuery);
+		return games;
+	}
+	
+	/**
+	 * 
+	 * @param query The query to be filtered on
+	 * @return A list exactly matching the filter
+	 */
+	protected List<GameParse> filterGamesWithQuery(ParseQuery<GameParse> query) {
 		try {
-			games = gameQuery.find();
+			return query.find();
 		} catch (ParseException e) {
-			Log.e("getGamesWSport", "Couldn't get games with sportname", e);
+			Log.e("filterGames", "Find failed", e);
 			return null;
 		}
-		
-		return games;
 	}
 }

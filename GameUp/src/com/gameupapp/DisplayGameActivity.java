@@ -101,7 +101,8 @@ public class DisplayGameActivity extends Activity implements
 		
 		//GameParse g = gameup.getGame(GAME_ID);
 		//setGameInfo(g);
-		new SetGame().execute(GAME_ID);
+		String[] params = {GAME_ID};
+		new SetGame().execute(params);
 
 	}
 	
@@ -110,7 +111,7 @@ public class DisplayGameActivity extends Activity implements
 		
 		@Override
 		protected Void doInBackground(String... gameID) {
-			Log.d("DisplayGame", "Setting game async");
+			Log.d("DisplayGame", gameID[0]);
 			g = gameup.getGame(gameID[0]);
 
 			return null;
