@@ -21,9 +21,12 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -34,15 +37,10 @@ public class CreateGameActivity extends Activity {
 	private String USER_ID;
 	private boolean loggedIn;
 	
-	// Spinner stuff
-	private Spinner sportSpinner;
-	private Spinner locationSpinner;
-	
-	// TODO: I18n?
     private SimpleDateFormat dateFormatter = new SimpleDateFormat(
-            "MMM dd, yyyy", Locale.US);
+            "MMM dd, yyyy", Locale.getDefault());
     private SimpleDateFormat timeFormatter = new SimpleDateFormat(
-            "h:mm a", Locale.US);
+            "h:mm a", Locale.getDefault());
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +123,8 @@ public class CreateGameActivity extends Activity {
 	}
 	
 	private void initSportSpinner() {
-		sportSpinner = (Spinner) findViewById(R.id.sport_spinner);
+		//Spinner sportSpinner = (Spinner) findViewById(R.id.sport_spinner);
+		AutoCompleteTextView sportDropdown = (AutoCompleteTextView) findViewById(R.id.sport_dropdown);
 
 		// Custom choices
 		List<String> choices = new ArrayList<String>();
@@ -145,19 +144,20 @@ public class CreateGameActivity extends Activity {
 		adapter.setDropDownViewResource(R.drawable.spinner_dropdown_item);
 
 		// Set the adapter to the spinner
-		sportSpinner.setAdapter(adapter);
-		sportSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-			public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-				updateSportsIcon();
-			}
+		sportDropdown.setAdapter(adapter);
+		sportDropdown.setOnItemClickListener(new OnItemClickListener() {
 
-			public void onNothingSelected(AdapterView<?> parent) {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
+				updateSportsIcon();
+				LinearLayout dummy = (LinearLayout) findViewById(R.id.dummy);
+				dummy.requestFocus();
 			}
 		});
 	}
 	
 	private void initLocationSpinner() {
-		locationSpinner = (Spinner) findViewById(R.id.location_spinner);
+		Spinner locationSpinner = (Spinner) findViewById(R.id.location_spinner);
 
 		// Custom choices
 		List<String> choices = new ArrayList<String>();
@@ -222,8 +222,10 @@ public class CreateGameActivity extends Activity {
 	}
 	
 	private void updateSportsIcon() {
+		AutoCompleteTextView sportDropdown = (AutoCompleteTextView) findViewById(R.id.sport_dropdown);
+		
 		ImageView sportIcon = (ImageView) findViewById(R.id.game_sport_icon);
-        String s = sportSpinner.getSelectedItem().toString().toLowerCase(Locale.US);
+        String s = sportDropdown.getText().toString().toLowerCase(Locale.US);
         if (sportIcon != null) {
 			int resId = HelperFunction.getResId(s, getBaseContext(), R.drawable.class);
 			if (resId != -1) {

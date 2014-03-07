@@ -52,11 +52,11 @@ public class MainActivity extends Activity implements OnGameClicked {
 		// Register GameParse subclass
 		ParseObject.registerSubclass(GameParse.class);
 		// erin@gameupapp.com Parse
-		Parse.initialize(this, "yYt3t3sH7XMU81BXgvYaXnWEsoahXCJb5dhupvP5",
-				"dZCnn1DrZJMXyZOkZ7pbM7Z0ePwTyIJsZzgY77FU");
+		//Parse.initialize(this, "yYt3t3sH7XMU81BXgvYaXnWEsoahXCJb5dhupvP5",
+		//		"dZCnn1DrZJMXyZOkZ7pbM7Z0ePwTyIJsZzgY77FU");
 		// Phil's Parse
-		//Parse.initialize(this, "a0k4KhDMvl3Mz2CUDcDMLAgnt5uaCLuIBxK41NGa",
-		//		"3EJKdG7SuoK89gkFkN1rcDNbFvIgN71iH0mJyfDC");
+		Parse.initialize(this, "a0k4KhDMvl3Mz2CUDcDMLAgnt5uaCLuIBxK41NGa",
+				"3EJKdG7SuoK89gkFkN1rcDNbFvIgN71iH0mJyfDC");
 
 		ParseFacebookUtils.initialize(getString(R.string.fb_app_id));
 		
