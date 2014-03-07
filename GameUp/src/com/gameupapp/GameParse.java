@@ -106,12 +106,17 @@ public class GameParse extends ParseObject {
 	
 	
 	public String getSport() {
-		Sport parseSport = (Sport) get("sport");
-		return parseSport.getName();
+		Sport sport = (Sport) getParseObject("sport");
+		try {
+			sport.fetchIfNeeded();
+		} catch (ParseException e) {
+			Log.e("GameParse getSport", "Couldn't fetch sport from server");
+		}
+		return sport.getName();
 	}
 	
 	public String getReadableLocation() {
-		return getString("readableLocation");
+		return getString("readableocation");
 	}
 	
 	public void setReadableLocation(String location) {

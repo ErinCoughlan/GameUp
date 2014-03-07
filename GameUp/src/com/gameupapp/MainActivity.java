@@ -51,6 +51,7 @@ public class MainActivity extends Activity implements OnGameClicked {
 		// Parse information
 		// Register GameParse subclass
 		ParseObject.registerSubclass(GameParse.class);
+		ParseObject.registerSubclass(Sport.class);
 		// erin@gameupapp.com Parse
 		Parse.initialize(this, "yYt3t3sH7XMU81BXgvYaXnWEsoahXCJb5dhupvP5",
 				"dZCnn1DrZJMXyZOkZ7pbM7Z0ePwTyIJsZzgY77FU");
