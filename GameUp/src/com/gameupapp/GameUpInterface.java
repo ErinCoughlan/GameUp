@@ -193,4 +193,22 @@ public class GameUpInterface {
 		// Game was not found; return an error
 		return null;
 	}
+	
+	public List<GameParse> getGamesWithSportName(String sportName) {
+		List<GameParse> games;
+		ParseQuery<Sport> sportQuery = ParseQuery.getQuery(Sport.class);
+		sportQuery.whereEqualTo("sport", sportName);
+		ParseQuery<GameParse> gameQuery = ParseQuery.getQuery(GameParse.class);
+		gameQuery.whereMatchesQuery("sport", sportQuery);
+		gameQuery.setLimit(10);
+		
+		try {
+			games = gameQuery.find();
+		} catch (ParseException e) {
+			Log.e("getGamesWSport", "Couldn't get games with sportname", e);
+			return null;
+		}
+		
+		return games;
+	}
 }
