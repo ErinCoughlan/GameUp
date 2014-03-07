@@ -42,10 +42,29 @@ public class HelperFunction {
 		return formatted;
 	}
 	
+	public static String convertToDateSimple(Date date) {
+		DateFormat format = new SimpleDateFormat("EEE, MMM. d '\n'h:mm a", Locale.getDefault());
+		return format.format(date);
+	}
+	
 	public static String convertToDate(Date date) {
 		DateFormat format = new SimpleDateFormat("EEE, MMM. d '\n'h:mm a", Locale.getDefault());
-		String outDate = format.format(date);
-		return outDate;
+	    Calendar calendar = Calendar.getInstance();
+	    calendar.setTime(date);
+	    Calendar today = Calendar.getInstance();
+	    Calendar tomorrow = Calendar.getInstance();
+	    tomorrow.add(Calendar.DATE, 1);
+	    DateFormat timeFormatter = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+
+	    if (calendar.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
+	    		calendar.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)) {
+	        return "Today '\n'" + timeFormatter.format(date);
+	    } else if (calendar.get(Calendar.YEAR) == tomorrow.get(Calendar.YEAR) &&
+	    		calendar.get(Calendar.DAY_OF_YEAR) == tomorrow.get(Calendar.DAY_OF_YEAR)) {
+	        return "Tomorrow '\n'" + timeFormatter.format(date);
+	    } else {
+	        return format.format(date);
+	    }
 	}
 	
 	public static String convertToDate(Date date1, Date date2) {
@@ -75,7 +94,7 @@ public class HelperFunction {
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
 		return sameDay;
 	}
-	
+
 	public static String convertParseGeoToString(ParseGeoPoint location) {
 		double latitude = location.getLatitude();
 		double longitude = location.getLongitude();
