@@ -145,12 +145,12 @@ public class GameUpInterface {
 	public List<GameParse> getGames() {
 		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
 		query.setLimit(10);
-		
+		query.include("sport");
 		// This is just a really, really general filter, so we can still use
 		// filterGamesWithQuery
 		gameList = filterGamesWithQuery(query);
 		
-		Log.d("games", "number of games: " + gameList.size());
+		Log.d("getGames", "number of games: " + gameList.size());
 		
 		return gameList;
 	}
