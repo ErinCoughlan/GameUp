@@ -299,7 +299,7 @@ public class CreateGameActivity extends Activity {
 				
 				// Finish joining the game if login is successful
 				if (loggedIn) {
-					AlertDialog dialog = createGameAlert(R.string.alert_success_join);
+					AlertDialog dialog = createGameAlert(R.string.alert_success_create);
 	            	dialog.show();
 					break;
 				}
