@@ -129,7 +129,6 @@ public class CreateGameActivity extends Activity {
 		List<String> choices = new ArrayList<String>();
 
 		for (Sport sport : gameup.getAllSports()) {
-			Log.d("sport", "about to get sport name");
 			choices.add(sport.getName());
 		}
 		
