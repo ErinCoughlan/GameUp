@@ -1,5 +1,7 @@
 package com.gameupapp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.json.JSONArray;
 
@@ -157,5 +159,11 @@ public class GameParse extends ParseObject {
 
 	public JSONArray getPlayers() {
 		return getJSONArray("Users");
+	}
+
+	public void removePlayer() {
+		List<ParseUser> currentUser = new ArrayList<ParseUser>();
+		currentUser.add(ParseUser.getCurrentUser());
+		removeAll("Users", currentUser);
 	}
 }
