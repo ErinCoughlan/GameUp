@@ -19,9 +19,13 @@ public class AppConstant {
 	static final int LOGIN_ID = 2;
 	
 	// Initial List of Sports	
-	static final List<String> sports = Arrays.asList(
+	static final List<String> SPORTS = Arrays.asList(
 			"Baseball", "Basketball", "Football", "Soccer",
 			"Tennis", "Volleyball", "Frisbee");
+	
+	// Ability Levels
+	static final List<String> ABILITY_LEVELS = Arrays.asList(
+			"Beginner", "Intermediate", "Advanced", "All Star");
 	
 	/*
      * Define a request code to send to Google Play services
