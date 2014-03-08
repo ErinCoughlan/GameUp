@@ -207,4 +207,14 @@ public class GameUpInterface {
 			return null;
 		}
 	}
+	
+	public List<Sport> getAllSports() {
+		ParseQuery<Sport> query = ParseQuery.getQuery(Sport.class);
+		try {
+			return query.find();
+		} catch (ParseException e) {
+			Log.e("getAllSports", "Find failed", e);
+			return null;
+		}
+	}
 }
