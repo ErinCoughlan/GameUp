@@ -210,6 +210,7 @@ public class GameUpInterface {
 	
 	public List<Sport> getAllSports() {
 		ParseQuery<Sport> query = ParseQuery.getQuery(Sport.class);
+		query.whereExists("sport");
 		try {
 			return query.find();
 		} catch (ParseException e) {
