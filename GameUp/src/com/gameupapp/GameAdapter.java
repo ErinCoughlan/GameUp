@@ -6,6 +6,7 @@ import java.util.Locale;
 import com.gameupapp.R;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,7 @@ public class GameAdapter extends ArrayAdapter<GameParse> {
 	 */
 	public View getView(final int position, View convertView, ViewGroup parent) {
 
+		
 		// assign the view we are converting to a local variable
 		View v = convertView;
 
@@ -59,7 +61,7 @@ public class GameAdapter extends ArrayAdapter<GameParse> {
 
 			// This is how you obtain a reference to the TextViews.
 			// These TextViews are created in the XML files we defined.
-
+			
 			TextView timestamp = (TextView) v.findViewById(R.id.gameTimestamp);
 			TextView location = (TextView) v.findViewById(R.id.gameLocation);
 			TextView sport = (TextView) v.findViewById(R.id.gameSport);
@@ -80,7 +82,9 @@ public class GameAdapter extends ArrayAdapter<GameParse> {
 			
 			
 			if (sport != null){
+				Log.d("BLAH","BLAH");
 				sport.setText(i.getSport());
+				Log.d("FOO","FOO");
 			}
 			
 			if (sportIcon != null){
