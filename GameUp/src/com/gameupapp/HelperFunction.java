@@ -54,14 +54,14 @@ public class HelperFunction {
 	    Calendar today = Calendar.getInstance();
 	    Calendar tomorrow = Calendar.getInstance();
 	    tomorrow.add(Calendar.DATE, 1);
-	    DateFormat timeFormatter = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+	    DateFormat timeFormatter = new SimpleDateFormat("h:mm a", Locale.getDefault());
 
 	    if (calendar.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
 	    		calendar.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)) {
-	        return "Today '\n'" + timeFormatter.format(date);
+	        return "Today \n" + timeFormatter.format(date);
 	    } else if (calendar.get(Calendar.YEAR) == tomorrow.get(Calendar.YEAR) &&
 	    		calendar.get(Calendar.DAY_OF_YEAR) == tomorrow.get(Calendar.DAY_OF_YEAR)) {
-	        return "Tomorrow '\n'" + timeFormatter.format(date);
+	        return "Tomorrow \n" + timeFormatter.format(date);
 	    } else {
 	        return format.format(date);
 	    }

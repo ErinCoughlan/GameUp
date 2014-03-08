@@ -133,9 +133,6 @@ public class CreateGameActivity extends Activity {
 		choices.addAll(AppConstant.sports);
 		
 		Collections.sort(choices);
-		
-		// TODO: Add New button has special interactions
-		choices.add("Add New");
 
 		// Create an ArrayAdapter with custom choices
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.drawable.spinner_item, choices);
