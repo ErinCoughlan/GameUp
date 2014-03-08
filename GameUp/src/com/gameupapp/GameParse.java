@@ -27,6 +27,7 @@ public class GameParse extends ParseObject {
 	public void setLocation(double latitude, double longitude) {
 		ParseGeoPoint location = new ParseGeoPoint(latitude, longitude);
 		put("location", location);
+		saveInBackground();
 	}
 	
 	public ParseGeoPoint getLocation() {
@@ -47,6 +48,7 @@ public class GameParse extends ParseObject {
 	 */
 	public void setDateTime(Date dateTime) {
 		put("startDateTime", dateTime);
+		saveInBackground();
 	}
 	
 	public Date getStartDateTime() {
@@ -55,6 +57,7 @@ public class GameParse extends ParseObject {
 	
 	public void setStartDateTime(Date dateTime) {
 		put("startDateTime", dateTime);
+		saveInBackground();
 	}
 	
 	public Date getEndDateTime() {
@@ -63,10 +66,12 @@ public class GameParse extends ParseObject {
 	
 	public void setEndDateTime(Date dateTime) {
 		put("endDateTime", dateTime);
+		saveInBackground();
 	}
 	
 	public void setMaxPlayerCount(int maxCount) {
 		put("maxPlayerCount", maxCount);
+		saveInBackground();
 	}
 	
 	public int getMaxPlayerCount() {
@@ -79,6 +84,7 @@ public class GameParse extends ParseObject {
 	
 	public void setCurrentPlayerCount(int newCount) {
 		put("currentPlayerCount", newCount);
+		saveInBackground();
 	}
 	
 	// TODO this should take in a player account or something
@@ -114,6 +120,7 @@ public class GameParse extends ParseObject {
 			return;
 		}
 		put("sport", parseSport);
+		saveInBackground();
 	}
 	
 	public String getSport() {
@@ -132,6 +139,7 @@ public class GameParse extends ParseObject {
 	
 	public void setReadableLocation(String location) {
 		put("readableLocation", location);
+		saveInBackground();
 	}
 	
 	public int getAbilityLevel() {
@@ -140,6 +148,7 @@ public class GameParse extends ParseObject {
 	
 	public void setAbilityLevel(int level) {
 		put("abilityLevel", level);
+		saveInBackground();
 	}
 
 	public JSONArray getPlayers() {
