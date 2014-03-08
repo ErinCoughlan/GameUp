@@ -57,10 +57,6 @@ public class CreateGameActivity extends Activity {
 		// Back button in app
 		getActionBar().setDisplayHomeAsUpEnabled(true);
         
-        // Initialize the spinners
-        initSportSpinner();
-        initLocationSpinner();
-        
         // Initialize times for start and end
         Calendar c = Calendar.getInstance();
         Date start = c.getTime();
@@ -85,6 +81,10 @@ public class CreateGameActivity extends Activity {
 		// GameUp instance
 		gameup = GameUpInterface.getInstance(USER_ID);
 		gameup.registerObserver(this);
+		
+		// Initialize the spinners
+        initSportSpinner();
+        initLocationSpinner();
 	}
 	
 	@Override
@@ -123,14 +123,15 @@ public class CreateGameActivity extends Activity {
 	}
 	
 	private void initSportSpinner() {
-		//Spinner sportSpinner = (Spinner) findViewById(R.id.sport_spinner);
 		AutoCompleteTextView sportDropdown = (AutoCompleteTextView) findViewById(R.id.sport_dropdown);
 
 		// Custom choices
 		List<String> choices = new ArrayList<String>();
-		
-		// TODO: Get choices from API
-		choices.addAll(AppConstant.sports);
+
+		for (Sport sport : gameup.getAllSports()) {
+			Log.d("sport", "about to get sport name");
+			choices.add(sport.getName());
+		}
 		
 		Collections.sort(choices);
 
