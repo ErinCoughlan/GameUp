@@ -82,9 +82,7 @@ public class GameAdapter extends ArrayAdapter<GameParse> {
 			
 			
 			if (sport != null){
-				Log.d("BLAH","BLAH");
 				sport.setText(i.getSport());
-				Log.d("FOO","FOO");
 			}
 			
 			if (sportIcon != null){
