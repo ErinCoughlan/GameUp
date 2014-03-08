@@ -30,6 +30,7 @@
     <string name="choose_players_prompt">Number of Players:</string>
     <string name="choose_start_time_prompt">Start time:</string>
     <string name="choose_end_time_prompt">End time:</string>
+    <string name="choose_ability_prompt">Ability Level:</string>
     <string name="login">Login</string>
     <string name="logout">Logout</string>
 

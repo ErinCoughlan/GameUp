@@ -85,6 +85,7 @@ public class CreateGameActivity extends Activity {
 		// Initialize the spinners
         initSportSpinner();
         initLocationSpinner();
+        initAbilitySpinner();
 	}
 	
 	@Override
@@ -171,6 +172,36 @@ public class CreateGameActivity extends Activity {
 
 		// Set the adapter to the spinner
 		locationSpinner.setAdapter(adapter);
+	}
+	
+	private void initAbilitySpinner() {
+		Spinner abilitySpinner = (Spinner) findViewById(R.id.ability_spinner);
+
+		// Custom choices
+		List<String> choices = new ArrayList<String>();
+		choices.addAll(AppConstant.ABILITY_LEVELS);
+
+		// Create an ArrayAdapter with custom choices
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.drawable.spinner_item, choices);
+
+		// Specify the layout to use when the list of choices appears
+		adapter.setDropDownViewResource(R.drawable.spinner_dropdown_item);
+
+		// Set the adapter to the spinner
+		abilitySpinner.setAdapter(adapter);
+		abilitySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+				updateSportsIcon();
+				LinearLayout dummy = (LinearLayout) findViewById(R.id.dummy);
+				dummy.requestFocus();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// Do nothing
+			}
+		});
 	}
 	
 	public void showTimePickerDialog(View v) {
