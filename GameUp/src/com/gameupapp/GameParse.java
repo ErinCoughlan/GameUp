@@ -87,6 +87,10 @@ public class GameParse extends ParseObject {
 		saveInBackground();
 	}
 	
+	public void incrementCurrentPlayerCount() {
+		increment("currentPlayerCount");
+	}
+	
 	// TODO this should take in a player account or something
 	public boolean addPlayer() {
 		try {
@@ -98,7 +102,7 @@ public class GameParse extends ParseObject {
 		int maxCount = getMaxPlayerCount();
 		int currentCount = getCurrentPlayerCount();
 		if(currentCount < maxCount) {
-			setCurrentPlayerCount(currentCount + 1);
+			incrementCurrentPlayerCount();
 			ParseUser currentUser = ParseUser.getCurrentUser();
 			addUnique("Users", currentUser);
 			return true;
