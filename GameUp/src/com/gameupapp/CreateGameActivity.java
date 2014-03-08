@@ -11,6 +11,7 @@ import java.util.Locale;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,6 +21,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -150,6 +152,11 @@ public class CreateGameActivity extends Activity {
 				updateSportsIcon();
 				LinearLayout dummy = (LinearLayout) findViewById(R.id.dummy);
 				dummy.requestFocus();
+				
+				InputMethodManager imm = (InputMethodManager) getSystemService(
+					Context.INPUT_METHOD_SERVICE);
+				AutoCompleteTextView sportDropdown = (AutoCompleteTextView) findViewById(R.id.sport_dropdown);
+				imm.hideSoftInputFromWindow(sportDropdown.getWindowToken(), 0);
 			}
 		});
 	}
