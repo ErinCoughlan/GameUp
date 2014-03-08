@@ -1,6 +1,5 @@
 package com.gameupapp;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -19,12 +18,6 @@ import android.util.Log;
 public class GameUpInterface {
 	private List<GameParse> gameList;
 	private Collection<Activity> observers;
-	
-	private String USER_ID;
-	
-	// Filtering
-	private int orderBy = 0;
-	private int numComments = 20;
 
 	private static GameUpInterface instance;
 	
@@ -90,15 +83,13 @@ public class GameUpInterface {
 	private JSONObject jsonGame6;
 	
 	/**
-	 * Private constructor of a new PodiumInterface instance.
+	 * Private constructor of a new GameUpInterface instance.
 	 * 
 	 * @param user_id	The unique ID of the user connecting to GameUp
 	 */
-	private GameUpInterface(String user_id) {
+	private GameUpInterface() {
 			
-		USER_ID = user_id;
 		observers = new HashSet<Activity>();
-		//httpTaskProvider = new HttpTaskProvider();
 		
 		try {
 			jsonGame = new JSONObject(gameString);
@@ -119,9 +110,9 @@ public class GameUpInterface {
 	 * @param user_id	The unique ID of the user connecting to GameUp
 	 * @return	an instance of GameUpInterface
 	 */
-	public static GameUpInterface getInstance(String user_id) {
+	public static GameUpInterface getInstance() {
 		if (instance == null) {
-			instance = new GameUpInterface(user_id);
+			instance = new GameUpInterface();
 		}
 		return instance;
 	}
@@ -177,6 +168,7 @@ public class GameUpInterface {
 		// Game was not found; return an error
 		return null;
 	}
+
 	/**
 	 * TODO Filter on "isn't already in the past"
 	 * @param sportName Name of the sport to be selected
@@ -217,5 +209,13 @@ public class GameUpInterface {
 			Log.e("getAllSports", "Find failed", e);
 			return null;
 		}
+	}
+	
+	public boolean postJoinGame() {
+		return true;
+	}
+	
+	public boolean postUnjoinGame() {
+		return false;
 	}
 }

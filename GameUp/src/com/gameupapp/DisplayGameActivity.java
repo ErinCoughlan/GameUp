@@ -93,14 +93,11 @@ public class DisplayGameActivity extends Activity implements
 		GAME_ID = intent.getStringExtra(AppConstant.GAME);
 		
 		// GameUp instance
-		gameup = GameUpInterface.getInstance(USER_ID);
+		gameup = GameUpInterface.getInstance();
 		gameup.registerObserver(this);
 		
 		
 		// Set info based on game
-		
-		//GameParse g = gameup.getGame(GAME_ID);
-		//setGameInfo(g);
 		String[] params = {GAME_ID};
 		new SetGame().execute(params);
 
@@ -113,7 +110,6 @@ public class DisplayGameActivity extends Activity implements
 		protected Void doInBackground(String... gameID) {
 			Log.d("DisplayGame", gameID[0]);
 			g = gameup.getGame(gameID[0]);
-
 			return null;
 		}
 		
@@ -138,32 +134,39 @@ public class DisplayGameActivity extends Activity implements
 		TextView location = (TextView) this.findViewById(R.id.gameLocation);
 		TextView players = (TextView) this.findViewById(R.id.gamePlayers);
 		TextView sport = (TextView) this.findViewById(R.id.gameSport);
+		TextView abilityLevel = (TextView) this.findViewById(R.id.gameAbilityLevel);
 		
 		// check to see if each individual textview is null.
-		// if not, assign some text!
-		if (timestamp != null){
+		// if not, assign some text
+		if (timestamp != null) {
 			String date = HelperFunction.convertToDate(g.getStartDateTime(), g.getEndDateTime());
 			timestamp.setText(date);
 		}
 		
-		if (location != null){
-			String locationString = HelperFunction.convertParseGeoToString(g.getLocation());
+		if (location != null) {
+			//String locationString = HelperFunction.convertParseGeoToString(g.getLocation());
+			String locationString = g.getReadableLocation();
 			location.setText(locationString);
 		}
 		
-		if (sport != null){
+		if (sport != null) {
 			sport.setText(g.getSport());
 		}
 		
 		int joined = g.getCurrentPlayerCount();
 		Log.d("gameSpecificView", "joined: " + joined);
 		int maxPlayers = g.getMaxPlayerCount();
-		if (players != null){
+		if (players != null) {
 			String str = joined + " out of " + maxPlayers;
 			players.setText(str);
 		}
 		
 		// TODO: Add Ability Level information
+		if (abilityLevel != null) {
+			int level = g.getAbilityLevel();
+			String str = AppConstant.ABILITY_LEVELS.get(level);
+			abilityLevel.setText(str);
+		}
 
 	}
 	

@@ -81,7 +81,7 @@ public class CreateGameActivity extends Activity {
 		super.onStart();
 		
 		// GameUp instance
-		gameup = GameUpInterface.getInstance(USER_ID);
+		gameup = GameUpInterface.getInstance();
 		gameup.registerObserver(this);
 		
 		// Initialize the spinners
