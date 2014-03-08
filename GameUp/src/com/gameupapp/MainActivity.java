@@ -119,7 +119,7 @@ public class MainActivity extends Activity implements OnGameClicked {
 	}
 
 	public void startGameUp() {
-		gameup = GameUpInterface.getInstance(USER_ID);
+		gameup = GameUpInterface.getInstance();
 		gameup.registerObserver(this);
 
 		new SetGameList().execute();

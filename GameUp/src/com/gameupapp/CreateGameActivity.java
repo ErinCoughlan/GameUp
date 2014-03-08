@@ -81,7 +81,7 @@ public class CreateGameActivity extends Activity {
 		super.onStart();
 		
 		// GameUp instance
-		gameup = GameUpInterface.getInstance(USER_ID);
+		gameup = GameUpInterface.getInstance();
 		gameup.registerObserver(this);
 		
 		// Initialize the spinners
@@ -278,8 +278,7 @@ public class CreateGameActivity extends Activity {
 			button.setText(R.string.create);
 	        button.setOnClickListener(new View.OnClickListener() {
 	            public void onClick(View v) {
-	            	// TODO: Determine which string to show
-	            	AlertDialog dialog = createGameAlert(R.string.alert_success_join);
+	            	AlertDialog dialog = createGameAlert(R.string.alert_success_create);
 	            	dialog.show();
 	            }
 	        });

@@ -55,7 +55,7 @@ public class LoginActivity extends Activity {
 		super.onStart();
 
 		// GameUp instance
-		gameup = GameUpInterface.getInstance(USER_ID);
+		gameup = GameUpInterface.getInstance();
 		gameup.registerObserver(this);
 
 		Session.getActiveSession().addCallback(callback);

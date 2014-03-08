@@ -164,7 +164,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:inputType="number"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:textSize="18sp" />
         </LinearLayout>
         
         <LinearLayout

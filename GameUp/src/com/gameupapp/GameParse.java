@@ -140,7 +140,7 @@ public class GameParse extends ParseObject {
 	}
 	
 	public String getReadableLocation() {
-		return getString("readableocation");
+		return getString("readableLocation");
 	}
 	
 	public void setReadableLocation(String location) {
