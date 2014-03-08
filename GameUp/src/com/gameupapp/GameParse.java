@@ -1,6 +1,8 @@
 package com.gameupapp;
 import java.util.Date;
 
+import org.json.JSONArray;
+
 import android.util.Log;
 
 import com.parse.ParseException;
@@ -8,6 +10,7 @@ import com.parse.ParseObject;
 import com.parse.ParseClassName;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 @ParseClassName("GameParse")
 public class GameParse extends ParseObject {
@@ -80,13 +83,22 @@ public class GameParse extends ParseObject {
 	
 	// TODO this should take in a player account or something
 	public boolean addPlayer() {
+		try {
+			refresh();
+		} catch (ParseException e) {
+			Log.d("addPlayer", "Couldn't refresh game", e);
+		}
+		
 		int maxCount = getMaxPlayerCount();
 		int currentCount = getCurrentPlayerCount();
 		if(currentCount < maxCount) {
 			setCurrentPlayerCount(currentCount + 1);
-			// TODO add the player to the list
+			ParseUser currentUser = ParseUser.getCurrentUser();
+			addUnique("Users", currentUser);
 			return true;
 		}
+		
+		saveInBackground();
 		
 		return false;
 	}
@@ -103,7 +115,6 @@ public class GameParse extends ParseObject {
 		}
 		put("sport", parseSport);
 	}
-	
 	
 	public String getSport() {
 		Sport sport = (Sport) getParseObject("sport");
@@ -129,5 +140,9 @@ public class GameParse extends ParseObject {
 	
 	public void setAbilityLevel(int level) {
 		put("abilityLevel", level);
+	}
+
+	public JSONArray getPlayers() {
+		return getJSONArray("Users");
 	}
 }
