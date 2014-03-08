@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -163,6 +164,7 @@ public class GameUpInterface {
 	public GameParse getGame(String gameId) {
 		GameParse game;
 		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
+		query.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
 		query.include("sport");
 		query.whereEqualTo("objectId", gameId);
 		
@@ -185,8 +187,17 @@ public class GameUpInterface {
 	public List<GameParse> getGamesWithSportName(String sportName) {
 		List<GameParse> games;
 		ParseQuery<Sport> sportQuery = ParseQuery.getQuery(Sport.class);
+		
+		// This query should always return the same thing, so setting it to 
+		// try cache first should be safe, as should a very long cache.
+		sportQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+		sportQuery.setMaxCacheAge(TimeUnit.DAYS.toMillis(14));
+		
 		sportQuery.whereEqualTo("sport", sportName);
+		
 		ParseQuery<GameParse> gameQuery = ParseQuery.getQuery(GameParse.class);
+		gameQuery.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
+		
 		gameQuery.whereMatchesQuery("sport", sportQuery);
 		gameQuery.setLimit(10);
 		
@@ -210,6 +221,12 @@ public class GameUpInterface {
 	
 	public List<Sport> getAllSports() {
 		ParseQuery<Sport> query = ParseQuery.getQuery(Sport.class);
+		
+		// The sports list is essentially static, so we can make it mostly
+		// just use cache
+		query.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+		query.setMaxCacheAge(TimeUnit.DAYS.toMillis(7));
+		
 		query.whereExists("sport");
 		try {
 			return query.find();
