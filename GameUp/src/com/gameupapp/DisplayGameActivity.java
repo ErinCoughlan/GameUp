@@ -13,7 +13,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
@@ -22,11 +21,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -53,7 +50,6 @@ public class DisplayGameActivity extends Activity implements
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		loggedIn = settings.getBoolean(AppConstant.LOGIN, false);
-		updateView();
 		
 		// Back button in app
 		getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -93,11 +89,9 @@ public class DisplayGameActivity extends Activity implements
 		gameup = GameUpInterface.getInstance();
 		gameup.registerObserver(this);
 		
-		
 		// Set info based on game
 		String[] params = {GAME_ID};
 		new SetGame().execute(params);
-
 	}
 	
 	private class SetGame extends AsyncTask<String, Integer, Void> {
@@ -121,6 +115,7 @@ public class DisplayGameActivity extends Activity implements
 				// Allow us to use the game within the class
 				GAME_PARSE = g;
 				setGameInfo(g);
+				updateView();
 				Log.d("DisplayGame", "Set game async");
 			} else {
 				Log.d("DisplayGame", "Failed to get game by id");
@@ -164,7 +159,6 @@ public class DisplayGameActivity extends Activity implements
 			String str = AppConstant.ABILITY_LEVELS.get(level);
 			abilityLevel.setText(str);
 		}
-
 	}
 	
 	@Override

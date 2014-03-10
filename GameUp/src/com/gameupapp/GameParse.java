@@ -184,18 +184,22 @@ public class GameParse extends ParseObject {
 	 */
 	public boolean checkPlayerJoined() { 
 		JSONArray joinedPlayers = getJSONArray("Users");
+		if (joinedPlayers == null) {
+			// We have no players
+			return false;
+		}
+		
 		ParseUser currentUser = ParseUser.getCurrentUser();
 		String currentUID = currentUser.getObjectId();
-		for(int i = 0; i < joinedPlayers.length(); i++) {
+		for (int i = 0; i < joinedPlayers.length(); i++) {
 			String candidateUID;
-			 
 			try {
 				candidateUID = joinedPlayers.getString(i);
 			} catch (JSONException e) {
 				Log.e("checkPlayerJoined", "Couldn't parse array of users", e);
 				return false;
 			}
-			if(candidateUID == currentUID) {
+			if (candidateUID.equals(currentUID)) {
 				return true;
 			}
 		}
