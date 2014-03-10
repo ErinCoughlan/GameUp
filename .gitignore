@@ -6,6 +6,7 @@ gen/
 
 # App metadata
 .metadata
+.settings
 
 # Other stuff
 *.pkc
