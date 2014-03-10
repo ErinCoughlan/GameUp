@@ -93,16 +93,16 @@ public class GameParse extends ParseObject {
 		increment("currentPlayerCount", -1);
 	}
 	
-	public void setSport(String sport) {
+	/**
+	 * 
+	 * @param sport The name of the sport to be added
+	 * @throws ParseException Throws an exception if the sport could not be found.
+	 */
+	public void setSport(String sport) throws ParseException {
 		ParseQuery<Sport> sportQuery = ParseQuery.getQuery(Sport.class);
 		sportQuery.whereEqualTo("sport", sport);
 		Sport parseSport;
-		try {
-			parseSport = sportQuery.getFirst();
-		} catch (ParseException e) {
-			Log.e("GameParse setSport", "Failed to lookup sport", e);
-			return;
-		}
+		parseSport = sportQuery.getFirst();
 		put("sport", parseSport);
 	}
 	
@@ -231,7 +231,13 @@ public class GameParse extends ParseObject {
 		setAbilityLevel(abilityLevel);
 		setLocation(latitude,longitude);
 		setReadableLocation(readableLocation);
-		setSport(sport);
+		try {
+			setSport(sport);
+		} catch (ParseException e1) {
+			Log.e("createGame", "Invalid sport. Deleting object.", e1);
+			deleteEventually();
+			return false;
+		}
 		
 		try {
 			save();
