@@ -219,7 +219,7 @@ public class GameParse extends ParseObject {
 			String sport) {
 		
 		assert(abilityLevel < 4);
-		assert(abilityLevel >0);
+		assert(abilityLevel > 0);
 		
 		// start date must come before end date
 		if(endDate.before(startDate)) {
