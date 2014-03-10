@@ -203,6 +203,11 @@ public class GameParse extends ParseObject {
 	public boolean checkPlayerJoined() { 
 		JSONArray joinedPlayers = getJSONArray("Users");
 		ParseUser currentUser = ParseUser.getCurrentUser();
+		
+		// Anonymous users can't have joined 
+		if(currentUser == null) {
+			return false;
+		}
 		String currentUID = currentUser.getObjectId();
 		for(int i = 0; i < joinedPlayers.length(); i++) {
 			String candidateUID;
