@@ -57,9 +57,11 @@ public class GameParse extends ParseObject {
 		return (Date) get("startDateTime");
 	}
 	
-	public void setStartDateTime(Date dateTime) {
+	public boolean setStartDateTime(Date dateTime) {
 		put("startDateTime", dateTime);
 		saveInBackground();
+		
+		return true;
 	}
 	
 	public Date getEndDateTime() {
@@ -91,28 +93,7 @@ public class GameParse extends ParseObject {
 	
 	public void incrementCurrentPlayerCount() {
 		increment("currentPlayerCount");
-	}
-	
-	// TODO this should take in a player account or something
-	public boolean addPlayer() {
-		try {
-			refresh();
-		} catch (ParseException e) {
-			Log.d("addPlayer", "Couldn't refresh game", e);
-		}
-		
-		int maxCount = getMaxPlayerCount();
-		int currentCount = getCurrentPlayerCount();
-		if(currentCount < maxCount) {
-			incrementCurrentPlayerCount();
-			ParseUser currentUser = ParseUser.getCurrentUser();
-			addUnique("Users", currentUser);
-			return true;
-		}
-		
 		saveInBackground();
-		
-		return false;
 	}
 	
 	public void setSport(String sport) {
@@ -161,9 +142,54 @@ public class GameParse extends ParseObject {
 		return getJSONArray("Users");
 	}
 
+	
+	// TODO throw error up to UI
+	public boolean addPlayer() {
+		try {
+			refresh();
+		} catch (ParseException e) {
+			Log.d("addPlayer", "Couldn't refresh game", e);
+		}
+		
+		int maxCount = getMaxPlayerCount();
+		int currentCount = getCurrentPlayerCount();
+		if(currentCount < maxCount) {
+			incrementCurrentPlayerCount();
+			ParseUser currentUser = ParseUser.getCurrentUser();
+			addUnique("Users", currentUser);
+			return true;
+		}
+		
+		saveInBackground();
+		
+		return false;
+	}
+	
 	public void removePlayer() {
 		List<ParseUser> currentUser = new ArrayList<ParseUser>();
 		currentUser.add(ParseUser.getCurrentUser());
 		removeAll("Users", currentUser);
+		
+		saveInBackground();
 	}
+	
+	public boolean createGame(Date startDate, Date endDate, int abilityLevel,
+			String readableLocation, double latitude, double longitude, 
+			String sport) {
+		// start date must come before end date
+		if(endDate.before(startDate)) {
+			return false;
+		}
+		
+		setStartDateTime(startDate);
+		setEndDateTime(endDate);
+		setAbilityLevel(abilityLevel);
+		setLocation(latitude,longitude);
+		setReadableLocation(readableLocation);
+		setSport(sport);
+		
+		saveEventually();
+		return true;
+	}
+	
 }
