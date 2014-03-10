@@ -28,8 +28,7 @@ import com.parse.ParseUser;
 
 public class MainActivity extends Activity implements OnGameClicked {
 	// General info about user and app
-	private String USERNAME; 
-	private boolean loggedIn = false;
+	private String USERNAME;
 	private GameUpInterface gameup;
 
 	private List<GameParse> gameList = new ArrayList<GameParse>();
@@ -62,10 +61,12 @@ public class MainActivity extends Activity implements OnGameClicked {
 		
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences("settings", 0);
-		loggedIn = settings.getBoolean(AppConstant.LOGIN, false);
+		USERNAME = settings.getString(AppConstant.USER, null);
 		
 		// Logging into Facebook if active previously logged in
 		Settings.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
+		ParseUser user = ParseUser.getCurrentUser();
+		boolean loggedIn = (user != null);
 		if (loggedIn) {
 			Log.d("facebook", "logged in - restoring session");
 			Session session = Session.getActiveSession();
@@ -168,7 +169,6 @@ public class MainActivity extends Activity implements OnGameClicked {
 		Intent intent = new Intent();
 		intent.setClass(MainActivity.this, DisplayGameActivity.class);
 		intent.putExtra(AppConstant.GAME, gameId);
-		intent.putExtra(AppConstant.LOGIN, loggedIn);
 		startActivityForResult(intent, AppConstant.DETAIL_ID);
 	}
 
@@ -176,7 +176,6 @@ public class MainActivity extends Activity implements OnGameClicked {
 		// Go to a new activity for creating game
 		Intent intent = new Intent();
 		intent.setClass(MainActivity.this, CreateGameActivity.class);
-		intent.putExtra(AppConstant.LOGIN, loggedIn);
 		startActivityForResult(intent, AppConstant.CREATE_ID);
 	}
 
@@ -184,7 +183,6 @@ public class MainActivity extends Activity implements OnGameClicked {
 		// Go to a new activity for logging in and out
 		Intent intent = new Intent();
 		intent.setClass(MainActivity.this, LoginActivity.class);
-		intent.putExtra(AppConstant.LOGIN, loggedIn);
 		startActivityForResult(intent, AppConstant.LOGIN_ID);
 	}
 
@@ -192,19 +190,15 @@ public class MainActivity extends Activity implements OnGameClicked {
 		if (resultCode == Activity.RESULT_OK) {
 			switch (requestCode) {
 			case AppConstant.DETAIL_ID:
-				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
 				updateView();
 				break;
 			case AppConstant.CREATE_ID:
-				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
 				updateView();
 				break;
 			case AppConstant.LOGIN_ID:
-				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
 				updateView();
-				
 				ParseUser user = ParseUser.getCurrentUser();
-				// Get the user's name using ParseUser
+				boolean loggedIn = !(user == null);
 				if (user != null) {
 					if (user.get("firstname") != null) {
 						USERNAME = user.get("firstname").toString();
@@ -224,7 +218,7 @@ public class MainActivity extends Activity implements OnGameClicked {
 							}
 					});
 					builder.show();
-				} else if (!loggedIn) {
+				} else {
 					AlertDialog.Builder builder = new AlertDialog.Builder(this)
 						.setTitle("Goodbye!")
 						.setMessage("Thanks for playing " + USERNAME + ".")
@@ -255,13 +249,15 @@ public class MainActivity extends Activity implements OnGameClicked {
 		// Save the user_id and similar shared variables
 		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		SharedPreferences.Editor editor = settings.edit();
-		editor.putBoolean(AppConstant.LOGIN, loggedIn);
+		editor.putString(AppConstant.USER, USERNAME);
 		editor.apply();
 	}
 	
 	private void updateView() {
 		// Simplify interactions if we don't have a registered user
 		final Button loginButton = (Button) findViewById(R.id.login);
+		ParseUser user = ParseUser.getCurrentUser();
+		boolean loggedIn = !(user == null);
 		if (loggedIn) {
 			loginButton.setText(R.string.logout);
 		} else {

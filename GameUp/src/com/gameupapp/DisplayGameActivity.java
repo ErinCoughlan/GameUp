@@ -9,13 +9,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.ParseUser;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -34,7 +34,6 @@ public class DisplayGameActivity extends Activity implements
 	private GameUpInterface gameup;
 	private String GAME_ID;
 	private GameParse GAME_PARSE;
-	private boolean loggedIn;
 	
 	private LocationClient mLocationClient;
 	private Location mCurrentLocation;
@@ -44,10 +43,6 @@ public class DisplayGameActivity extends Activity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_display_game);
-		
-		// Restore preferences
-		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
-		loggedIn = settings.getBoolean(AppConstant.LOGIN, false);
 		
 		// Back button in app
 		getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -188,17 +183,13 @@ public class DisplayGameActivity extends Activity implements
 		if (gameup != null) {
 			gameup.removeObserver(this);
 		}
-		
-		// Save the user_id and similar shared variables
-		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putBoolean(AppConstant.LOGIN, loggedIn);
-		editor.apply();
 	}
 	
 	private void updateView() {
 		// Set up the join/unjoin button
 		final Button button = (Button) findViewById(R.id.joinButton);
+		ParseUser user = ParseUser.getCurrentUser();
+		final boolean loggedIn = (user != null);
 		if (loggedIn) {
 			boolean alreadyJoined = gameup.checkPlayerJoined(GAME_PARSE);
 			if (alreadyJoined) {
@@ -241,7 +232,6 @@ public class DisplayGameActivity extends Activity implements
 	            	// Go to a new activity for logging in and out
 	        		Intent intent = new Intent();
 	        		intent.setClass(DisplayGameActivity.this, LoginActivity.class);
-	        		intent.putExtra(AppConstant.LOGIN, loggedIn);
 	        		startActivityForResult(intent, AppConstant.LOGIN_ID);
 	            }
 	        });
@@ -252,7 +242,6 @@ public class DisplayGameActivity extends Activity implements
 		if (resultCode == Activity.RESULT_OK) {
 			switch (requestCode) {
 			case AppConstant.LOGIN_ID:
-				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
 				updateView();
 			}
 		}
