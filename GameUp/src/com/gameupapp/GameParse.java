@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 
 import android.util.Log;
 
@@ -29,7 +30,6 @@ public class GameParse extends ParseObject {
 	public void setLocation(double latitude, double longitude) {
 		ParseGeoPoint location = new ParseGeoPoint(latitude, longitude);
 		put("location", location);
-		saveInBackground();
 	}
 	
 	public ParseGeoPoint getLocation() {
@@ -50,16 +50,15 @@ public class GameParse extends ParseObject {
 	 */
 	public void setDateTime(Date dateTime) {
 		put("startDateTime", dateTime);
-		saveInBackground();
 	}
 	
 	public Date getStartDateTime() {
 		return (Date) get("startDateTime");
 	}
 	
-	public void setStartDateTime(Date dateTime) {
-		put("startDateTime", dateTime);
-		saveInBackground();
+	public boolean setStartDateTime(Date dateTime) {
+		put("startDateTime", dateTime);		
+		return true;
 	}
 	
 	public Date getEndDateTime() {
@@ -68,12 +67,10 @@ public class GameParse extends ParseObject {
 	
 	public void setEndDateTime(Date dateTime) {
 		put("endDateTime", dateTime);
-		saveInBackground();
 	}
 	
 	public void setMaxPlayerCount(int maxCount) {
 		put("maxPlayerCount", maxCount);
-		saveInBackground();
 	}
 	
 	public int getMaxPlayerCount() {
@@ -86,45 +83,27 @@ public class GameParse extends ParseObject {
 	
 	public void setCurrentPlayerCount(int newCount) {
 		put("currentPlayerCount", newCount);
-		saveInBackground();
 	}
 	
 	public void incrementCurrentPlayerCount() {
 		increment("currentPlayerCount");
 	}
-	
-	public boolean addPlayer() {
-		try {
-			refresh();
-		} catch (ParseException e) {
-			Log.d("addPlayer", "Couldn't refresh game", e);
-		}
-		
-		int maxCount = getMaxPlayerCount();
-		int currentCount = getCurrentPlayerCount();
-		if (currentCount < maxCount) {
-			incrementCurrentPlayerCount();
-			ParseUser currentUser = ParseUser.getCurrentUser();
-			addUnique("Users", currentUser);
-			saveInBackground();
-			return true;
-		}
-		
-		return false;
+
+	public void decrementCurrentPlayerCount() {
+		increment("currentPlayerCount", -1);
 	}
 	
-	public void setSport(String sport) {
+	/**
+	 * 
+	 * @param sport The name of the sport to be added
+	 * @throws ParseException Throws an exception if the sport could not be found.
+	 */
+	public void setSport(String sport) throws ParseException {
 		ParseQuery<Sport> sportQuery = ParseQuery.getQuery(Sport.class);
 		sportQuery.whereEqualTo("sport", sport);
 		Sport parseSport;
-		try {
-			parseSport = sportQuery.getFirst();
-		} catch (ParseException e) {
-			Log.e("GameParse setSport", "Failed to lookup sport", e);
-			return;
-		}
+		parseSport = sportQuery.getFirst();
 		put("sport", parseSport);
-		saveInBackground();
 	}
 	
 	public String getSport() {
@@ -143,7 +122,6 @@ public class GameParse extends ParseObject {
 	
 	public void setReadableLocation(String location) {
 		put("readableLocation", location);
-		saveInBackground();
 	}
 	
 	public int getAbilityLevel() {
@@ -152,17 +130,121 @@ public class GameParse extends ParseObject {
 	
 	public void setAbilityLevel(int level) {
 		put("abilityLevel", level);
-		saveInBackground();
 	}
 
 	public JSONArray getPlayers() {
 		return getJSONArray("Users");
 	}
 
+	// TODO throw error up to UI
+	public boolean addPlayer() {
+		try {
+			refresh();
+		} catch (ParseException e) {
+			Log.d("addPlayer", "Couldn't refresh game", e);
+		}
+		
+		int maxCount = getMaxPlayerCount();
+		int currentCount = getCurrentPlayerCount();
+		if(currentCount < maxCount) {
+			incrementCurrentPlayerCount();
+			ParseUser currentUser = ParseUser.getCurrentUser();
+			addUnique("Users", currentUser.getObjectId());
+			
+			try {
+				save();
+				return true;
+			} catch (ParseException e) {
+				Log.e("addPlayer", "Failed to add player", e);
+				return false;
+			}
+		}
+		
+		return false;
+	}
+	
 	public boolean removePlayer() {
-		List<ParseUser> currentUser = new ArrayList<ParseUser>();
-		currentUser.add(ParseUser.getCurrentUser());
+		List<String> currentUser = new ArrayList<String>();
+		currentUser.add(ParseUser.getCurrentUser().getObjectId());
 		removeAll("Users", currentUser);
+		decrementCurrentPlayerCount();
+		
+		try {
+			save();
+			return true;
+		} catch (ParseException e) {
+			Log.e("removePlayer", "Failed to remove player", e);
+			return false;
+		}
+	}
+	
+	/**
+	 * Checks if the current user has already joined a game
+	 * @return true if the user has joined. False otherwise (including on error).
+	 */
+	public boolean checkPlayerJoined() { 
+		JSONArray joinedPlayers = getJSONArray("Users");
+		ParseUser currentUser = ParseUser.getCurrentUser();
+		String currentUID = currentUser.getObjectId();
+		for(int i = 0; i < joinedPlayers.length(); i++) {
+			String candidateUID;
+			 
+			try {
+				candidateUID = joinedPlayers.getString(i);
+			} catch (JSONException e) {
+				Log.e("checkPlayerJoined", "Couldn't parse array of users", e);
+				return false;
+			}
+			if(candidateUID == currentUID) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * 
+	 * @param startDate Start date/time of game
+	 * @param endDate End date/time of game (must be after startDate)
+	 * @param abilityLevel Level of players expected in this game (1-4)
+	 * @param readableLocation A human-readable (ie address, place name) location
+	 * @param latitude Latitude of game 
+	 * @param longitude Longitude of game
+	 * @param sport Name of sport
+	 * @return True on successful creation, false on error or validation problem.
+	 */
+	public boolean createGame(Date startDate, Date endDate, int abilityLevel,
+			String readableLocation, double latitude, double longitude, 
+			String sport) {
+		
+		assert(abilityLevel < 4);
+		assert(abilityLevel > 0);
+		
+		// start date must come before end date
+		if(endDate.before(startDate)) {
+			return false;
+		}
+		
+		setStartDateTime(startDate);
+		setEndDateTime(endDate);
+		setAbilityLevel(abilityLevel);
+		setLocation(latitude,longitude);
+		setReadableLocation(readableLocation);
+		try {
+			setSport(sport);
+		} catch (ParseException e1) {
+			Log.e("createGame", "Invalid sport. Deleting object.", e1);
+			deleteEventually();
+			return false;
+		}
+		
+		try {
+			save();
+		} catch (ParseException e) {
+			Log.e("createGame", "Couldn't save game", e);
+		}
 		return true;
 	}
+	
 }

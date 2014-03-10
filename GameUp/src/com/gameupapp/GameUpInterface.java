@@ -233,4 +233,8 @@ public class GameUpInterface {
 	public boolean postUnjoinGame(GameParse game) {
 		return game.removePlayer();
 	}
+	
+	public boolean checkPlayerJoined(GameParse game) {
+		return game.checkPlayerJoined();
+	}
 }

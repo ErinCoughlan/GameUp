@@ -208,8 +208,7 @@ public class DisplayGameActivity extends Activity implements
 		// Set up the join/unjoin button
 		final Button button = (Button) findViewById(R.id.joinButton);
 		if (loggedIn) {
-			//boolean alreadyJoined = gameup.checkPlayerJoined(GAME_PARSE);
-			boolean alreadyJoined = false;
+			boolean alreadyJoined = gameup.checkPlayerJoined(GAME_PARSE);
 			if (alreadyJoined) {
 				button.setText(R.string.unjoin);
 				button.setOnClickListener(new View.OnClickListener() {
