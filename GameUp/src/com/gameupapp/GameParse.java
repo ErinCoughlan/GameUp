@@ -89,6 +89,10 @@ public class GameParse extends ParseObject {
 		increment("currentPlayerCount");
 	}
 	
+	public void decrementCurrentPlayerCount() {
+		increment("currentPlayerCount", -1);
+	}
+	
 	public void setSport(String sport) {
 		ParseQuery<Sport> sportQuery = ParseQuery.getQuery(Sport.class);
 		sportQuery.whereEqualTo("sport", sport);
@@ -163,7 +167,7 @@ public class GameParse extends ParseObject {
 		List<String> currentUser = new ArrayList<String>();
 		currentUser.add(ParseUser.getCurrentUser().getObjectId());
 		removeAll("Users", currentUser);
-		// TODO decrement currentPlayerCount
+		decrementCurrentPlayerCount();
 		
 		try {
 			save();
