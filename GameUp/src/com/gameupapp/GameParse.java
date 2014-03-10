@@ -136,8 +136,16 @@ public class GameParse extends ParseObject {
 		return getJSONArray("Users");
 	}
 
-	// TODO throw error up to UI
+	/**
+	 * TODO Throw error up to UI
+	 * @return True on successful add. False if the player had already joined,
+	 * 				the game is full, or the save fails.
+	 */
 	public boolean addPlayer() {
+		if(checkPlayerJoined()) {
+			return false;
+		}
+		
 		try {
 			refresh();
 		} catch (ParseException e) {
@@ -163,19 +171,29 @@ public class GameParse extends ParseObject {
 		return false;
 	}
 	
+	/**
+	 * Remove a player from the game
+	 * @return True if the player was successfully removed. False if the remove 
+	 * 		   		failed or player hadn't joined.
+	 */
 	public boolean removePlayer() {
-		List<String> currentUser = new ArrayList<String>();
-		currentUser.add(ParseUser.getCurrentUser().getObjectId());
-		removeAll("Users", currentUser);
-		decrementCurrentPlayerCount();
-		
-		try {
-			save();
-			return true;
-		} catch (ParseException e) {
-			Log.e("removePlayer", "Failed to remove player", e);
+		if(checkPlayerJoined()) {
+			List<String> currentUser = new ArrayList<String>();
+			currentUser.add(ParseUser.getCurrentUser().getObjectId());
+			removeAll("Users", currentUser);
+			decrementCurrentPlayerCount();
+			
+			try {
+				save();
+				return true;
+			} catch (ParseException e) {
+				Log.e("removePlayer", "Failed to remove player", e);
+				return false;
+			}
+		} else {
 			return false;
 		}
+		
 	}
 	
 	/**
@@ -190,6 +208,11 @@ public class GameParse extends ParseObject {
 		}
 		
 		ParseUser currentUser = ParseUser.getCurrentUser();
+		
+		// Anonymous users can't have joined 
+		if(currentUser == null) {
+			return false;
+		}
 		String currentUID = currentUser.getObjectId();
 		for (int i = 0; i < joinedPlayers.length(); i++) {
 			String candidateUID;
