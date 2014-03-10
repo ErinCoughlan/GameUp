@@ -22,9 +22,13 @@
     <string name="alert_success_join">Congrats! \n You successfully joined the game!</string>
     <string name="alert_success_unjoin">Congrats! \n You successfully unjoined the game!</string>
     <string name="alert_success_create">Congrats! \n You successfully created a game!</string>
+    <string name="alert_fail_join">Sorry. \n This game is full. Please try a different game.</string>
+    <string name="alert_fail_unjoin">Sorry. \n You can\'t to unjoin the game at this time.</string>
+    <string name="alert_fail_create">Sorry. \n You can\'t create a game at this time.</string>
     <string name="access_sport_icon">Sport icon for game</string>
     <string name="access_map">Map to the game location</string>
     <string name="access_success">Success icon</string>
+    <string name="access_failure">Failure icon</string>
     <string name="choose_sport_prompt">Sport:</string>
     <string name="choose_location_prompt">Venue:</string>
     <string name="choose_players_prompt">Number of Players:</string>

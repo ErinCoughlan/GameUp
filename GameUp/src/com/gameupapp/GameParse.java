@@ -93,7 +93,6 @@ public class GameParse extends ParseObject {
 		increment("currentPlayerCount");
 	}
 	
-	// TODO this should take in a player account or something
 	public boolean addPlayer() {
 		try {
 			refresh();
@@ -103,14 +102,13 @@ public class GameParse extends ParseObject {
 		
 		int maxCount = getMaxPlayerCount();
 		int currentCount = getCurrentPlayerCount();
-		if(currentCount < maxCount) {
+		if (currentCount < maxCount) {
 			incrementCurrentPlayerCount();
 			ParseUser currentUser = ParseUser.getCurrentUser();
 			addUnique("Users", currentUser);
+			saveInBackground();
 			return true;
 		}
-		
-		saveInBackground();
 		
 		return false;
 	}
@@ -161,9 +159,10 @@ public class GameParse extends ParseObject {
 		return getJSONArray("Users");
 	}
 
-	public void removePlayer() {
+	public boolean removePlayer() {
 		List<ParseUser> currentUser = new ArrayList<ParseUser>();
 		currentUser.add(ParseUser.getCurrentUser());
 		removeAll("Users", currentUser);
+		return true;
 	}
 }
