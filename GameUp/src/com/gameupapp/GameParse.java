@@ -30,7 +30,6 @@ public class GameParse extends ParseObject {
 	public void setLocation(double latitude, double longitude) {
 		ParseGeoPoint location = new ParseGeoPoint(latitude, longitude);
 		put("location", location);
-		saveInBackground();
 	}
 	
 	public ParseGeoPoint getLocation() {
@@ -51,7 +50,6 @@ public class GameParse extends ParseObject {
 	 */
 	public void setDateTime(Date dateTime) {
 		put("startDateTime", dateTime);
-		saveInBackground();
 	}
 	
 	public Date getStartDateTime() {
@@ -59,9 +57,7 @@ public class GameParse extends ParseObject {
 	}
 	
 	public boolean setStartDateTime(Date dateTime) {
-		put("startDateTime", dateTime);
-		saveInBackground();
-		
+		put("startDateTime", dateTime);		
 		return true;
 	}
 	
@@ -71,12 +67,10 @@ public class GameParse extends ParseObject {
 	
 	public void setEndDateTime(Date dateTime) {
 		put("endDateTime", dateTime);
-		saveInBackground();
 	}
 	
 	public void setMaxPlayerCount(int maxCount) {
 		put("maxPlayerCount", maxCount);
-		saveInBackground();
 	}
 	
 	public int getMaxPlayerCount() {
@@ -89,12 +83,10 @@ public class GameParse extends ParseObject {
 	
 	public void setCurrentPlayerCount(int newCount) {
 		put("currentPlayerCount", newCount);
-		saveInBackground();
 	}
 	
 	public void incrementCurrentPlayerCount() {
 		increment("currentPlayerCount");
-		saveInBackground();
 	}
 	
 	public void setSport(String sport) {
@@ -108,7 +100,6 @@ public class GameParse extends ParseObject {
 			return;
 		}
 		put("sport", parseSport);
-		saveInBackground();
 	}
 	
 	public String getSport() {
@@ -127,7 +118,6 @@ public class GameParse extends ParseObject {
 	
 	public void setReadableLocation(String location) {
 		put("readableLocation", location);
-		saveInBackground();
 	}
 	
 	public int getAbilityLevel() {
@@ -136,7 +126,6 @@ public class GameParse extends ParseObject {
 	
 	public void setAbilityLevel(int level) {
 		put("abilityLevel", level);
-		saveInBackground();
 	}
 
 	public JSONArray getPlayers() {
@@ -157,20 +146,32 @@ public class GameParse extends ParseObject {
 			incrementCurrentPlayerCount();
 			ParseUser currentUser = ParseUser.getCurrentUser();
 			addUnique("Users", currentUser.getObjectId());
-			return true;
+			
+			try {
+				save();
+				return true;
+			} catch (ParseException e) {
+				Log.e("addPlayer", "Failed to add player", e);
+				return false;
+			}
 		}
-		
-		saveInBackground();
 		
 		return false;
 	}
 	
-	public void removePlayer() {
+	public boolean removePlayer() {
 		List<String> currentUser = new ArrayList<String>();
 		currentUser.add(ParseUser.getCurrentUser().getObjectId());
 		removeAll("Users", currentUser);
+		// TODO decrement currentPlayerCount
 		
-		saveInBackground();
+		try {
+			save();
+			return true;
+		} catch (ParseException e) {
+			Log.e("removePlayer", "Failed to remove player", e);
+			return false;
+		}
 	}
 	
 	/**
@@ -196,12 +197,26 @@ public class GameParse extends ParseObject {
 		}
 		
 		return false;
-		
 	}
 	
+	/**
+	 * 
+	 * @param startDate Start date/time of game
+	 * @param endDate End date/time of game (must be after startDate)
+	 * @param abilityLevel Level of players expected in this game (1-4)
+	 * @param readableLocation A human-readable (ie address, place name) location
+	 * @param latitude Latitude of game 
+	 * @param longitude Longitude of game
+	 * @param sport Name of sport
+	 * @return True on successful creation, false on error or validation problem.
+	 */
 	public boolean createGame(Date startDate, Date endDate, int abilityLevel,
 			String readableLocation, double latitude, double longitude, 
 			String sport) {
+		
+		assert(abilityLevel < 4);
+		assert(abilityLevel >0);
+		
 		// start date must come before end date
 		if(endDate.before(startDate)) {
 			return false;
@@ -214,7 +229,11 @@ public class GameParse extends ParseObject {
 		setReadableLocation(readableLocation);
 		setSport(sport);
 		
-		saveEventually();
+		try {
+			save();
+		} catch (ParseException e) {
+			Log.e("createGame", "Couldn't save game", e);
+		}
 		return true;
 	}
 	
