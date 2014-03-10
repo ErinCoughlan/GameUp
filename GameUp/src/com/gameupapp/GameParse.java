@@ -17,7 +17,7 @@ import com.parse.ParseUser;
 @ParseClassName("GameParse")
 public class GameParse extends ParseObject {
 	
-	public String getGameID() {
+	public String getGameId() {
 		return getObjectId();
 	}
 	

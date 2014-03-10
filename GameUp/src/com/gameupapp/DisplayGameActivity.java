@@ -1,7 +1,5 @@
 package com.gameupapp;
 
-import com.parse.Parse;
-import com.parse.ParseQuery;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -28,7 +26,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -39,7 +36,6 @@ public class DisplayGameActivity extends Activity implements
 		GooglePlayServicesClient.OnConnectionFailedListener {
 	
 	private GameUpInterface gameup;
-	private String USER_ID;
 	private String GAME_ID;
 	private boolean loggedIn;
 	
@@ -55,7 +51,6 @@ public class DisplayGameActivity extends Activity implements
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		loggedIn = settings.getBoolean(AppConstant.LOGIN, false);
-		USER_ID = settings.getString(AppConstant.USER, null);
 		updateView();
 		
 		// Back button in app
@@ -144,7 +139,6 @@ public class DisplayGameActivity extends Activity implements
 		}
 		
 		if (location != null) {
-			//String locationString = HelperFunction.convertParseGeoToString(g.getLocation());
 			String locationString = g.getReadableLocation();
 			location.setText(locationString);
 		}
@@ -161,7 +155,6 @@ public class DisplayGameActivity extends Activity implements
 			players.setText(str);
 		}
 		
-		// TODO: Add Ability Level information
 		if (abilityLevel != null) {
 			int level = g.getAbilityLevel();
 			String str = AppConstant.ABILITY_LEVELS.get(level);
@@ -187,7 +180,6 @@ public class DisplayGameActivity extends Activity implements
 		           public void onClick(DialogInterface dialog, int id) {
 		        	   // TODO: send a request to gameUp
 		        	   Intent result = new Intent();
-		        	   result.putExtra(AppConstant.USER, USER_ID);
 		        	   result.putExtra(AppConstant.LOGIN, loggedIn);
 		       		   setResult(Activity.RESULT_OK, result);
 		               finish();
@@ -231,7 +223,6 @@ public class DisplayGameActivity extends Activity implements
 		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putBoolean(AppConstant.LOGIN, loggedIn);
-		editor.putString(AppConstant.USER, USER_ID);
 		editor.apply();
 	}
 	
@@ -254,7 +245,6 @@ public class DisplayGameActivity extends Activity implements
 	            	// Go to a new activity for logging in and out
 	        		Intent intent = new Intent();
 	        		intent.setClass(DisplayGameActivity.this, LoginActivity.class);
-	        		intent.putExtra(AppConstant.USER, USER_ID);
 	        		intent.putExtra(AppConstant.LOGIN, loggedIn);
 	        		startActivityForResult(intent, AppConstant.LOGIN_ID);
 	            }
@@ -266,11 +256,8 @@ public class DisplayGameActivity extends Activity implements
 		if (resultCode == Activity.RESULT_OK) {
 			switch (requestCode) {
 			case AppConstant.LOGIN_ID:
-				USER_ID = data.getStringExtra(AppConstant.USER);
 				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
-				
-				Log.d("login", "(display activity) user: " + USER_ID + " loggedIn = " + loggedIn);
-				
+
 				// Finish joining the game if login is successful
 				if (loggedIn) {
 					AlertDialog dialog = createGameAlert(R.string.alert_success_join);

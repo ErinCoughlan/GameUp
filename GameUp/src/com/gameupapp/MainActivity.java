@@ -23,13 +23,12 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 
-import com.parse.Parse;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 
 public class MainActivity extends Activity implements OnGameClicked {
 	// General info about user and app
-	private String USER_ID = null;
+	private String USERNAME; 
 	private boolean loggedIn = false;
 	private GameUpInterface gameup;
 
@@ -64,7 +63,6 @@ public class MainActivity extends Activity implements OnGameClicked {
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences("settings", 0);
 		loggedIn = settings.getBoolean(AppConstant.LOGIN, false);
-		USER_ID = settings.getString(AppConstant.USER, null);
 		
 		// Logging into Facebook if active previously logged in
 		Settings.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
@@ -165,13 +163,11 @@ public class MainActivity extends Activity implements OnGameClicked {
 	public void onGameClicked(GameParse gameClicked, int position) {
 		GameParse game = gameList.get(position);
 		
-		// TODO I've been using capital ID and just noticed everything else is Id. I need to fix mine.
-		String gameId = game.getGameID();
+		String gameId = game.getGameId();
 		// Go to a new activity for the specific game
 		Intent intent = new Intent();
 		intent.setClass(MainActivity.this, DisplayGameActivity.class);
 		intent.putExtra(AppConstant.GAME, gameId);
-		intent.putExtra(AppConstant.USER, USER_ID);
 		intent.putExtra(AppConstant.LOGIN, loggedIn);
 		startActivityForResult(intent, AppConstant.DETAIL_ID);
 	}
@@ -180,7 +176,6 @@ public class MainActivity extends Activity implements OnGameClicked {
 		// Go to a new activity for creating game
 		Intent intent = new Intent();
 		intent.setClass(MainActivity.this, CreateGameActivity.class);
-		intent.putExtra(AppConstant.USER, USER_ID);
 		intent.putExtra(AppConstant.LOGIN, loggedIn);
 		startActivityForResult(intent, AppConstant.CREATE_ID);
 	}
@@ -189,7 +184,6 @@ public class MainActivity extends Activity implements OnGameClicked {
 		// Go to a new activity for logging in and out
 		Intent intent = new Intent();
 		intent.setClass(MainActivity.this, LoginActivity.class);
-		intent.putExtra(AppConstant.USER, USER_ID);
 		intent.putExtra(AppConstant.LOGIN, loggedIn);
 		startActivityForResult(intent, AppConstant.LOGIN_ID);
 	}
@@ -198,27 +192,31 @@ public class MainActivity extends Activity implements OnGameClicked {
 		if (resultCode == Activity.RESULT_OK) {
 			switch (requestCode) {
 			case AppConstant.DETAIL_ID:
-				USER_ID = data.getStringExtra(AppConstant.USER);
 				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
 				updateView();
 				break;
 			case AppConstant.CREATE_ID:
-				USER_ID = data.getStringExtra(AppConstant.USER);
 				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
 				updateView();
 				break;
 			case AppConstant.LOGIN_ID:
-				USER_ID = data.getStringExtra(AppConstant.USER);
 				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
 				updateView();
 				
 				ParseUser user = ParseUser.getCurrentUser();
 				// Get the user's name using ParseUser
+				if (user != null) {
+					if (user.get("firstname") != null) {
+						USERNAME = user.get("firstname").toString();
+					}
+					Log.d("facebook", "parse name: " + user.get("firstname"));
+					Log.d("facebook", "parse email: " + user.getEmail());
+				}
 				
 				if (loggedIn) {
 					AlertDialog.Builder builder = new AlertDialog.Builder(this)
 						.setTitle("Welcome!")
-						.setMessage("Join or create a game " + USER_ID + ".")
+						.setMessage("Join or create a game " + USERNAME + ".")
 						.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
@@ -229,13 +227,15 @@ public class MainActivity extends Activity implements OnGameClicked {
 				} else if (!loggedIn) {
 					AlertDialog.Builder builder = new AlertDialog.Builder(this)
 						.setTitle("Goodbye!")
-						.setMessage("Thanks for playing " + USER_ID + ".")
+						.setMessage("Thanks for playing " + USERNAME + ".")
 						.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								dialog.cancel();
 							}
 					});
+					// Clear the USERNAME because the user logged out
+					USERNAME = null;
 					builder.show();
 				}
 				break;
@@ -256,7 +256,6 @@ public class MainActivity extends Activity implements OnGameClicked {
 		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putBoolean(AppConstant.LOGIN, loggedIn);
-		editor.putString(AppConstant.USER, USER_ID);
 		editor.apply();
 	}
 	

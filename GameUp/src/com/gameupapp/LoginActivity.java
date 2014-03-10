@@ -23,7 +23,6 @@ import com.parse.ParseUser;
 
 public class LoginActivity extends Activity {
 	private GameUpInterface gameup;
-	private String USER_ID;
 	private boolean loggedIn;
 
 	private Session.StatusCallback callback = new Session.StatusCallback() {
@@ -44,7 +43,6 @@ public class LoginActivity extends Activity {
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		loggedIn = settings.getBoolean(AppConstant.LOGIN, false);
-		USER_ID = settings.getString(AppConstant.USER, null);
 
 		// Back button in app
 		getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -59,8 +57,6 @@ public class LoginActivity extends Activity {
 		gameup.registerObserver(this);
 
 		Session.getActiveSession().addCallback(callback);
-		
-		Log.d("login", "at least I'm starting");
 	}
 
 	@Override
@@ -79,7 +75,6 @@ public class LoginActivity extends Activity {
 		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putBoolean(AppConstant.LOGIN, loggedIn);
-		editor.putString(AppConstant.USER, USER_ID);
 		editor.apply();
 	}
 	
@@ -151,13 +146,13 @@ public class LoginActivity extends Activity {
 	}
 	
 	private void logIn(Session session) {
-		ParseFacebookUtils.logIn(this, new LogInCallback() {
+		ParseFacebookUtils.logIn(Arrays.asList("email", "basic_info"),
+					this, new LogInCallback() {
 				@Override
 				public void done(ParseUser user, ParseException e) {
 					if (user == null) {
 						Log.d("facebook", "User cancelled the Facebook login");
 						Intent result = new Intent();
-						result.putExtra(AppConstant.USER, USER_ID);
 						result.putExtra(AppConstant.LOGIN, loggedIn);
 						setResult(Activity.RESULT_CANCELED, result);
 						finish();
@@ -171,17 +166,16 @@ public class LoginActivity extends Activity {
 			});
 		
 		// Request user data and show the results
-		// TODO: Determine if this login information can be stored with Parse
-		//       instead of being passed around using SharedPrefs
 		Request.newMeRequest(session, new Request.GraphUserCallback() {
 			@Override
 			public void onCompleted(GraphUser user, Response response) {
-				Log.d("facebook", user.getName());
-				USER_ID = user.getFirstName();
-				Log.d("facebook", user.getId());
+				ParseUser pUser = ParseUser.getCurrentUser();
+				String email = user.asMap().get("email").toString();
+				pUser.setEmail(email);
+				pUser.put("firstname", user.getFirstName());
+				
 				loggedIn = true;
 				Intent result = new Intent();
-				result.putExtra(AppConstant.USER, USER_ID);
 				result.putExtra(AppConstant.LOGIN, loggedIn);
 				setResult(Activity.RESULT_OK, result);
 				finish();
@@ -193,7 +187,6 @@ public class LoginActivity extends Activity {
 	private void logOut() {
 		loggedIn = false;
 		Intent result = new Intent();
-		result.putExtra(AppConstant.USER, USER_ID);
 		result.putExtra(AppConstant.LOGIN, loggedIn);
 		setResult(Activity.RESULT_OK, result);
 		finish();

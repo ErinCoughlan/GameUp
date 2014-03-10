@@ -36,7 +36,6 @@ import android.widget.AdapterView.OnItemSelectedListener;
 public class CreateGameActivity extends Activity {
 	
 	private GameUpInterface gameup;
-	private String USER_ID;
 	private boolean loggedIn;
 	
     private SimpleDateFormat dateFormatter = new SimpleDateFormat(
@@ -52,8 +51,6 @@ public class CreateGameActivity extends Activity {
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		loggedIn = settings.getBoolean(AppConstant.LOGIN, false);
-		USER_ID = settings.getString(AppConstant.USER, null);
-		Log.d("login", "(display create) user: " + USER_ID + " loggedIn = " + loggedIn);
 		updateView();
 		
 		// Back button in app
@@ -121,7 +118,6 @@ public class CreateGameActivity extends Activity {
 		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putBoolean(AppConstant.LOGIN, loggedIn);
-		editor.putString(AppConstant.USER, USER_ID);
 		editor.apply();
 	}
 	
@@ -240,7 +236,6 @@ public class CreateGameActivity extends Activity {
 		           public void onClick(DialogInterface dialog, int id) {
 		        	   // TODO: send a request to gameUp
 		        	   Intent result = new Intent();
-		        	   result.putExtra(AppConstant.USER, USER_ID);
 		        	   result.putExtra(AppConstant.LOGIN, loggedIn);
 		        	   setResult(Activity.RESULT_OK, result);
 		               finish();
@@ -289,7 +284,6 @@ public class CreateGameActivity extends Activity {
 	            	// Go to a new activity for logging in and out
 	        		Intent intent = new Intent();
 	        		intent.setClass(CreateGameActivity.this, LoginActivity.class);
-	        		intent.putExtra(AppConstant.USER, USER_ID);
 	        		intent.putExtra(AppConstant.LOGIN, loggedIn);
 	        		startActivityForResult(intent, AppConstant.LOGIN_ID);
 	            }
@@ -301,14 +295,11 @@ public class CreateGameActivity extends Activity {
 		if (resultCode == Activity.RESULT_OK) {
 			switch (requestCode) {
 			case AppConstant.LOGIN_ID:
-				USER_ID = data.getStringExtra(AppConstant.USER);
 				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
-				
-				Log.d("login", "(create activity) user: " + USER_ID + " loggedIn = " + loggedIn);
 				
 				// Finish joining the game if login is successful
 				if (loggedIn) {
-					AlertDialog dialog = createGameAlert(R.string.alert_success_join);
+					AlertDialog dialog = createGameAlert(R.string.alert_success_create);
 	            	dialog.show();
 					break;
 				}
