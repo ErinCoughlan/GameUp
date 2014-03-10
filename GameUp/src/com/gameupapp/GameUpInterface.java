@@ -9,8 +9,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.parse.ParseQuery;
-import com.parse.ParseObject;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 
 import android.app.Activity;
@@ -228,11 +226,15 @@ public class GameUpInterface {
 		}
 	}
 	
-	public boolean postJoinGame() {
-		return true;
+	public boolean postJoinGame(GameParse game) {
+		return game.addPlayer();
 	}
 	
-	public boolean postUnjoinGame() {
-		return false;
+	public boolean postUnjoinGame(GameParse game) {
+		return game.removePlayer();
+	}
+	
+	public boolean checkPlayerJoined(GameParse game) {
+		return game.checkPlayerJoined();
 	}
 }

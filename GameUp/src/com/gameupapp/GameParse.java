@@ -88,7 +88,7 @@ public class GameParse extends ParseObject {
 	public void incrementCurrentPlayerCount() {
 		increment("currentPlayerCount");
 	}
-	
+
 	public void decrementCurrentPlayerCount() {
 		increment("currentPlayerCount", -1);
 	}
@@ -202,6 +202,11 @@ public class GameParse extends ParseObject {
 	 */
 	public boolean checkPlayerJoined() { 
 		JSONArray joinedPlayers = getJSONArray("Users");
+		if (joinedPlayers == null) {
+			// We have no players
+			return false;
+		}
+		
 		ParseUser currentUser = ParseUser.getCurrentUser();
 		
 		// Anonymous users can't have joined 
@@ -209,16 +214,15 @@ public class GameParse extends ParseObject {
 			return false;
 		}
 		String currentUID = currentUser.getObjectId();
-		for(int i = 0; i < joinedPlayers.length(); i++) {
+		for (int i = 0; i < joinedPlayers.length(); i++) {
 			String candidateUID;
-			 
 			try {
 				candidateUID = joinedPlayers.getString(i);
 			} catch (JSONException e) {
 				Log.e("checkPlayerJoined", "Couldn't parse array of users", e);
 				return false;
 			}
-			if(candidateUID == currentUID) {
+			if (candidateUID.equals(currentUID)) {
 				return true;
 			}
 		}

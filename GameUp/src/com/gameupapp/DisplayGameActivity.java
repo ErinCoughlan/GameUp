@@ -13,7 +13,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
@@ -22,7 +21,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -35,6 +33,7 @@ public class DisplayGameActivity extends Activity implements
 	
 	private GameUpInterface gameup;
 	private String GAME_ID;
+	private GameParse GAME_PARSE;
 	private boolean loggedIn;
 	
 	private LocationClient mLocationClient;
@@ -49,7 +48,6 @@ public class DisplayGameActivity extends Activity implements
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		loggedIn = settings.getBoolean(AppConstant.LOGIN, false);
-		updateView();
 		
 		// Back button in app
 		getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -89,11 +87,9 @@ public class DisplayGameActivity extends Activity implements
 		gameup = GameUpInterface.getInstance();
 		gameup.registerObserver(this);
 		
-		
 		// Set info based on game
 		String[] params = {GAME_ID};
 		new SetGame().execute(params);
-
 	}
 	
 	private class SetGame extends AsyncTask<String, Integer, Void> {
@@ -114,7 +110,10 @@ public class DisplayGameActivity extends Activity implements
 		@Override
 		protected void onPostExecute(Void result) {
 			if(g != null) {
+				// Allow us to use the game within the class
+				GAME_PARSE = g;
 				setGameInfo(g);
+				updateView();
 				Log.d("DisplayGame", "Set game async");
 			} else {
 				Log.d("DisplayGame", "Failed to get game by id");
@@ -158,33 +157,6 @@ public class DisplayGameActivity extends Activity implements
 			String str = AppConstant.ABILITY_LEVELS.get(level);
 			abilityLevel.setText(str);
 		}
-
-	}
-	
-	private AlertDialog createGameAlert(int message) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		
-		// Get the layout inflater
-	    LayoutInflater inflater = this.getLayoutInflater();
-	    
-	    View v = inflater.inflate(R.layout.success_dialog, null);
-	    TextView tv = (TextView) v.findViewById(R.id.dialog_message);
-	    if (tv != null) {
-    		tv.setText(message);
-    	}
-	    
-    	builder.setView(v)
-    	       .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-		           public void onClick(DialogInterface dialog, int id) {
-		        	   // TODO: send a request to gameUp
-		        	   Intent result = new Intent();
-		        	   result.putExtra(AppConstant.LOGIN, loggedIn);
-		       		   setResult(Activity.RESULT_OK, result);
-		               finish();
-		           }
-    	});
-    	
-    	return builder.create();
 	}
 	
 	@Override
@@ -228,14 +200,40 @@ public class DisplayGameActivity extends Activity implements
 		// Set up the join/unjoin button
 		final Button button = (Button) findViewById(R.id.joinButton);
 		if (loggedIn) {
-			button.setText(R.string.join);
-	        button.setOnClickListener(new View.OnClickListener() {
-	            public void onClick(View v) {
-	            	// TODO: Determine which string to show
-	            	AlertDialog dialog = createGameAlert(R.string.alert_success_join);
-	            	dialog.show();
-	            }
-	        });
+			boolean alreadyJoined = gameup.checkPlayerJoined(GAME_PARSE);
+			if (alreadyJoined) {
+				button.setText(R.string.unjoin);
+				button.setOnClickListener(new View.OnClickListener() {
+		            public void onClick(View v) {
+		            	boolean success = gameup.postUnjoinGame(GAME_PARSE);
+		            	if (success) {
+			            	AlertDialog dialog = HelperFunction.createGameAlert(
+			            			R.string.alert_success_unjoin, true, DisplayGameActivity.this, loggedIn);
+			            	dialog.show();
+		            	} else {
+		            		AlertDialog dialog = HelperFunction.createGameAlert(
+			            			R.string.alert_fail_unjoin, false, DisplayGameActivity.this, loggedIn);
+		            		dialog.show();
+		            	}
+		            }
+		        });
+			} else {
+				button.setText(R.string.join);
+		        button.setOnClickListener(new View.OnClickListener() {
+		            public void onClick(View v) {
+		            	boolean success = gameup.postJoinGame(GAME_PARSE);
+		            	if (success) {
+		            		AlertDialog dialog = HelperFunction.createGameAlert(
+			            			R.string.alert_success_join, true, DisplayGameActivity.this, loggedIn);
+			            	dialog.show();
+		            	} else {
+		            		AlertDialog dialog = HelperFunction.createGameAlert(
+		            				R.string.alert_fail_join, false, DisplayGameActivity.this, loggedIn);
+		            		dialog.show();
+		            	}
+		            }
+		        });
+			}
 		} else {
 			button.setText(R.string.sign_up);
 			button.setOnClickListener(new View.OnClickListener() {
@@ -255,13 +253,7 @@ public class DisplayGameActivity extends Activity implements
 			switch (requestCode) {
 			case AppConstant.LOGIN_ID:
 				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
-
-				// Finish joining the game if login is successful
-				if (loggedIn) {
-					AlertDialog dialog = createGameAlert(R.string.alert_success_join);
-	            	dialog.show();
-					break;
-				}
+				updateView();
 			}
 		}
 	}

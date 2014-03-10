@@ -8,7 +8,15 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.parse.Parse;
 import com.parse.ParseGeoPoint;
@@ -100,6 +108,39 @@ public class HelperFunction {
 		double longitude = location.getLongitude();
 		String locationStr = latitude + ", " + longitude;
 		return locationStr;
+	}
+	
+	public static AlertDialog createGameAlert(int message, boolean success,
+				final Activity a, final boolean loggedIn) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(a);
+		
+		// Get the layout inflater
+	    LayoutInflater inflater = a.getLayoutInflater();
+	    
+	    View v = inflater.inflate(R.layout.success_dialog, null);
+	    if (!success) {
+	    	ImageView iv = (ImageView) v.findViewById(R.id.dialog_image);
+	    	if (iv != null) {
+	    		iv.setImageResource(R.drawable.failure);
+	    		iv.setContentDescription(a.getResources().getString(R.string.access_failure));
+	    	}
+	    }
+	    TextView tv = (TextView) v.findViewById(R.id.dialog_message);
+	    if (tv != null) {
+    		tv.setText(message);
+    	}
+	    
+    	builder.setView(v)
+    	       .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) {
+		        	   Intent result = new Intent();
+		        	   result.putExtra(AppConstant.LOGIN, loggedIn);
+		       		   a.setResult(Activity.RESULT_OK, result);
+		               a.finish();
+		           }
+    	});
+    	
+    	return builder.create();
 	}
 
 }

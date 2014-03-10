@@ -221,36 +221,6 @@ public class CreateGameActivity extends Activity {
 	    newFragment.show(getFragmentManager(), "datePicker");
 	}
 	
-	private AlertDialog createGameAlert(int message) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		
-	    LayoutInflater inflater = this.getLayoutInflater();
-	    View v = inflater.inflate(R.layout.success_dialog, null);
-	    TextView tv = (TextView) v.findViewById(R.id.dialog_message);
-	    if (tv != null) {
-    		tv.setText(message);
-    	}
-	    
-    	builder.setView(v)
-    	       .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-		           public void onClick(DialogInterface dialog, int id) {
-		        	   // TODO: send a request to gameUp
-		        	   Intent result = new Intent();
-		        	   result.putExtra(AppConstant.LOGIN, loggedIn);
-		        	   setResult(Activity.RESULT_OK, result);
-		               finish();
-		           }
-    	});
-    	
-    	return builder.create();
-	}
-	
-	public void showSuccessDialog(View v) {
-		// TODO: Determine which string to show
-    	AlertDialog dialog = createGameAlert(R.string.alert_success_create);
-    	dialog.show();
-	}
-	
 	private void updateSportsIcon() {
 		AutoCompleteTextView sportDropdown = (AutoCompleteTextView) findViewById(R.id.sport_dropdown);
 		
@@ -273,7 +243,8 @@ public class CreateGameActivity extends Activity {
 			button.setText(R.string.create);
 	        button.setOnClickListener(new View.OnClickListener() {
 	            public void onClick(View v) {
-	            	AlertDialog dialog = createGameAlert(R.string.alert_success_create);
+	            	AlertDialog dialog = HelperFunction.createGameAlert(
+	            			R.string.alert_success_create, true, CreateGameActivity.this, loggedIn);
 	            	dialog.show();
 	            }
 	        });
@@ -297,11 +268,9 @@ public class CreateGameActivity extends Activity {
 			case AppConstant.LOGIN_ID:
 				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
 				
-				// Finish joining the game if login is successful
 				if (loggedIn) {
-					AlertDialog dialog = createGameAlert(R.string.alert_success_create);
-	            	dialog.show();
-					break;
+					// Update the buttons if the user has logged in
+					updateView();
 				}
 			}
 		}
