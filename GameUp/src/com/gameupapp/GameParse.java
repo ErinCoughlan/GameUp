@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 
 import android.util.Log;
 
@@ -142,7 +143,6 @@ public class GameParse extends ParseObject {
 		return getJSONArray("Users");
 	}
 
-	
 	// TODO throw error up to UI
 	public boolean addPlayer() {
 		try {
@@ -156,7 +156,7 @@ public class GameParse extends ParseObject {
 		if(currentCount < maxCount) {
 			incrementCurrentPlayerCount();
 			ParseUser currentUser = ParseUser.getCurrentUser();
-			addUnique("Users", currentUser);
+			addUnique("Users", currentUser.getObjectId());
 			return true;
 		}
 		
@@ -166,11 +166,37 @@ public class GameParse extends ParseObject {
 	}
 	
 	public void removePlayer() {
-		List<ParseUser> currentUser = new ArrayList<ParseUser>();
-		currentUser.add(ParseUser.getCurrentUser());
+		List<String> currentUser = new ArrayList<String>();
+		currentUser.add(ParseUser.getCurrentUser().getObjectId());
 		removeAll("Users", currentUser);
 		
 		saveInBackground();
+	}
+	
+	/**
+	 * Checks if the current user has already joined a game
+	 * @return true if the user has joined. False otherwise (including on error).
+	 */
+	public boolean checkPlayerJoined() { 
+		JSONArray joinedPlayers = getJSONArray("Users");
+		ParseUser currentUser = ParseUser.getCurrentUser();
+		String currentUID = currentUser.getObjectId();
+		for(int i = 0; i < joinedPlayers.length(); i++) {
+			String candidateUID;
+			 
+			try {
+				candidateUID = joinedPlayers.getString(i);
+			} catch (JSONException e) {
+				Log.e("checkPlayerJoined", "Couldn't parse array of users", e);
+				return false;
+			}
+			if(candidateUID == currentUID) {
+				return true;
+			}
+		}
+		
+		return false;
+		
 	}
 	
 	public boolean createGame(Date startDate, Date endDate, int abilityLevel,
