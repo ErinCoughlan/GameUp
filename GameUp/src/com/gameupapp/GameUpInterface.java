@@ -130,20 +130,29 @@ public class GameUpInterface {
 	}
 	
 	/**
-	 *  TODO filter on "isn't already in the past"
+	 * TODO filter on "isn't already in the past"
 	 * @return The first 10 games in the DB
 	 */
 	public List<GameParse> getGames() {
-		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
-		query.setLimit(10);
+		ParseQuery<GameParse> query = getGamesQuery();
 		query.include("sport");
 		// This is just a really, really general filter, so we can still use
 		// filterGamesWithQuery
 		gameList = filterGamesWithQuery(query);
-		
 		Log.d("getGames", "number of games: " + gameList.size());
 		
 		return gameList;
+	}
+	
+	/**
+	 * TODO filter on "isn't already in the past"
+	 * @return The first 10 games in the DB
+	 */
+	public ParseQuery<GameParse> getGamesQuery() {
+		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
+		query.setLimit(10);
+		
+		return query;
 	}
 	
 	/**
@@ -169,14 +178,36 @@ public class GameUpInterface {
 		// Game was not found; return an error
 		return null;
 	}
+	
+	/**
+	 * 
+	 * @param ability Ability level to filter with
+	 * @return List of games at the given ability level
+	 */
+	public List<GameParse> getGamesWithAbility(int ability) {
+		ParseQuery<GameParse> query = getQueryWithAbility(ability);
+		query.include("sport");
+		
+		return filterGamesWithQuery(query);
+	}
+	
+	/**
+	 * 
+	 * @param ability  Ability level to filter with
+	 * @return Query on games matching the given ability level
+	 */
+	public ParseQuery<GameParse> getQueryWithAbility(int ability) {
+		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
+		query.whereEqualTo("abilityLevel", ability);
+		return query;
+	}
 
 	/**
 	 * TODO Filter on "isn't already in the past"
 	 * @param sportName Name of the sport to be selected
 	 * @return A list with the first 10 games of that sport.
 	 */
-	public List<GameParse> getGamesWithSportName(String sportName) {
-		List<GameParse> games;
+	public ParseQuery<GameParse> getQueryWithSportName(String sportName) {
 		ParseQuery<Sport> sportQuery = ParseQuery.getQuery(Sport.class);
 		
 		// This query should always return the same thing, so setting it to 
@@ -192,6 +223,19 @@ public class GameUpInterface {
 		gameQuery.whereMatchesQuery("sport", sportQuery);
 		gameQuery.setLimit(10);
 		
+		return gameQuery;
+	}
+	
+	/**
+	 * TODO Filter on "isn't already in the past"
+	 * @param sportName Name of the sport to be selected
+	 * @return A query on the first 10 games of that sport.
+	 */
+	public List<GameParse> getGamesWithSportName(String sportName) {
+		List<GameParse> games;
+		ParseQuery<GameParse> gameQuery = getQueryWithSportName(sportName);
+		gameQuery.include("sport");
+		
 		games = filterGamesWithQuery(gameQuery);
 		return games;
 	}
@@ -201,16 +245,14 @@ public class GameUpInterface {
 	 * @param miles The radius, in miles, within which we look
 	 * @param latitude User's current latitude
 	 * @param longitude User's current longitude
-	 * @return List of games within the given geographical area
+	 * @return List of games within the given geographic area
 	 */
 	public List<GameParse> getGamesWithinMiles(double miles, double latitude, 
 			double longitude) {
 		List<GameParse> games;
-		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
-		query.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
+		ParseQuery<GameParse> query = getQueriesWithinMiles(miles, 
+				latitude, longitude);
 		query.include("sport");
-		ParseGeoPoint currentLocation = new ParseGeoPoint(latitude, longitude);
-		query.whereWithinMiles("location", currentLocation, miles);
 		
 		games = filterGamesWithQuery(query);
 		return games;
@@ -218,7 +260,25 @@ public class GameUpInterface {
 	
 	/**
 	 * 
-	 * @param kilometers The radius, in miles, within which we look
+	 * @param miles The radius, in miles, within which we look
+	 * @param latitude User's current latitude 
+	 * @param longitude User's current longitude
+	 * @return Query for games within the given geographic area
+	 */
+	public ParseQuery<GameParse> getQueriesWithinMiles(double miles, 
+			double latitude, double longitude) {
+		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
+		query.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
+		query.include("sport");
+		ParseGeoPoint currentLocation = new ParseGeoPoint(latitude, longitude);
+		query.whereWithinMiles("location", currentLocation, miles);
+		
+		return query;
+	}
+	
+	/**
+	 * 
+	 * @param kilometers The radius, in kilometers, within which we look
 	 * @param latitude User's current latitude
 	 * @param longitude User's current longitude
 	 * @return List of games within the given geographical area
@@ -226,22 +286,41 @@ public class GameUpInterface {
 	public List<GameParse> getGamesWithinKilometers(double kilometers, 
 			double latitude, double longitude) {
 		List<GameParse> games;
+		ParseQuery<GameParse> query = getQueriesWithinKilometers(kilometers, 
+				latitude, longitude);
+		query.include("sport");
+		
+		games = filterGamesWithQuery(query);
+		return games;
+
+	}
+	
+	
+	/**
+	 * 
+	 * @param kilometers The radius, in kilometers, within which we look
+	 * @param latitude User's current latitude 
+	 * @param longitude User's current longitude
+	 * @return Query for games within the given geographic area
+	 */
+	public ParseQuery<GameParse> getQueriesWithinKilometers(double kilometers, 
+			double latitude, double longitude) {
 		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
 		query.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
 		query.include("sport");
 		ParseGeoPoint currentLocation = new ParseGeoPoint(latitude, longitude);
 		query.whereWithinKilometers("location", currentLocation, kilometers);
 		
-		games = filterGamesWithQuery(query);
-		return games;
+		return query;
 	}
+	
 	
 	/**
 	 * 
 	 * @param query The query to be filtered on
 	 * @return A list exactly matching the filter
 	 */
-	private List<GameParse> filterGamesWithQuery(ParseQuery<GameParse> query) {
+	public List<GameParse> filterGamesWithQuery(ParseQuery<GameParse> query) {
 		query.whereEqualTo("isDebugGame", AppConstant.DEBUG);
 		
 		try {
@@ -253,6 +332,17 @@ public class GameUpInterface {
 	}
 	
 	public List<Sport> getAllSports() {
+		ParseQuery<Sport> query = getAllSportsQuery();
+		
+		try {
+			return query.find();
+		} catch (ParseException e) {
+			Log.e("getAllSports", "Find failed", e);
+			return null;
+		}
+	}
+	
+	public ParseQuery<Sport> getAllSportsQuery() {
 		ParseQuery<Sport> query = ParseQuery.getQuery(Sport.class);
 		
 		// The sports list is essentially static, so we can make it mostly
@@ -261,12 +351,7 @@ public class GameUpInterface {
 		query.setMaxCacheAge(TimeUnit.DAYS.toMillis(7));
 		
 		query.whereExists("sport");
-		try {
-			return query.find();
-		} catch (ParseException e) {
-			Log.e("getAllSports", "Find failed", e);
-			return null;
-		}
+		return query;
 	}
 	
 	public boolean postJoinGame(GameParse game) {
