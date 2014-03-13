@@ -201,6 +201,8 @@ public class GameUpInterface {
 	 * @return A list exactly matching the filter
 	 */
 	protected List<GameParse> filterGamesWithQuery(ParseQuery<GameParse> query) {
+		query.whereEqualTo("isDebugGame", AppConstant.DEBUG);
+		
 		try {
 			return query.find();
 		} catch (ParseException e) {

@@ -258,6 +258,8 @@ public class GameParse extends ParseObject {
 		setAbilityLevel(abilityLevel);
 		setLocation(latitude,longitude);
 		setReadableLocation(readableLocation);
+		setDebug();
+		
 		try {
 			setSport(sport);
 		} catch (ParseException e1) {
@@ -272,6 +274,14 @@ public class GameParse extends ParseObject {
 			Log.e("createGame", "Couldn't save game", e);
 		}
 		return true;
+	}
+	
+	public boolean getDebug() {
+		return getBoolean("isDebugGame");
+	}
+	
+	public void setDebug() {
+		put("isDebugGame", AppConstant.DEBUG);
 	}
 	
 }
