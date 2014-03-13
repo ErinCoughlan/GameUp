@@ -218,6 +218,26 @@ public class GameUpInterface {
 	
 	/**
 	 * 
+	 * @param kilometers The radius, in miles, within which we look
+	 * @param latitude User's current latitude
+	 * @param longitude User's current longitude
+	 * @return List of games within the given geographical area
+	 */
+	public List<GameParse> getGamesWithinKilometers(double kilometers, 
+			double latitude, double longitude) {
+		List<GameParse> games;
+		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
+		query.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
+		query.include("sport");
+		ParseGeoPoint currentLocation = new ParseGeoPoint(latitude, longitude);
+		query.whereWithinKilometers("location", currentLocation, kilometers);
+		
+		games = filterGamesWithQuery(query);
+		return games;
+	}
+	
+	/**
+	 * 
 	 * @param query The query to be filtered on
 	 * @return A list exactly matching the filter
 	 */
