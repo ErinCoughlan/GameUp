@@ -35,12 +35,8 @@ public class AppConstant {
             CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     static final int MAP_ZOOM = 18;
     static final int RQS_GooglePlayServices = 1;
-
-    // Image ids for player
-    // TODO: use profile pictures for players
-    static final Integer PLAYER = R.drawable.player;
-    static final Integer PLAYER_ABSENT = R.drawable.player_absent;
     
+    // Unknown sport icon
     static final Integer UNKNOWN_IMG = R.drawable.unknown_icon;
     
     // Parse RequestCodes

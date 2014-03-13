@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical" >
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/gameupLogo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
         android:contentDescription="@string/app_name"
         android:src="@drawable/gameup" />
 
-    <com.facebook.widget.LoginButton
+    <ImageButton
         android:id="@+id/authButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" />
+        android:layout_below="@+id/gameupLogo"
+        android:layout_centerHorizontal="true"
+        android:background="@null"
+        android:contentDescription="@string/access_facebook"
+        android:src="@drawable/facebook_medium" />
 
-</LinearLayout>
+</RelativeLayout>

@@ -11,6 +11,7 @@ import com.gameupapp.GameFragment.OnGameClicked;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
+import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
@@ -20,6 +21,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -115,6 +117,19 @@ public class MainActivity extends Activity implements OnGameClicked {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	        case R.id.menu_logout:
+	        	ParseUser.logOut();
+	        	updateView();
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
 	}
 
 	public void startGameUp() {
@@ -259,9 +274,11 @@ public class MainActivity extends Activity implements OnGameClicked {
 		ParseUser user = ParseUser.getCurrentUser();
 		boolean loggedIn = !(user == null);
 		if (loggedIn) {
-			loginButton.setText(R.string.logout);
+			//loginButton.setText(R.string.logout);
+			loginButton.setVisibility(View.INVISIBLE);
 		} else {
-			loginButton.setText(R.string.sign_up);
+			//loginButton.setText(R.string.sign_up);
+			loginButton.setVisibility(View.VISIBLE);
 		}
 	}
 
