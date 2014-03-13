@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import com.parse.ParseUser;
 
@@ -26,13 +27,17 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.TimePicker;
 
 public class CreateGameActivity extends Activity {
 	private GameUpInterface gameup;
+	private int abilityLevel;
+	private String sport;
 	
     private SimpleDateFormat dateFormatter = new SimpleDateFormat(
             "MMM dd, yyyy", Locale.getDefault());
@@ -140,6 +145,7 @@ public class CreateGameActivity extends Activity {
 					Context.INPUT_METHOD_SERVICE);
 				AutoCompleteTextView sportDropdown = (AutoCompleteTextView) findViewById(R.id.sport_dropdown);
 				imm.hideSoftInputFromWindow(sportDropdown.getWindowToken(), 0);
+				sport = (String) parent.getItemAtPosition(pos);
 			}
 		});
 	}
@@ -185,6 +191,7 @@ public class CreateGameActivity extends Activity {
 				updateSportsIcon();
 				LinearLayout dummy = (LinearLayout) findViewById(R.id.dummy);
 				dummy.requestFocus();
+				abilityLevel = (Integer) parent.getItemAtPosition(pos);
 			}
 
 			@Override
@@ -232,8 +239,36 @@ public class CreateGameActivity extends Activity {
 			button.setText(R.string.create);
 	        button.setOnClickListener(new View.OnClickListener() {
 	            public void onClick(View v) {
-	            	AlertDialog dialog = HelperFunction.createGameAlert(
-	            			R.string.alert_success_create, true, CreateGameActivity.this, loggedIn);
+	                long startDateL = ((DatePicker) findViewById(R.id.start_date_picker)).getMaxDate();
+	                int startHour = ((TimePicker) findViewById(R.id.start_time_picker)).getCurrentHour();
+	                int startMinute = ((TimePicker) findViewById(R.id.start_time_picker)).getCurrentMinute();
+	                
+	                long endDateL = ((DatePicker) findViewById(R.id.end_date_picker)).getMaxDate();
+	                int endHour = ((TimePicker) findViewById(R.id.end_time_picker)).getCurrentHour();
+	                int endMinute = ((TimePicker) findViewById(R.id.end_time_picker)).getCurrentMinute();
+	                
+	                long startHourL = TimeUnit.HOURS.toMillis(startHour);
+	                long startMinuteL = TimeUnit.MINUTES.toMillis(startMinute);
+	                
+	                long endHourL = TimeUnit.HOURS.toMillis(endHour);
+	                long endMinuteL = TimeUnit.MINUTES.toMillis(endMinute);
+	                
+	                Date startDate = new Date(startDateL + startHourL 
+	                		+ startMinuteL);
+	                Date endDate = new Date(endDateL + endHourL + endMinuteL);
+	                
+	                
+	            	boolean succeeded = gameup.createGame(startDate, endDate, 
+	            			abilityLevel, "aLocation", 0.0, 0.0, sport);
+	            	AlertDialog dialog;
+	            	if (succeeded) {
+	            		dialog = HelperFunction.createGameAlert(
+	            				R.string.alert_success_create, true, CreateGameActivity.this, loggedIn);
+	            	} else {
+	            		dialog = HelperFunction.createGameAlert(
+	            				R.string.alert_fail_create, false, CreateGameActivity.this, loggedIn);
+	            	}
+	            	
 	            	dialog.show();
 	            }
 	        });

@@ -1,6 +1,7 @@
 package com.gameupapp;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -377,9 +378,16 @@ public class GameUpInterface {
 								+ "id " + gameId + " failed.");
 				throw(e);
 			}
-
 			user.delete();
 		}
+	}
+	
+	public boolean createGame(Date startDate, Date endDate, int abilityLevel,
+			String readableLocation, double latitude, double longitude, 
+			String sport) {
+		GameParse game = new GameParse(); 
+		return game.createGame(startDate, endDate, abilityLevel, readableLocation, 
+				latitude, longitude, sport);
 	}
 	
 	public boolean postJoinGame(GameParse game) {
