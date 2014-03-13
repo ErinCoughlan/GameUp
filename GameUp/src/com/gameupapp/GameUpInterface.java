@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseException;
 
@@ -197,10 +198,30 @@ public class GameUpInterface {
 	
 	/**
 	 * 
+	 * @param miles The radius, in miles, within which we look
+	 * @param latitude User's current latitude
+	 * @param longitude User's current longitude
+	 * @return List of games within the given geographical area
+	 */
+	public List<GameParse> getGamesWithinMiles(double miles, double latitude, 
+			double longitude) {
+		List<GameParse> games;
+		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
+		query.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
+		query.include("sport");
+		ParseGeoPoint currentLocation = new ParseGeoPoint(latitude, longitude);
+		query.whereWithinMiles("location", currentLocation, miles);
+		
+		games = filterGamesWithQuery(query);
+		return games;
+	}
+	
+	/**
+	 * 
 	 * @param query The query to be filtered on
 	 * @return A list exactly matching the filter
 	 */
-	protected List<GameParse> filterGamesWithQuery(ParseQuery<GameParse> query) {
+	private List<GameParse> filterGamesWithQuery(ParseQuery<GameParse> query) {
 		query.whereEqualTo("isDebugGame", AppConstant.DEBUG);
 		
 		try {
