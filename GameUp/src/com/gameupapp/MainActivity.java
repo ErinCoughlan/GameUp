@@ -128,6 +128,9 @@ public class MainActivity extends Activity implements OnGameClicked {
 	        	ParseUser.logOut();
 	        	updateView();
 	            return true;
+	        case R.id.menu_settings:
+	        	onSettingsClicked();
+	        	return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
@@ -201,11 +204,21 @@ public class MainActivity extends Activity implements OnGameClicked {
 		intent.setClass(MainActivity.this, LoginActivity.class);
 		startActivityForResult(intent, AppConstant.LOGIN_ID);
 	}
+	
+	public void onSettingsClicked() {
+		// Go to a new activity for settings
+		Intent intent = new Intent();
+		intent.setClass(MainActivity.this, SettingsActivity.class);
+		startActivityForResult(intent, AppConstant.SETTINGS_ID);
+	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == Activity.RESULT_OK) {
 			switch (requestCode) {
 			case AppConstant.DETAIL_ID:
+				updateView();
+				break;
+			case AppConstant.SETTINGS_ID:
 				updateView();
 				break;
 			case AppConstant.CREATE_ID:

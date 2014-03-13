@@ -12,11 +12,13 @@ public class AppConstant {
 	static final String GAME = "game";
 	static final String USER = "user";
 	static final String LOGIN = "logged_in";
+	static final String SETTINGS = "settings";
 	
 	// Response from activities
 	static final int DETAIL_ID = 0;
 	static final int CREATE_ID = 1;
 	static final int LOGIN_ID = 2;
+	static final int SETTINGS_ID = 3;
 	
 	// Initial List of Sports	
 	static final List<String> SPORTS = Arrays.asList(
