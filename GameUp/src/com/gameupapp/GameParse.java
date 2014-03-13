@@ -155,12 +155,16 @@ public class GameParse extends ParseObject {
 		int maxCount = getMaxPlayerCount();
 		int currentCount = getCurrentPlayerCount();
 		if(currentCount < maxCount) {
+			// Update game
 			incrementCurrentPlayerCount();
 			ParseUser currentUser = ParseUser.getCurrentUser();
 			addUnique("Users", currentUser.getObjectId());
 			
+			// Update user
+			currentUser.addUnique("listOfGames", getObjectId());
 			try {
 				save();
+				currentUser.save();
 				return true;
 			} catch (ParseException e) {
 				Log.e("addPlayer", "Failed to add player", e);
@@ -178,22 +182,29 @@ public class GameParse extends ParseObject {
 	 */
 	public boolean removePlayer() {
 		if(checkPlayerJoined()) {
-			List<String> currentUser = new ArrayList<String>();
-			currentUser.add(ParseUser.getCurrentUser().getObjectId());
-			removeAll("Users", currentUser);
+			// Update game
+			ParseUser currentUser = ParseUser.getCurrentUser();
+			List<String> currentUserList = new ArrayList<String>();
+			currentUserList.add(currentUser.getObjectId());
+			removeAll("Users", currentUserList);
 			decrementCurrentPlayerCount();
+			
+			// Update user
+			List<String> game = new ArrayList<String>();
+			game.add(getObjectId());
+			currentUser.removeAll("listOofGames", game);
 			
 			try {
 				save();
+				currentUser.save();
 				return true;
 			} catch (ParseException e) {
-				Log.e("removePlayer", "Failed to remove player", e);
+				Log.e("removePlayer", "Failed to fuly remove player", e);
 				return false;
 			}
 		} else {
 			return false;
 		}
-		
 	}
 	
 	/**
