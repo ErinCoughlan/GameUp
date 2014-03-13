@@ -5,12 +5,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseException;
+import com.parse.ParseUser;
 
 import android.app.Activity;
 import android.util.Log;
@@ -352,6 +354,32 @@ public class GameUpInterface {
 		
 		query.whereExists("sport");
 		return query;
+	}
+	
+	/**
+	 * This method deletes all data on a user everywhere in our database.
+	 * After this function returns, the user object will be invalid and CANNOT
+	 * SAFELY BE ACCESSED.
+	 * @param user The user to be deleted
+	 * @throws JSONException Thrown if we can't parse a gameId at some point
+	 * @throws ParseException Thrown either if removeUser fails on one of the
+	 * user's games, or if deleting the user fails
+	 */
+	public void removeUserFromApp(ParseUser user) throws JSONException, ParseException {
+		JSONArray gameIds = user.getJSONArray("listOfGames");
+		for(int i = 0; i < gameIds.length(); i++) {
+			String gameId = gameIds.getString(i);
+			GameParse game = getGame(gameId);
+			boolean removed = game.removePlayer();
+			if(!removed) {
+				ParseException e = new ParseException(
+						ParseException.OTHER_CAUSE,"Removing user from game with "
+								+ "id " + gameId + " failed.");
+				throw(e);
+			}
+
+			user.delete();
+		}
 	}
 	
 	public boolean postJoinGame(GameParse game) {
