@@ -8,17 +8,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import com.parse.ParseUser;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -30,13 +29,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 public class CreateGameActivity extends Activity {
-	
 	private GameUpInterface gameup;
-	private boolean loggedIn;
 	
     private SimpleDateFormat dateFormatter = new SimpleDateFormat(
             "MMM dd, yyyy", Locale.getDefault());
@@ -47,10 +43,7 @@ public class CreateGameActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_create_game);
-		
-		// Restore preferences
-		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
-		loggedIn = settings.getBoolean(AppConstant.LOGIN, false);
+
 		updateView();
 		
 		// Back button in app
@@ -113,12 +106,6 @@ public class CreateGameActivity extends Activity {
 		if (gameup != null) {
 			gameup.removeObserver(this);
 		}
-		
-		// Save the user_id and similar shared variables
-		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putBoolean(AppConstant.LOGIN, loggedIn);
-		editor.apply();
 	}
 	
 	private void initSportSpinner() {
@@ -239,6 +226,8 @@ public class CreateGameActivity extends Activity {
 	private void updateView() {
 		// Set up the create button
 		final Button button = (Button) findViewById(R.id.createButton);
+		ParseUser user = ParseUser.getCurrentUser();
+		final boolean loggedIn = (user != null);
 		if (loggedIn) {
 			button.setText(R.string.create);
 	        button.setOnClickListener(new View.OnClickListener() {
@@ -255,7 +244,6 @@ public class CreateGameActivity extends Activity {
 	            	// Go to a new activity for logging in and out
 	        		Intent intent = new Intent();
 	        		intent.setClass(CreateGameActivity.this, LoginActivity.class);
-	        		intent.putExtra(AppConstant.LOGIN, loggedIn);
 	        		startActivityForResult(intent, AppConstant.LOGIN_ID);
 	            }
 	        });
@@ -266,12 +254,7 @@ public class CreateGameActivity extends Activity {
 		if (resultCode == Activity.RESULT_OK) {
 			switch (requestCode) {
 			case AppConstant.LOGIN_ID:
-				loggedIn = data.getBooleanExtra(AppConstant.LOGIN, false);
-				
-				if (loggedIn) {
-					// Update the buttons if the user has logged in
-					updateView();
-				}
+				updateView();
 			}
 		}
 	}
