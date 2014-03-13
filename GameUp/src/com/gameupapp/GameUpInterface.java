@@ -359,6 +359,7 @@ public class GameUpInterface {
 	
 	/**
 	 * This method deletes all data on a user everywhere in our database.
+	 * TODO Audit this code
 	 * After this function returns, the user object will be invalid and CANNOT
 	 * SAFELY BE ACCESSED.
 	 * @param user The user to be deleted

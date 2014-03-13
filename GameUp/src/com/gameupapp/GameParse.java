@@ -163,6 +163,9 @@ public class GameParse extends ParseObject {
 			// Update user
 			currentUser.addUnique("listOfGames", getObjectId());
 			try {
+				/** TODO handle possible inconsistent state if one save
+				 * succeeds but the other fails.
+				 */
 				save();
 				currentUser.save();
 				return true;
@@ -195,6 +198,9 @@ public class GameParse extends ParseObject {
 			currentUser.removeAll("listOofGames", game);
 			
 			try {
+				/** TODO handle possible inconsistent state if one save
+				 * succeeds but the other fails.
+				 */
 				save();
 				currentUser.save();
 				return true;

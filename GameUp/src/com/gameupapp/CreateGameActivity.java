@@ -239,6 +239,11 @@ public class CreateGameActivity extends Activity {
 			button.setText(R.string.create);
 	        button.setOnClickListener(new View.OnClickListener() {
 	            public void onClick(View v) {
+	            	
+	            	/** TODO Check all of this, Philip wrote it and has no idea
+	            	 * if any of it is right.
+	            	 */
+	            	
 	                long startDateL = ((DatePicker) findViewById(R.id.start_date_picker)).getMaxDate();
 	                int startHour = ((TimePicker) findViewById(R.id.start_time_picker)).getCurrentHour();
 	                int startMinute = ((TimePicker) findViewById(R.id.start_time_picker)).getCurrentMinute();
@@ -257,15 +262,24 @@ public class CreateGameActivity extends Activity {
 	                		+ startMinuteL);
 	                Date endDate = new Date(endDateL + endHourL + endMinuteL);
 	                
+	                // TODO get actual location
+	                long latitude = 0;
+	                long longitude = 0;
+	                
+	                // TODO get actual readable location
+	                String readableLocation = "aLocation";
 	                
 	            	boolean succeeded = gameup.createGame(startDate, endDate, 
-	            			abilityLevel, "aLocation", 0.0, 0.0, sport);
+	            			abilityLevel, readableLocation, latitude, 
+	            			longitude, sport);
+	            	
 	            	AlertDialog dialog;
 	            	if (succeeded) {
 	            		dialog = HelperFunction.createGameAlert(
 	            				R.string.alert_success_create, true, CreateGameActivity.this, loggedIn);
 	            	} else {
 	            		dialog = HelperFunction.createGameAlert(
+	            				//TODO not sure if this should be false or true
 	            				R.string.alert_fail_create, false, CreateGameActivity.this, loggedIn);
 	            	}
 	            	
