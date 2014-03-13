@@ -24,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
@@ -274,10 +275,8 @@ public class MainActivity extends Activity implements OnGameClicked {
 		ParseUser user = ParseUser.getCurrentUser();
 		boolean loggedIn = !(user == null);
 		if (loggedIn) {
-			//loginButton.setText(R.string.logout);
-			loginButton.setVisibility(View.INVISIBLE);
+			loginButton.setVisibility(View.GONE);
 		} else {
-			//loginButton.setText(R.string.sign_up);
 			loginButton.setVisibility(View.VISIBLE);
 		}
 	}
