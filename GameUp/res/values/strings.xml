@@ -5,6 +5,7 @@
     <string name="display_activity_display_message">Join Game</string>
     <string name="create_activity_display_message">Create Game</string>
     <string name="login_activity_display_message">Login</string>
+    <string name="settings_activity_display_message">Settings</string>
     <string name="app_name">GameUp</string>
     <string name="fb_app_id">388247841278612</string>
     <string name="map_api_key">AIzaSyB_Hh3iDwK7kgxnmZpHMD27wlXxRvpXBBE</string>
@@ -18,6 +19,7 @@
     <string name="join">Join Game</string>
     <string name="unjoin">Unjoin Game</string>
     <string name="create">Create Game</string>
+    <string name="unlink">Unlink From Facebook</string>
     <string name="players_joined">Players Joined:</string>
     <string name="ability_level">Ability Level:</string>
     <string name="alert_success_join">Congrats! \n You successfully joined the game!</string>
@@ -39,6 +41,8 @@
     <string name="choose_ability_prompt">Ability Level:</string>
     <string name="login">Login</string>
     <string name="logout">Logout</string>
+    
+    <string name="unlink_prompt">Unlinking your account from Facebook will permanently delete all of your information from GameUp. This action cannot be undone.</string>
 
     <color name="nice_blue">#33b5e5</color>
     <color name="nice_blue_dark">#0099cc</color>
