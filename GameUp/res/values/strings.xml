@@ -20,6 +20,7 @@
     <string name="unjoin">Unjoin Game</string>
     <string name="create">Create Game</string>
     <string name="unlink">Unlink From Facebook</string>
+    <string name="unlink_short">Unlink</string>
     <string name="players_joined">Players Joined:</string>
     <string name="ability_level">Ability Level:</string>
     <string name="alert_success_join">Congrats! \n You successfully joined the game!</string>
@@ -42,7 +43,7 @@
     <string name="login">Login</string>
     <string name="logout">Logout</string>
     
-    <string name="unlink_prompt">Unlinking your account from Facebook will permanently delete all of your information from GameUp. This action cannot be undone.</string>
+    <string name="unlink_prompt">Unlinking your account from Facebook will permanently delete all of your information from GameUp.</string>
 
     <color name="nice_blue">#33b5e5</color>
     <color name="nice_blue_dark">#0099cc</color>

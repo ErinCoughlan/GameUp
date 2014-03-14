@@ -117,6 +117,14 @@ public class MainActivity extends Activity implements OnGameClicked {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_main, menu);
+		
+		MenuItem settings = (MenuItem) menu.findItem(R.id.menu_settings);
+		MenuItem logout = (MenuItem) menu.findItem(R.id.menu_logout);
+		ParseUser user = ParseUser.getCurrentUser();
+		if (user == null) {
+			settings.setVisible(false);
+			logout.setVisible(false);
+		}
 		return true;
 	}
 	
@@ -283,6 +291,7 @@ public class MainActivity extends Activity implements OnGameClicked {
 	}
 	
 	private void updateView() {
+		invalidateOptionsMenu();
 		// Simplify interactions if we don't have a registered user
 		final Button loginButton = (Button) findViewById(R.id.login);
 		ParseUser user = ParseUser.getCurrentUser();

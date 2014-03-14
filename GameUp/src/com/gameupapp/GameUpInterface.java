@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.parse.ParseFacebookUtils;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseException;
@@ -369,18 +370,22 @@ public class GameUpInterface {
 	 */
 	public void removeUserFromApp(ParseUser user) throws JSONException, ParseException {
 		JSONArray gameIds = user.getJSONArray("listOfGames");
-		for(int i = 0; i < gameIds.length(); i++) {
-			String gameId = gameIds.getString(i);
-			GameParse game = getGame(gameId);
-			boolean removed = game.removePlayer();
-			if(!removed) {
-				ParseException e = new ParseException(
-						ParseException.OTHER_CAUSE,"Removing user from game with "
-								+ "id " + gameId + " failed.");
-				throw(e);
+		if (gameIds != null) {
+			for(int i = 0; i < gameIds.length(); i++) {
+				String gameId = gameIds.getString(i);
+				GameParse game = getGame(gameId);
+				boolean removed = game.removePlayer();
+				if(!removed) {
+					ParseException e = new ParseException(
+							ParseException.OTHER_CAUSE,"Removing user from game with "
+									+ "id " + gameId + " failed.");
+					throw(e);
+				}
 			}
-			user.delete();
 		}
+		ParseFacebookUtils.unlink(user);
+		ParseUser.logOut();
+		user.delete();
 	}
 	
 	public boolean createGame(Date startDate, Date endDate, int abilityLevel,
