@@ -262,7 +262,7 @@ public class GameParse extends ParseObject {
 			String readableLocation, double latitude, double longitude, 
 			String sport) {
 		
-		assert(abilityLevel < 4);
+		assert(abilityLevel <= 4);
 		assert(abilityLevel > 0);
 		
 		// start date must come before end date
