@@ -139,9 +139,28 @@ public class MainActivity extends Activity implements OnGameClicked {
 	        case R.id.menu_settings:
 	        	onSettingsClicked();
 	        	return true;
+	        case R.id.menu_refresh:
+	        	refreshGames();
+	        	return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
+	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
+
+		// Clear the observers
+		if (gameup != null) {
+			gameup.removeObserver(this);
+		}
+
+		// Save the user_id and similar shared variables
+		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString(AppConstant.USER, USERNAME);
+		editor.apply();
 	}
 
 	public void startGameUp() {
@@ -225,15 +244,18 @@ public class MainActivity extends Activity implements OnGameClicked {
 			switch (requestCode) {
 			case AppConstant.DETAIL_ID:
 				updateView();
+				refreshGames();
 				break;
 			case AppConstant.SETTINGS_ID:
 				updateView();
 				break;
 			case AppConstant.CREATE_ID:
 				updateView();
+				refreshGames();
 				break;
 			case AppConstant.LOGIN_ID:
 				updateView();
+				refreshGames();
 				ParseUser user = ParseUser.getCurrentUser();
 				boolean loggedIn = !(user == null);
 				if (user != null) {
@@ -273,22 +295,6 @@ public class MainActivity extends Activity implements OnGameClicked {
 			}
 		}
 	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-
-		// Clear the observers
-		if (gameup != null) {
-			gameup.removeObserver(this);
-		}
-
-		// Save the user_id and similar shared variables
-		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putString(AppConstant.USER, USERNAME);
-		editor.apply();
-	}
 	
 	private void updateView() {
 		invalidateOptionsMenu();
@@ -301,6 +307,10 @@ public class MainActivity extends Activity implements OnGameClicked {
 		} else {
 			loginButton.setVisibility(View.VISIBLE);
 		}
+	}
+	
+	private void refreshGames() {
+		new SetGameList().execute();
 	}
 
 }
