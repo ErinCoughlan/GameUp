@@ -77,7 +77,7 @@ public class GameAdapter extends ArrayAdapter<GameParse> {
 			if (location != null){
 				//String locationString = HelperFunction.convertParseGeoToString(i.getLocation());
 				//location.setText(locationString);
-				location.setText("0.1 miles away");
+				location.setText("0.1 mi. away");
 			}
 			
 			

@@ -137,7 +137,6 @@ public class CreateGameActivity extends Activity {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-				updateSportsIcon();
 				LinearLayout dummy = (LinearLayout) findViewById(R.id.dummy);
 				dummy.requestFocus();
 				
@@ -188,7 +187,6 @@ public class CreateGameActivity extends Activity {
 		abilitySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-				updateSportsIcon();
 				LinearLayout dummy = (LinearLayout) findViewById(R.id.dummy);
 				dummy.requestFocus();
 				abilityLevel = (Integer) parent.getItemAtPosition(pos);
@@ -213,21 +211,6 @@ public class CreateGameActivity extends Activity {
 		frag.setUpdateButton((Button) v, dateFormatter);
 	    DialogFragment newFragment = frag;
 	    newFragment.show(getFragmentManager(), "datePicker");
-	}
-	
-	private void updateSportsIcon() {
-		AutoCompleteTextView sportDropdown = (AutoCompleteTextView) findViewById(R.id.sport_dropdown);
-		
-		ImageView sportIcon = (ImageView) findViewById(R.id.game_sport_icon);
-        String s = sportDropdown.getText().toString().toLowerCase(Locale.US);
-        if (sportIcon != null) {
-			int resId = HelperFunction.getResId(s, getBaseContext(), R.drawable.class);
-			if (resId != -1) {
-				sportIcon.setBackgroundResource(resId);
-			} else {
-				sportIcon.setBackgroundResource(R.drawable.unknown_icon);
-			}
-        }
 	}
 	
 	private void updateView() {
