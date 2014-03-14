@@ -22,6 +22,10 @@ import android.util.Log;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 public class GameUpInterface {
+	
+	// set to true when location services are connected
+	public boolean CAN_CONNECT = false;
+	
 	private List<GameParse> gameList;
 	private Collection<Activity> observers;
 
@@ -107,6 +111,7 @@ public class GameUpInterface {
 		} catch (JSONException e) {
 			Log.e("json", "you fail");
 		}
+		
 	}
 
 	/**
@@ -144,6 +149,7 @@ public class GameUpInterface {
 		query.include("sport");
 		// This is just a really, really general filter, so we can still use
 		// filterGamesWithQuery
+		
 		gameList = filterGamesWithQuery(query);
 		Log.d("getGames", "number of games: " + gameList.size());
 		
@@ -169,7 +175,11 @@ public class GameUpInterface {
 	public GameParse getGame(String gameId) {
 		GameParse game;
 		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
-		query.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
+		
+		// We hit this too often not to use cache when we can.
+		query.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+		query.setMaxCacheAge(TimeUnit.MINUTES.toMillis(30));
+		
 		query.include("sport");
 		query.whereEqualTo("objectId", gameId);
 		

@@ -8,6 +8,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
 import com.parse.ParseUser;
 
 import android.app.Activity;
@@ -40,12 +43,16 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.TimePicker;
 
-public class CreateGameActivity extends Activity {
+public class CreateGameActivity extends Activity implements 
+			GooglePlayServicesClient.ConnectionCallbacks,
+			GooglePlayServicesClient.OnConnectionFailedListener {
+	
 	private GameUpInterface gameup;
 	private int abilityLevel;
 	private String sport;
 	private Calendar startC;
 	private Calendar endC;
+	private LocationClient locationClient;
 	
     private SimpleDateFormat dateFormatter = new SimpleDateFormat(
             "MMM dd, yyyy", Locale.getDefault());
@@ -67,6 +74,7 @@ public class CreateGameActivity extends Activity {
 		endC = Calendar.getInstance();
         endC.add(Calendar.HOUR,  1);
         updateTimes();
+        locationClient = new LocationClient(this, this, this);
         
 	}
 	
@@ -83,7 +91,7 @@ public class CreateGameActivity extends Activity {
         initLocationSpinner();
         initAbilitySpinner();
         initPlayersEditText();
-        
+        locationClient.connect();
 	}
 	
 	@Override
@@ -419,5 +427,23 @@ public class CreateGameActivity extends Activity {
 			Context.INPUT_METHOD_SERVICE);
 		View v = findViewById(android.R.id.content);
 		imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onConnected(Bundle connectionHint) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onDisconnected() {
+		// TODO Auto-generated method stub
+		
 	}
 }
