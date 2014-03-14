@@ -9,7 +9,6 @@ import com.google.android.gms.common.GooglePlayServicesClient;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
