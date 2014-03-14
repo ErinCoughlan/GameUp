@@ -296,6 +296,10 @@ public class GameParse extends ParseObject {
 		} catch (ParseException e) {
 			Log.e("createGame", "Couldn't save game", e);
 		}
+		
+		// And automatically add the player who created the game
+		// TODO: Figure out what to do if add fails, but create works
+		addPlayer();
 		return true;
 	}
 	

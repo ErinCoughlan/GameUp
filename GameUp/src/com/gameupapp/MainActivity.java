@@ -11,7 +11,6 @@ import com.gameupapp.GameFragment.OnGameClicked;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
-import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
@@ -24,7 +23,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
