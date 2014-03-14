@@ -35,8 +35,6 @@ public class MainActivity extends Activity implements OnGameClicked,
 	// General info about user and app
 	private String USERNAME;
 	private GameUpInterface gameup;
-	private LocationManager locationManager;
-	
 	private List<GameParse> gameList = new ArrayList<GameParse>();
 
 	@Override
