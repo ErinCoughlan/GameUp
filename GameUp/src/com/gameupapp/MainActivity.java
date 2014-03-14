@@ -3,10 +3,6 @@ package com.gameupapp;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facebook.LoggingBehavior;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.Settings;
 import com.gameupapp.GameFragment.OnGameClicked;
 import com.parse.Parse;
 import com.parse.ParseObject;
@@ -33,14 +29,6 @@ public class MainActivity extends Activity implements OnGameClicked {
 	private GameUpInterface gameup;
 
 	private List<GameParse> gameList = new ArrayList<GameParse>();
-	
-	// Facebook stuff
-	private Session.StatusCallback callback = new Session.StatusCallback() {
-	    @Override
-	    public void call(Session session, SessionState state, Exception exception) {
-	        Log.d("facebook", "state is opened: " + Boolean.toString(state.isOpened()));
-	    }
-	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,28 +51,6 @@ public class MainActivity extends Activity implements OnGameClicked {
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences("settings", 0);
 		USERNAME = settings.getString(AppConstant.USER, null);
-		
-		// Logging into Facebook if active previously logged in
-		Settings.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
-		ParseUser user = ParseUser.getCurrentUser();
-		boolean loggedIn = (user != null);
-		if (loggedIn) {
-			Log.d("facebook", "logged in - restoring session");
-			Session session = Session.getActiveSession();
-			if (session == null) {
-				Log.d("facebook", "session is null");
-				if (savedInstanceState != null) {
-					session = Session.restoreSession(this, null, callback, savedInstanceState);
-				}
-				if (session == null) {
-					session = new Session(this);
-				}
-				Session.setActiveSession(session);
-				if (session.getState().equals(SessionState.CREATED_TOKEN_LOADED)) {
-					session.openForRead(new Session.OpenRequest(this).setCallback(callback));
-				}
-			}
-		}
 
 		// Set up on click for creating new games
 		final Button button = (Button) findViewById(R.id.new_game);
