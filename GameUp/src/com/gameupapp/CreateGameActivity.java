@@ -236,6 +236,15 @@ public class CreateGameActivity extends Activity {
 				if (v.getId() == R.id.start_time_picker) {
 					startC.set(Calendar.HOUR_OF_DAY, hourOfDay);
 					startC.set(Calendar.MINUTE, minute);
+					
+					// Make it a little easier for the user to set the time
+					Date startDate = startC.getTime();
+					Date endDate = endC.getTime();
+					if (endDate.before(startDate)) {
+						endC.set(Calendar.HOUR_OF_DAY, hourOfDay);
+						endC.set(Calendar.MINUTE, minute);
+						endC.add(Calendar.HOUR,  1);
+					}
 				} else if (v.getId() == R.id.end_time_picker) {
 					endC.set(Calendar.HOUR_OF_DAY, hourOfDay);
 					endC.set(Calendar.MINUTE, minute);
@@ -257,6 +266,15 @@ public class CreateGameActivity extends Activity {
 					startC.set(Calendar.YEAR, year);
 					startC.set(Calendar.MONTH, month);
 					startC.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+					
+					// Make it a little easier for the user to set the date
+					Date startDate = startC.getTime();
+					Date endDate = endC.getTime();
+					if (endDate.before(startDate)) {
+						endC.set(Calendar.YEAR, year);
+						endC.set(Calendar.MONTH, month);
+						endC.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+					}
 				} else if (v.getId() == R.id.end_date_picker) {
 					endC.set(Calendar.YEAR, year);
 					endC.set(Calendar.MONTH, month);
