@@ -19,6 +19,8 @@ import com.parse.ParseUser;
 import android.app.Activity;
 import android.util.Log;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+
 public class GameUpInterface {
 	private List<GameParse> gameList;
 	private Collection<Activity> observers;
@@ -231,6 +233,7 @@ public class GameUpInterface {
 	}
 	
 	/**
+	 * 
 	 * TODO Filter on "isn't already in the past"
 	 * @param sportName Name of the sport to be selected
 	 * @return A query on the first 10 games of that sport.
@@ -395,6 +398,52 @@ public class GameUpInterface {
 		return game.createGame(startDate, endDate, abilityLevel, readableLocation, 
 				latitude, longitude, sport);
 	}
+	
+	/**
+	 * 
+	 * @param gameId The ID of the game to be found
+	 * @return An ImmutablePair (tuple) of latitude, longitude.
+	 */
+	public ImmutablePair<Double, Double> getLatLongOfGame(String gameId) {
+		GameParse game = getGame(gameId);
+		ParseGeoPoint location = game.getLocation();
+		double latitude = location.getLatitude();
+		double longitude = location.getLongitude();
+		
+		return new ImmutablePair<Double, Double>(latitude, longitude);
+	}
+	
+
+	/**
+	 * 
+	 * TODO Assumes miles
+	 * @param latitude Latitude of current user location
+	 * @param longitude Longitude of current user location
+	 * @param gameId ID of game to be looked up
+	 * @return The distance (in miles) between current location and game location
+	 */
+	public double getDistanceBetweenLocationAndGame(double latitude, 
+			double longitude, String gameId) {
+		GameParse game = getGame(gameId);
+		ParseGeoPoint gameLocation = game.getLocation();
+		ParseGeoPoint location = new ParseGeoPoint(latitude, longitude);
+		
+		return gameLocation.distanceInMilesTo(location);
+		
+	}
+	
+	/**
+	 * 
+	 * @return A query matching all games starting in the future
+	 */
+	public ParseQuery<GameParse> getQueryOnFutureGames() {
+		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
+		Date currentDate = new Date(System.currentTimeMillis());
+		query.whereGreaterThan("startDateTime", currentDate);
+		
+		return query;
+	}
+	
 	
 	public boolean postJoinGame(GameParse game) {
 		return game.addPlayer();

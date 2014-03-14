@@ -41,9 +41,21 @@ public class FilterBuilder {
 		query.whereMatchesQuery("abilityLevel", abilityQuery);
 	}
 	
+	/**
+	 * 
+	 * @param sport The name of the desired sport
+	 */
 	public void setSport(String sport) {
 		ParseQuery<GameParse> sportQuery = gameup.getQueryWithSportName(sport);
 		query.whereMatchesQuery("sport", sportQuery);
+	}
+	
+	/**
+	 * Filters out all games that have already happened
+	 */
+	public void filterIntoFuture() {
+		ParseQuery<GameParse> temporalFilter = gameup.getQueryOnFutureGames();
+		query.whereMatchesQuery("startDateTime", temporalFilter);
 	}
 	
 	/**
