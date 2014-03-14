@@ -9,7 +9,6 @@
     <string name="app_name">GameUp</string>
     <string name="fb_app_id">388247841278612</string>
     <string name="map_api_key">AIzaSyB_Hh3iDwK7kgxnmZpHMD27wlXxRvpXBBE</string>
-    <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_logout">Logout</string>
     <string name="menu_refresh">Refresh</string>
@@ -31,7 +30,6 @@
     <string name="alert_fail_unjoin">Sorry. \n You can\'t to unjoin the game at this time.</string>
     <string name="alert_fail_create">Sorry. \n You can\'t create a game at this time.</string>
     <string name="access_sport_icon">Sport icon for game</string>
-    <string name="access_map">Map to the game location</string>
     <string name="access_success">Success icon</string>
     <string name="access_failure">Failure icon</string>
     <string name="access_facebook">Facebook login</string>
@@ -41,8 +39,6 @@
     <string name="choose_start_time_prompt">Start time:</string>
     <string name="choose_end_time_prompt">End time:</string>
     <string name="choose_ability_prompt">Ability Level:</string>
-    <string name="login">Login</string>
-    <string name="logout">Logout</string>
     
     <string name="unlink_prompt">Unlinking your account from Facebook will permanently delete all of your information from GameUp.</string>
 

@@ -1,0 +1,40 @@
+body {
+    display: block;
+    position: relative;
+    margin: 0px;
+    min-width: 960px;
+    text-align: center;
+    width: 100%;
+}
+
+body, button, input, label, select, td, textarea {
+    font-family: 'lucida grande',tahoma,verdana,arial,sans-serif;
+    font-size: 11px;
+}
+
+.center {
+    margin: 0px auto;
+}
+
+.logo {
+	display: block;
+	margin: 0px;
+    position: relative;
+}
+
+.logo img {
+    height: 500px;
+}
+
+.comingSoon {
+    font-size: 40px;
+}
+
+.download {
+	float: right;
+    margin: 30px;
+}
+
+.download img {
+	height: 68px;
+}

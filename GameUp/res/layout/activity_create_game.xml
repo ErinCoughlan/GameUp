@@ -68,8 +68,7 @@
                     android:id="@+id/start_date_picker"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:onClick="showDatePickerDialog" />
+                    android:layout_weight="1" />
 
                 <Button
                     android:id="@+id/start_time_picker"
@@ -97,8 +96,7 @@
                     android:id="@+id/end_date_picker"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:onClick="showDatePickerDialog" />
+                    android:layout_weight="1" />
 
                 <Button
                     android:id="@+id/end_time_picker"
