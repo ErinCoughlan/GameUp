@@ -7,8 +7,8 @@
     <string name="login_activity_display_message">Login</string>
     <string name="settings_activity_display_message">Settings</string>
     <string name="app_name">GameUp</string>
-    <string name="fb_app_id">388247841278612</string>
-    <string name="map_api_key">AIzaSyB_Hh3iDwK7kgxnmZpHMD27wlXxRvpXBBE</string>
+    <string name="fb_app_id" translatable="false">388247841278612</string>
+    <string name="map_api_key" translatable="false">AIzaSyB_Hh3iDwK7kgxnmZpHMD27wlXxRvpXBBE</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_logout">Logout</string>
     <string name="menu_refresh">Refresh</string>
