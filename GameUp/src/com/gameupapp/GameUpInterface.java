@@ -389,11 +389,11 @@ public class GameUpInterface {
 	}
 	
 	public boolean createGame(Date startDate, Date endDate, int abilityLevel,
-			String readableLocation, double latitude, double longitude, 
-			String sport) {
+			int playerCount, String readableLocation, double latitude,
+			double longitude, String sport) {
 		GameParse game = new GameParse(); 
-		return game.createGame(startDate, endDate, abilityLevel, readableLocation, 
-				latitude, longitude, sport);
+		return game.createGame(startDate, endDate, abilityLevel, playerCount,
+				readableLocation, latitude, longitude, sport);
 	}
 	
 	public boolean postJoinGame(GameParse game) {

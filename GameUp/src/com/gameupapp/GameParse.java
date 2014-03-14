@@ -2,6 +2,7 @@ package com.gameupapp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -99,6 +100,8 @@ public class GameParse extends ParseObject {
 	 * @throws ParseException Throws an exception if the sport could not be found.
 	 */
 	public void setSport(String sport) throws ParseException {
+		// Sport must be lowercased
+		sport = sport.toLowerCase(Locale.US);
 		ParseQuery<Sport> sportQuery = ParseQuery.getQuery(Sport.class);
 		sportQuery.whereEqualTo("sport", sport);
 		Sport parseSport;
@@ -252,6 +255,7 @@ public class GameParse extends ParseObject {
 	 * @param startDate Start date/time of game
 	 * @param endDate End date/time of game (must be after startDate)
 	 * @param abilityLevel Level of players expected in this game (1-4)
+	 * @param playerCount Maximum number of players for a game (must be >0)
 	 * @param readableLocation A human-readable (ie address, place name) location
 	 * @param latitude Latitude of game 
 	 * @param longitude Longitude of game
@@ -259,11 +263,12 @@ public class GameParse extends ParseObject {
 	 * @return True on successful creation, false on error or validation problem.
 	 */
 	public boolean createGame(Date startDate, Date endDate, int abilityLevel,
-			String readableLocation, double latitude, double longitude, 
-			String sport) {
+			int playerCount, String readableLocation, double latitude,
+			double longitude, String sport) {
 		
 		assert(abilityLevel <= 4);
 		assert(abilityLevel > 0);
+		assert(playerCount > 0);
 		
 		// start date must come before end date
 		if(endDate.before(startDate)) {
@@ -273,6 +278,7 @@ public class GameParse extends ParseObject {
 		setStartDateTime(startDate);
 		setEndDateTime(endDate);
 		setAbilityLevel(abilityLevel);
+		setMaxPlayerCount(playerCount);
 		setLocation(latitude,longitude);
 		setReadableLocation(readableLocation);
 		setDebug();

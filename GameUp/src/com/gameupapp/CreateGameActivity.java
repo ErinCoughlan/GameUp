@@ -14,6 +14,7 @@ import com.parse.ParseUser;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,8 +24,6 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -35,7 +34,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -47,6 +45,8 @@ public class CreateGameActivity extends Activity {
 	private GameUpInterface gameup;
 	private int abilityLevel;
 	private String sport;
+	private Calendar startC;
+	private Calendar endC;
 	
     private SimpleDateFormat dateFormatter = new SimpleDateFormat(
             "MMM dd, yyyy", Locale.getDefault());
@@ -64,10 +64,11 @@ public class CreateGameActivity extends Activity {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
         
         // Initialize times for start and end
-        Calendar c = Calendar.getInstance();
-        Date start = c.getTime();
-        c.add(Calendar.HOUR,  1);
-        Date end = c.getTime();
+        startC = Calendar.getInstance();
+        Date start = startC.getTime();
+        endC = Calendar.getInstance();
+        endC.add(Calendar.HOUR,  1);
+        Date end = endC.getTime();
         
         Button startDate = (Button) findViewById(R.id.start_date_picker);
         Button startTime = (Button) findViewById(R.id.start_time_picker);
@@ -78,6 +79,24 @@ public class CreateGameActivity extends Activity {
         startTime.setText(timeFormatter.format(start));
         endDate.setText(dateFormatter.format(end));
         endTime.setText(timeFormatter.format(end));
+        
+        final int startHour = startC.get(Calendar.HOUR_OF_DAY);
+        final int startMinute = startC.get(Calendar.MINUTE);
+        final int endHour = endC.get(Calendar.HOUR_OF_DAY);
+        final int endMinute = endC.get(Calendar.MINUTE);
+        
+        // Set up the onClicks for each button
+        startTime.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				showTimePickerDialog(v, startHour, startMinute);
+			}
+		});
+        
+        endTime.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				showTimePickerDialog(v, endHour, endMinute);
+			}
+		});
 	}
 	
 	@Override
@@ -237,11 +256,29 @@ public class CreateGameActivity extends Activity {
 		});
 	}
 	
-	public void showTimePickerDialog(View v) {
+	public void showTimePickerDialog(View v, int hourOfDay, int minute) {
+		/*
 	    TimePickerFragment frag = new TimePickerFragment();
 		frag.setUpdateButton((Button) v, timeFormatter);
 	    DialogFragment newFragment = frag;
 	    newFragment.show(getFragmentManager(), "timePicker");
+	    */
+		TimePickerDialog diag = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+			
+			@Override
+			public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+				if (view.getId() == R.id.start_time_picker) {
+					startC.set(Calendar.HOUR_OF_DAY, hourOfDay);
+					startC.set(Calendar.MINUTE, minute);
+				} else if (view.getId() == R.id.end_time_picker) {
+					endC.set(Calendar.HOUR_OF_DAY, hourOfDay);
+					endC.set(Calendar.MINUTE, minute);
+				}
+				
+			}
+		}, hourOfDay, minute, false);
+		
+		diag.show();
 	}
 	
 	public void showDatePickerDialog(View v) {
@@ -297,6 +334,7 @@ public class CreateGameActivity extends Activity {
 	}
 	
 	private boolean createGame() {
+		/*
 		long startDateL = ((DatePicker) findViewById(R.id.start_date_picker)).getMaxDate();
         int startHour = ((TimePicker) findViewById(R.id.start_time_picker)).getCurrentHour();
         int startMinute = ((TimePicker) findViewById(R.id.start_time_picker)).getCurrentMinute();
@@ -314,6 +352,13 @@ public class CreateGameActivity extends Activity {
         Date startDate = new Date(startDateL + startHourL 
         		+ startMinuteL);
         Date endDate = new Date(endDateL + endHourL + endMinuteL);
+        */
+		Date startDate = startC.getTime();
+		Date endDate = endC.getTime();
+		
+		// Max number of players
+		final EditText editText = (EditText) findViewById(R.id.edittext_players);
+		int playerCount = Integer.parseInt(editText.getText().toString());
         
         // TODO get actual location
         long latitude = 0;
@@ -322,10 +367,12 @@ public class CreateGameActivity extends Activity {
         // TODO get actual readable location
         String readableLocation = "aLocation";
         
-        Log.d("create", "ability level: " + Integer.toString(abilityLevel) + " sport: " + sport);
+        Log.d("create", "ability level: " + Integer.toString(abilityLevel));
+        Log.d("create", "sport: " + sport);
+        Log.d("create", "playerCount: " + Integer.toString(playerCount));
         
     	boolean succeeded = gameup.createGame(startDate, endDate, 
-    			abilityLevel, readableLocation, latitude, 
+    			abilityLevel, playerCount, readableLocation, latitude, 
     			longitude, sport);
     	
     	return succeeded;

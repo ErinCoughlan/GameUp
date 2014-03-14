@@ -75,8 +75,7 @@
                     android:id="@+id/start_time_picker"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:onClick="showTimePickerDialog" />
+                    android:layout_weight="1" />
             </LinearLayout>
 
             <LinearLayout
@@ -105,8 +104,7 @@
                     android:id="@+id/end_time_picker"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:onClick="showTimePickerDialog" />
+                    android:layout_weight="1" />
             </LinearLayout>
         </RelativeLayout>
 
