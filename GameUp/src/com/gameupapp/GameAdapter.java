@@ -1,11 +1,17 @@
 package com.gameupapp;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
 
 import com.gameupapp.R;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
 
 import android.content.Context;
+import android.location.Location;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,11 +20,15 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class GameAdapter extends ArrayAdapter<GameParse> {
+public class GameAdapter extends ArrayAdapter<GameParse> implements 
+				GooglePlayServicesClient.ConnectionCallbacks,
+				GooglePlayServicesClient.OnConnectionFailedListener {
 
 	private List<GameParse> objects;
 	private int layout;
 	private Context context;
+	private LocationClient locationClient;
+	private GameUpInterface gameup;
 
 	/* here we must override the constructor for ArrayAdapter
 	 * the only variable we care about now is ArrayList<Item> objects,
@@ -28,6 +38,9 @@ public class GameAdapter extends ArrayAdapter<GameParse> {
 		super(context, textViewResourceId, gamesList);
 		this.objects = gamesList;
 		this.layout = textViewResourceId;
+		this.locationClient = new LocationClient(context, this, this);
+		this.locationClient.connect();
+		this.gameup = GameUpInterface.getInstance();
 	}
 
 	/*
@@ -39,6 +52,7 @@ public class GameAdapter extends ArrayAdapter<GameParse> {
 		
 		// assign the view we are converting to a local variable
 		View v = convertView;
+		Location location = locationClient.getLastLocation();
 
 		// first check to see if the view is null. if so, we have to inflate it.
 		// to inflate it basically means to render, or show, the view.
@@ -56,14 +70,15 @@ public class GameAdapter extends ArrayAdapter<GameParse> {
 		 * Therefore, i refers to the current Item object.
 		 */
 		GameParse i = objects.get(position);
-
+		double latitude = location.getLatitude();
+		double longitude = location.getLongitude();
+		
 		if (i != null) {
-
 			// This is how you obtain a reference to the TextViews.
 			// These TextViews are created in the XML files we defined.
 			
 			TextView timestamp = (TextView) v.findViewById(R.id.gameTimestamp);
-			TextView location = (TextView) v.findViewById(R.id.gameLocation);
+			TextView textLocation = (TextView) v.findViewById(R.id.gameLocation);
 			TextView sport = (TextView) v.findViewById(R.id.gameSport);
 			ImageView sportIcon = (ImageView) v.findViewById(R.id.gameSportIcon);
 
@@ -74,10 +89,18 @@ public class GameAdapter extends ArrayAdapter<GameParse> {
 				timestamp.setText(date);
 			}
 			
-			if (location != null){
+			if (textLocation != null){
 				//String locationString = HelperFunction.convertParseGeoToString(i.getLocation());
 				//location.setText(locationString);
-				location.setText("0.1 mi. away");
+				
+				double distance = 
+						gameup.getDistanceBetweenLocationAndGame(latitude, 
+								longitude, i.getGameId());
+				
+				DecimalFormat df = new DecimalFormat();
+				df.setMaximumFractionDigits(1);
+				
+				textLocation.setText(df.format(distance) + " mi. away");
 			}
 			
 			
@@ -106,5 +129,23 @@ public class GameAdapter extends ArrayAdapter<GameParse> {
 
 	public int getPosition(GameParse game){
 		return this.objects.indexOf(game);
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onConnected(Bundle connectionHint) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onDisconnected() {
+		// TODO Auto-generated method stub
+		
 	}
 }

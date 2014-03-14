@@ -4,15 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gameupapp.GameFragment.OnGameClicked;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.Menu;
@@ -23,11 +27,16 @@ import android.widget.Button;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 
-public class MainActivity extends Activity implements OnGameClicked {
+
+// TODO Play Services check per https://developer.android.com/training/location/retrieve-current.html
+public class MainActivity extends Activity implements OnGameClicked, 
+					GooglePlayServicesClient.ConnectionCallbacks,
+					GooglePlayServicesClient.OnConnectionFailedListener {
 	// General info about user and app
 	private String USERNAME;
 	private GameUpInterface gameup;
-
+	private LocationManager locationManager;
+	
 	private List<GameParse> gameList = new ArrayList<GameParse>();
 
 	@Override
@@ -276,5 +285,66 @@ public class MainActivity extends Activity implements OnGameClicked {
 	private void refreshGames() {
 		new SetGameList().execute();
 	}
+	
+	
+	
+	 /*
+     * Called by Location Services when the request to connect the
+     * client finishes successfully. At this point, you can
+     * request the current location or start periodic updates
+     */
+    @Override
+    public void onConnected(Bundle dataBundle) {
+        // Display the connection status
+        gameup.CAN_CONNECT = true;
+
+    }
+    
+    /*
+     * Called by Location Services if the connection to the
+     * location client drops because of an error.
+     */
+    @Override
+    public void onDisconnected() {
+        // Display the connection status
+        gameup.CAN_CONNECT = false;
+    }
+    
+    /*
+     * Called by Location Services if the attempt to
+     * Location Services fails.
+     */
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        /*
+         * Google Play services can resolve some errors it detects.
+         * If the error has a resolution, try sending an Intent to
+         * start a Google Play services activity that can resolve
+         * error.
+         */
+        if (connectionResult.hasResolution()) {
+            try {
+                // Start an Activity that tries to resolve the error
+                connectionResult.startResolutionForResult(
+                        this,
+                        AppConstant.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+                /*
+                 * Thrown if Google Play services canceled the original
+                 * PendingIntent
+                 */
+            } catch (IntentSender.SendIntentException e) {
+                // Log the error
+                e.printStackTrace();
+            }
+        } else {
+            /*
+             * If no resolution is available, display a dialog to the
+             * user with the error.
+             */
+        	//TODO in the docs, this is showErrorDialog, but I can't find
+        	// anything with that method?
+            showDialog(connectionResult.getErrorCode());
+        }
+    }
 
 }
