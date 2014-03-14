@@ -19,8 +19,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -28,10 +30,13 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.TimePicker;
 
 public class CreateGameActivity extends Activity {
@@ -83,6 +88,7 @@ public class CreateGameActivity extends Activity {
         initSportSpinner();
         initLocationSpinner();
         initAbilitySpinner();
+        initPlayersEditText();
 	}
 	
 	@Override
@@ -137,14 +143,8 @@ public class CreateGameActivity extends Activity {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-				LinearLayout dummy = (LinearLayout) findViewById(R.id.dummy);
-				dummy.requestFocus();
-				
-				InputMethodManager imm = (InputMethodManager) getSystemService(
-					Context.INPUT_METHOD_SERVICE);
-				AutoCompleteTextView sportDropdown = (AutoCompleteTextView) findViewById(R.id.sport_dropdown);
-				imm.hideSoftInputFromWindow(sportDropdown.getWindowToken(), 0);
 				sport = (String) parent.getItemAtPosition(pos);
+				releaseFocus();
 			}
 		});
 	}
@@ -170,7 +170,7 @@ public class CreateGameActivity extends Activity {
 	}
 	
 	private void initAbilitySpinner() {
-		Spinner abilitySpinner = (Spinner) findViewById(R.id.ability_spinner);
+		final Spinner abilitySpinner = (Spinner) findViewById(R.id.ability_spinner);
 
 		// Custom choices
 		List<String> choices = new ArrayList<String>();
@@ -187,14 +187,27 @@ public class CreateGameActivity extends Activity {
 		abilitySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-				LinearLayout dummy = (LinearLayout) findViewById(R.id.dummy);
-				dummy.requestFocus();
-				abilityLevel = (Integer) parent.getItemAtPosition(pos);
+				abilityLevel = AppConstant.ABILITY_LEVELS.indexOf(abilitySpinner.getSelectedItem().toString());
+				releaseFocus();
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {
-				// Do nothing
+				abilityLevel = -1;
+			}
+		});
+	}
+	
+	private void initPlayersEditText() {
+		final EditText editText = (EditText) findViewById(R.id.edittext_players);
+		editText.setOnEditorActionListener(new OnEditorActionListener() {        
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				if (actionId == EditorInfo.IME_ACTION_DONE) {
+					editText.clearFocus();
+					releaseFocus();
+				}
+				return false;
 			}
 		});
 	}
@@ -222,39 +235,7 @@ public class CreateGameActivity extends Activity {
 			button.setText(R.string.create);
 	        button.setOnClickListener(new View.OnClickListener() {
 	            public void onClick(View v) {
-	            	
-	            	/** TODO Check all of this, Philip wrote it and has no idea
-	            	 * if any of it is right.
-	            	 */
-	            	
-	                long startDateL = ((DatePicker) findViewById(R.id.start_date_picker)).getMaxDate();
-	                int startHour = ((TimePicker) findViewById(R.id.start_time_picker)).getCurrentHour();
-	                int startMinute = ((TimePicker) findViewById(R.id.start_time_picker)).getCurrentMinute();
-	                
-	                long endDateL = ((DatePicker) findViewById(R.id.end_date_picker)).getMaxDate();
-	                int endHour = ((TimePicker) findViewById(R.id.end_time_picker)).getCurrentHour();
-	                int endMinute = ((TimePicker) findViewById(R.id.end_time_picker)).getCurrentMinute();
-	                
-	                long startHourL = TimeUnit.HOURS.toMillis(startHour);
-	                long startMinuteL = TimeUnit.MINUTES.toMillis(startMinute);
-	                
-	                long endHourL = TimeUnit.HOURS.toMillis(endHour);
-	                long endMinuteL = TimeUnit.MINUTES.toMillis(endMinute);
-	                
-	                Date startDate = new Date(startDateL + startHourL 
-	                		+ startMinuteL);
-	                Date endDate = new Date(endDateL + endHourL + endMinuteL);
-	                
-	                // TODO get actual location
-	                long latitude = 0;
-	                long longitude = 0;
-	                
-	                // TODO get actual readable location
-	                String readableLocation = "aLocation";
-	                
-	            	boolean succeeded = gameup.createGame(startDate, endDate, 
-	            			abilityLevel, readableLocation, latitude, 
-	            			longitude, sport);
+	            	boolean succeeded = createGame();
 	            	
 	            	AlertDialog dialog;
 	            	if (succeeded) {
@@ -262,7 +243,6 @@ public class CreateGameActivity extends Activity {
 	            				R.string.alert_success_create, true, CreateGameActivity.this, loggedIn);
 	            	} else {
 	            		dialog = HelperFunction.createGameAlert(
-	            				//TODO not sure if this should be false or true
 	            				R.string.alert_fail_create, false, CreateGameActivity.this, loggedIn);
 	            	}
 	            	
@@ -289,5 +269,50 @@ public class CreateGameActivity extends Activity {
 				updateView();
 			}
 		}
+	}
+	
+	private boolean createGame() {
+		long startDateL = ((DatePicker) findViewById(R.id.start_date_picker)).getMaxDate();
+        int startHour = ((TimePicker) findViewById(R.id.start_time_picker)).getCurrentHour();
+        int startMinute = ((TimePicker) findViewById(R.id.start_time_picker)).getCurrentMinute();
+        
+        long endDateL = ((DatePicker) findViewById(R.id.end_date_picker)).getMaxDate();
+        int endHour = ((TimePicker) findViewById(R.id.end_time_picker)).getCurrentHour();
+        int endMinute = ((TimePicker) findViewById(R.id.end_time_picker)).getCurrentMinute();
+        
+        long startHourL = TimeUnit.HOURS.toMillis(startHour);
+        long startMinuteL = TimeUnit.MINUTES.toMillis(startMinute);
+        
+        long endHourL = TimeUnit.HOURS.toMillis(endHour);
+        long endMinuteL = TimeUnit.MINUTES.toMillis(endMinute);
+        
+        Date startDate = new Date(startDateL + startHourL 
+        		+ startMinuteL);
+        Date endDate = new Date(endDateL + endHourL + endMinuteL);
+        
+        // TODO get actual location
+        long latitude = 0;
+        long longitude = 0;
+        
+        // TODO get actual readable location
+        String readableLocation = "aLocation";
+        
+        Log.d("create", "ability level: " + Integer.toString(abilityLevel) + " sport: " + sport);
+        
+    	boolean succeeded = gameup.createGame(startDate, endDate, 
+    			abilityLevel, readableLocation, latitude, 
+    			longitude, sport);
+    	
+    	return succeeded;
+	}
+	
+	private void releaseFocus() {
+		LinearLayout dummy = (LinearLayout) findViewById(R.id.dummy);
+		dummy.requestFocus();
+		
+		InputMethodManager imm = (InputMethodManager) getSystemService(
+			Context.INPUT_METHOD_SERVICE);
+		View v = findViewById(android.R.id.content);
+		imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 	}
 }
