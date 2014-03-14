@@ -34,8 +34,8 @@ public class FilterBuilder {
 	 * @param level Takes the desired ability level (from 1-5)
 	 */
 	public void setAbilityLevel(int level) {
-		assert(level <= 5);
-		assert(level >- 0);
+		assert(level <= 4);
+		assert(level > 0);
 		
 		ParseQuery<GameParse> abilityQuery = gameup.getQueryWithAbility(level);
 		query.whereMatchesQuery("abilityLevel", abilityQuery);
