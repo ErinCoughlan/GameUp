@@ -23,8 +23,13 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 
 public class GameUpInterface {
 	
-	// set to true when location services are connected
-	public boolean CAN_CONNECT = false;
+	/* set to true when location services are connected
+	 * Defaults to true because of a really weird race condition that leads to
+	 * GameAdapter's constructor seeing this as false and then its main methods
+	 * seeing it as true; I don't even know how it can get called before it's set
+	 * to true.
+	*/
+	public boolean CAN_CONNECT = true;
 	
 	private List<GameParse> gameList;
 	private Collection<Activity> observers;
@@ -203,6 +208,7 @@ public class GameUpInterface {
 	public List<GameParse> getGamesWithAbility(int ability) {
 		ParseQuery<GameParse> query = getQueryWithAbility(ability);
 		query.include("sport");
+		
 		
 		return filterGamesWithQuery(query);
 	}

@@ -38,9 +38,13 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 		super(context, textViewResourceId, gamesList);
 		this.objects = gamesList;
 		this.layout = textViewResourceId;
-		this.locationClient = new LocationClient(context, this, this);
-		this.locationClient.connect();
+
 		this.gameup = GameUpInterface.getInstance();
+		if(gameup.CAN_CONNECT) {
+			this.locationClient = new LocationClient(context, this, this);
+			this.locationClient.connect();
+		}
+		
 	}
 
 	/*
@@ -49,11 +53,15 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 	 */
 	public View getView(final int position, View convertView, ViewGroup parent) {
 
-		
+		double latitude = 0;
+		double longitude = 0;
 		// assign the view we are converting to a local variable
 		View v = convertView;
-		Location location = locationClient.getLastLocation();
-
+		if(gameup.CAN_CONNECT) {
+			Location location = locationClient.getLastLocation();
+			latitude = location.getLatitude();
+			longitude = location.getLongitude();
+		}
 		// first check to see if the view is null. if so, we have to inflate it.
 		// to inflate it basically means to render, or show, the view.
 		if (v == null) {
@@ -70,8 +78,7 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 		 * Therefore, i refers to the current Item object.
 		 */
 		GameParse i = objects.get(position);
-		double latitude = location.getLatitude();
-		double longitude = location.getLongitude();
+
 		
 		if (i != null) {
 			// This is how you obtain a reference to the TextViews.

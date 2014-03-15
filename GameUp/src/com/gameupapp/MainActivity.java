@@ -37,15 +37,20 @@ import com.parse.ParseUser;
 public class MainActivity extends Activity implements OnGameClicked, 
 					GooglePlayServicesClient.ConnectionCallbacks,
 					GooglePlayServicesClient.OnConnectionFailedListener {
+	
 	// General info about user and app
 	private String USERNAME;
 	private GameUpInterface gameup;
 	private List<GameParse> gameList = new ArrayList<GameParse>();
-
+	// used to get this bool from onCreate to onStart
+	private boolean PLAY_SERVICES;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+
 		
 		// Parse information
 		// Register GameParse subclass
@@ -79,12 +84,27 @@ public class MainActivity extends Activity implements OnGameClicked,
 				onLoginClicked();
 			}
 		});
+		
+		PLAY_SERVICES = true;
+		int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        try {
+            if (status != ConnectionResult.SUCCESS) {
+            	GooglePlayServicesUtil.getErrorDialog(status, this,
+            			AppConstant.RQS_GooglePlayServices).show();
+            	PLAY_SERVICES = false;
+            }
+            
+            // Create a client for location in maps
+  
+        } catch (Exception e) {
+        	PLAY_SERVICES = false;
+            Log.e("Error: GooglePlayServiceUtil: ", "" + e);
+        }
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
-		
 		startGameUp();
 		updateView();
 	}
@@ -142,7 +162,7 @@ public class MainActivity extends Activity implements OnGameClicked,
 	public void startGameUp() {
 		gameup = GameUpInterface.getInstance();
 		gameup.registerObserver(this);
-
+		gameup.CAN_CONNECT = PLAY_SERVICES;
 		new SetGameList().execute();
 	}
 
