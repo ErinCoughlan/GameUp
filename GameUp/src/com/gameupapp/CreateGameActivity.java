@@ -541,6 +541,10 @@ public class CreateGameActivity extends Activity implements
         Log.d("create", "sport: " + sport);
         Log.d("create", "playerCount: " + Integer.toString(playerCount));
         
+        if (latitude < -180) {
+        	latitude = 0;
+        	longitude = 0;
+        }
     	boolean succeeded = gameup.createGame(startDate, endDate, 
     			abilityLevel, playerCount, readableLocation, latitude, 
     			longitude, sport);
