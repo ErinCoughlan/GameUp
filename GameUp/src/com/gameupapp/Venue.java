@@ -7,6 +7,13 @@ public class Venue {
 	private String name;
 	private ImmutablePair<Double, Double> location;
 	
+	/**
+	 * 
+	 * @param latitude
+	 * @param longitude
+	 * @param place
+	 * @param aName
+	 */
 	public Venue(double latitude, double longitude, String place, String aName) {
 		location = new ImmutablePair<Double, Double>(latitude, longitude);
 		readableLocation = place;

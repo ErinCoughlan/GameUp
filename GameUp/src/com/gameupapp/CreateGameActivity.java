@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
@@ -56,6 +58,12 @@ public class CreateGameActivity extends Activity implements
 	private Calendar startC;
 	private Calendar endC;
 	private LocationClient locationClient;
+	private List<Venue> venues;
+	private String readableLocation = null;
+
+	// illegal latitude and longitude as sentinels.
+	private double latitude = -181;
+	private double longitude = -181;
 	
     private SimpleDateFormat dateFormatter = new SimpleDateFormat(
             "MMM dd, yyyy", Locale.getDefault());
@@ -78,7 +86,11 @@ public class CreateGameActivity extends Activity implements
         endC.add(Calendar.HOUR,  1);
         updateTimes();
         locationClient = new LocationClient(this, this, this);
-        
+        venues = new ArrayList<Venue>();
+        venues.add(new Venue(34.099204, -117.705262, "Biszantz Tennis Center", "Biszantz"));
+        venues.add(new Venue(34.062431, -117.673231, "Ontario Ice Skating Center", "Ontario Ice"));
+        venues.add(new Venue(34.228108, -118.449804, "LA Kings Valley Ice Center", "LA Kings"));
+        venues.add(new Venue(34.053186, -117.658522, "Cyprus Avenue Park", "Cyprus Ave"));
 	}
 	
 	@Override
@@ -95,6 +107,7 @@ public class CreateGameActivity extends Activity implements
         initAbilitySpinner();
         initPlayersEditText();
         locationClient.connect();
+        
 	}
 	
 	@Override
@@ -171,10 +184,12 @@ public class CreateGameActivity extends Activity implements
 
 		// Custom choices
 		List<String> choices = new ArrayList<String>();
+		for(Venue venue : venues) {
+			choices.add(venue.getName());
+		}
 		
 		// TODO: Get choices from API and set up Add New interactions
 		Collections.sort(choices);
-		choices.add("foo");
 		choices.add("Add New");
 
 		// Create an ArrayAdapter with custom choices
@@ -211,6 +226,16 @@ public class CreateGameActivity extends Activity implements
 				    
 					dialog = builder.create();
 					dialog.show();
+				} else {
+					for(Venue venue : venues) {
+						if(selectedItem.equals(venue.getName())) {
+							ImmutablePair<Double, Double> location = 
+									venue.getLocation();
+							readableLocation = venue.getReadableLocation();
+							latitude = location.left;
+							longitude = location.right;
+						}
+					}
 				}
 			}
 
@@ -439,10 +464,7 @@ public class CreateGameActivity extends Activity implements
 		// Max number of players
 		final EditText editText = (EditText) findViewById(R.id.edittext_players);
 		int playerCount = Integer.parseInt(editText.getText().toString());
-        
-        // TODO get actual location
-        long latitude = 0;
-        long longitude = 0;
+  
         
         // TODO get actual readable location
         String readableLocation = "aLocation";
