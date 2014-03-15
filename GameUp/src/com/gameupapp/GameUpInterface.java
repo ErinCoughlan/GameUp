@@ -204,6 +204,7 @@ public class GameUpInterface {
 		ParseQuery<GameParse> query = getQueryWithAbility(ability);
 		query.include("sport");
 		
+		
 		return filterGamesWithQuery(query);
 	}
 	

@@ -45,5 +45,7 @@
     <color name="nice_blue">#33b5e5</color>
     <color name="nice_blue_dark">#0099cc</color>
     <color name="transparent">#00000000</color>
+    <string name="venue_name_hint">Save this venue as...</string>
+    <string name="venue_addr_hint">Location (e.g. Parents Field)</string>
 
 </resources>
