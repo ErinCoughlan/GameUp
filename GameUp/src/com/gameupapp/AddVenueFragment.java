@@ -25,7 +25,9 @@ public class AddVenueFragment extends DialogFragment {
 	private AddVenueDialogListener mListener;
 	
 	
-	private void initVenueNameEditText() {
+	/*private void initVenueNameEditText() {
+		View view = getView();
+		getView().findViewById(R.id.edittext_venuename);
 		final EditText nameText = (EditText) getView().findViewById(R.id.edittext_venuename);
 		nameText.setOnEditorActionListener(new OnEditorActionListener() {        
 			@Override
@@ -49,7 +51,7 @@ public class AddVenueFragment extends DialogFragment {
 				return false;
 			}
 		});
-	}
+	}*/
 	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -61,7 +63,6 @@ public class AddVenueFragment extends DialogFragment {
 		        @Override
 		        public void onClick(DialogInterface dialog, int which) {
 		        	mListener.onDialogPositiveClick(AddVenueFragment.this);
-		            dialog.dismiss();
 		            //save info where you want it
 		        }
 		 });
@@ -73,8 +74,8 @@ public class AddVenueFragment extends DialogFragment {
 				
 			}
 		});
-		 
-		 return builder.create();
+		  
+		return builder.create();
 		
 	}
 	
@@ -86,7 +87,7 @@ public class AddVenueFragment extends DialogFragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		
+
 		try {
 			mListener = (AddVenueDialogListener) activity;
 		} catch (ClassCastException e) {
