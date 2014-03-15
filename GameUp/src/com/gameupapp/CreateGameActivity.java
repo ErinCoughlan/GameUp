@@ -174,6 +174,7 @@ public class CreateGameActivity extends Activity implements
 		
 		// TODO: Get choices from API and set up Add New interactions
 		Collections.sort(choices);
+		choices.add("foo");
 		choices.add("Add New");
 
 		// Create an ArrayAdapter with custom choices
@@ -189,14 +190,16 @@ public class CreateGameActivity extends Activity implements
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
 				String selectedItem = locationSpinner.getSelectedItem().toString();
+				Log.d("locationSpinner", selectedItem);
 				if(selectedItem.equals("Add New")) {
 					AlertDialog dialog;
+					Context context = view.getContext();
 					LayoutInflater inflater = (LayoutInflater) 
 							getSystemService(LAYOUT_INFLATER_SERVICE);
 					View layout = inflater.inflate(R.layout.add_venue, 
 							(ViewGroup) findViewById(R.layout.activity_create_game));
 					
-					AlertDialog.Builder builder = new AlertDialog.Builder(getBaseContext());
+					AlertDialog.Builder builder = new AlertDialog.Builder(context);
 				    builder.setView(layout);
 				    builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
 				        @Override
