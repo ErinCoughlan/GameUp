@@ -204,51 +204,53 @@ public class CreateGameActivity extends Activity implements
 			return;
 		}
 		
-		// Get current user location so we can create a lat/long box for 
-		// the Geocoder
-		Location currentLocation = locationClient.getLastLocation();
-		double localLatitude = currentLocation.getLatitude();
-		double localLongitude = currentLocation.getLongitude();
-		
-		
-		// Geocoder takes a box formed by a lowerLeft and upperRight point-pair
-		double lowerLeftLatitude = localLatitude - 1;
-		double upperRightLatitude = localLatitude + 1;
-		double lowerLeftLongitude = localLongitude - 1;
-		double upperRightLongitude = localLongitude + 1;
-		
-		//TODO Locale
-		Locale locale =Locale.ENGLISH;
-		Geocoder venueLocation = new Geocoder(this, locale);
-		
-		List<Address> addresses;
-		// TODO ability to choose the correct address
-		try {
-			addresses = 
-					venueLocation.getFromLocationName(readableLocation, 
-							AppConstant.MAX_GEOCODER_RESULTS, lowerLeftLatitude, 
-							lowerLeftLongitude, upperRightLatitude, upperRightLongitude);
-		} catch (IOException e) {
+		if(gameup.CAN_CONNECT) {
+			// Get current user location so we can create a lat/long box for 
+			// the Geocoder
+			Location currentLocation = locationClient.getLastLocation();
+			double localLatitude = currentLocation.getLatitude();
+			double localLongitude = currentLocation.getLongitude();
 			
-			//TODO handle this gracefully
-			Log.e("getVenueLocation", "Getting venue location failed", e);
-			return;
+			
+			// Geocoder takes a box formed by a lowerLeft and upperRight point-pair
+			double lowerLeftLatitude = localLatitude - 1;
+			double upperRightLatitude = localLatitude + 1;
+			double lowerLeftLongitude = localLongitude - 1;
+			double upperRightLongitude = localLongitude + 1;
+			
+			//TODO Locale
+			Locale locale =Locale.ENGLISH;
+			Geocoder venueLocation = new Geocoder(this, locale);
+			
+			List<Address> addresses;
+			// TODO ability to choose the correct address
+			try {
+				addresses = 
+						venueLocation.getFromLocationName(readableLocation, 
+								AppConstant.MAX_GEOCODER_RESULTS, lowerLeftLatitude, 
+								lowerLeftLongitude, upperRightLatitude, upperRightLongitude);
+			} catch (IOException e) {
+				
+				//TODO handle this gracefully
+				Log.e("getVenueLocation", "Getting venue location failed", e);
+				return;
+			}
+			
+			Address address = addresses.get(0);
+			
+			Log.d("getVenueLocation", address.toString());
+			
+			double venueLatitude = address.getLatitude();
+			double venueLongitude = address.getLongitude();
+			
+			Venue addedVenue = new Venue(venueLatitude, venueLongitude, 
+					readableLocation, venueName);
+			
+			venues.add(addedVenue);
+			
+			// Refresh venues
+			initLocationSpinner();
 		}
-		
-		Address address = addresses.get(0);
-		
-		Log.d("getVenueLocation", address.toString());
-		
-		double venueLatitude = address.getLatitude();
-		double venueLongitude = address.getLongitude();
-		
-		Venue addedVenue = new Venue(venueLatitude, venueLongitude, 
-				readableLocation, venueName);
-		
-		venues.add(addedVenue);
-		
-		// Refresh venues
-		initLocationSpinner();
 		dialog.dismiss();
 	}
 	

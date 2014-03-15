@@ -6,6 +6,10 @@ import java.util.List;
 import com.gameupapp.GameFragment.OnGameClicked;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
@@ -13,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -22,6 +27,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
@@ -31,15 +37,20 @@ import com.parse.ParseUser;
 public class MainActivity extends Activity implements OnGameClicked, 
 					GooglePlayServicesClient.ConnectionCallbacks,
 					GooglePlayServicesClient.OnConnectionFailedListener {
+	
 	// General info about user and app
 	private String USERNAME;
 	private GameUpInterface gameup;
 	private List<GameParse> gameList = new ArrayList<GameParse>();
-
+	// used to get this bool from onCreate to onStart
+	private boolean PLAY_SERVICES;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+
 		
 		// Parse information
 		// Register GameParse subclass
@@ -73,12 +84,27 @@ public class MainActivity extends Activity implements OnGameClicked,
 				onLoginClicked();
 			}
 		});
+		
+		PLAY_SERVICES = true;
+		int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        try {
+            if (status != ConnectionResult.SUCCESS) {
+            	GooglePlayServicesUtil.getErrorDialog(status, this,
+            			AppConstant.RQS_GooglePlayServices).show();
+            	PLAY_SERVICES = false;
+            }
+            
+            // Create a client for location in maps
+  
+        } catch (Exception e) {
+        	PLAY_SERVICES = false;
+            Log.e("Error: GooglePlayServiceUtil: ", "" + e);
+        }
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
-		
 		startGameUp();
 		updateView();
 	}
@@ -136,7 +162,7 @@ public class MainActivity extends Activity implements OnGameClicked,
 	public void startGameUp() {
 		gameup = GameUpInterface.getInstance();
 		gameup.registerObserver(this);
-
+		gameup.CAN_CONNECT = PLAY_SERVICES;
 		new SetGameList().execute();
 	}
 
