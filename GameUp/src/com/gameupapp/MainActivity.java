@@ -173,7 +173,7 @@ public class MainActivity extends Activity implements OnGameClicked,
 		@Override
 		protected Void doInBackground(Void... params) {
 			Log.d("DisplayGame", "Setting gameList async");
-			gs = gameup.getGames();
+			gs = gameup.getFutureGames();
 			return null;
 		}
 		

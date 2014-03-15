@@ -172,6 +172,13 @@ public class GameUpInterface {
 		return query;
 	}
 	
+	public List<GameParse> getFutureGames() {
+		ParseQuery<GameParse> query = getQueryOnFutureGames();
+		query.setLimit(10);
+		
+		return filterGamesWithQuery(query);
+	}
+	
 	/**
 	 * 
 	 * @param gameId Unique identifier for the desired game
