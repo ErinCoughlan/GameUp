@@ -44,10 +44,31 @@ public class MainActivity extends Activity implements OnGameClicked,
 	private List<GameParse> gameList = new ArrayList<GameParse>();
 	// used to get this bool from onCreate to onStart
 	private boolean PLAY_SERVICES;
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		PLAY_SERVICES = true;
+		int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        try {
+            if (status != ConnectionResult.SUCCESS) {
+            	GooglePlayServicesUtil.getErrorDialog(status, this,
+            			AppConstant.RQS_GooglePlayServices).show();
+            	PLAY_SERVICES = false;
+            }
+            
+            // Create a client for location in maps
+  
+        } catch (Exception e) {
+        	PLAY_SERVICES = false;
+            Log.e("Error: GooglePlayServiceUtil: ", "" + e);
+        }
+        
+        gameup = GameUpInterface.getInstance();
+        gameup.CAN_CONNECT = PLAY_SERVICES;
+		
 		setContentView(R.layout.activity_main);
 		
 
@@ -84,22 +105,6 @@ public class MainActivity extends Activity implements OnGameClicked,
 				onLoginClicked();
 			}
 		});
-		
-		PLAY_SERVICES = true;
-		int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-        try {
-            if (status != ConnectionResult.SUCCESS) {
-            	GooglePlayServicesUtil.getErrorDialog(status, this,
-            			AppConstant.RQS_GooglePlayServices).show();
-            	PLAY_SERVICES = false;
-            }
-            
-            // Create a client for location in maps
-  
-        } catch (Exception e) {
-        	PLAY_SERVICES = false;
-            Log.e("Error: GooglePlayServiceUtil: ", "" + e);
-        }
 	}
 
 	@Override
@@ -160,10 +165,10 @@ public class MainActivity extends Activity implements OnGameClicked,
 	}
 
 	public void startGameUp() {
-		gameup = GameUpInterface.getInstance();
 		gameup.registerObserver(this);
 		gameup.CAN_CONNECT = PLAY_SERVICES;
 		new SetGameList().execute();
+		
 	}
 
 
@@ -320,9 +325,6 @@ public class MainActivity extends Activity implements OnGameClicked,
     public void onConnected(Bundle dataBundle) {
         // Display the connection status
         gameup.CAN_CONNECT = true;
-        SetGameList setGameList = new SetGameList();
-        setGameList.execute();
-        updateView();
     }
     
     /*

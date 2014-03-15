@@ -13,6 +13,8 @@ import com.google.android.gms.location.LocationClient;
 import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,6 +62,12 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 		double latitude = 0;
 		double longitude = 0;
 		
+		// Hackery to deal with race conditions so second pass is right
+		if(PLAY_SERVICES != gameup.CAN_CONNECT) {
+			locationClient = new LocationClient(context, this, this);
+			locationClient.connect();
+		}
+		
 		// assign the view we are converting to a local variable
 		View v = convertView;
 		if(PLAY_SERVICES) {
@@ -68,11 +76,8 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 			longitude = location.getLongitude();
 		}
 		
-		// Hackery to deal with race conditions so second pass is right
-		if(PLAY_SERVICES != gameup.CAN_CONNECT) {
-			locationClient = new LocationClient(context, this, this);
-			locationClient.connect();
-		}
+
+
 		
 		
 		
