@@ -536,10 +536,6 @@ public class CreateGameActivity extends Activity implements
 		// Max number of players
 		final EditText editText = (EditText) findViewById(R.id.edittext_players);
 		int playerCount = Integer.parseInt(editText.getText().toString());
-  
-        
-        // TODO get actual readable location
-        String readableLocation = "aLocation";
         
         Log.d("create", "ability level: " + Integer.toString(abilityLevel));
         Log.d("create", "sport: " + sport);
