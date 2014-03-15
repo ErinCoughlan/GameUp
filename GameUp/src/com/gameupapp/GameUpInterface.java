@@ -29,7 +29,7 @@ public class GameUpInterface {
 	 * seeing it as true; I don't even know how it can get called before it's set
 	 * to true.
 	*/
-	public boolean CAN_CONNECT = true;
+	public boolean CAN_CONNECT = false;
 	
 	private List<GameParse> gameList;
 	private Collection<Activity> observers;

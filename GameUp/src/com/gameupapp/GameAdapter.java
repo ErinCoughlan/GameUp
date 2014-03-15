@@ -7,6 +7,7 @@ import java.util.Locale;
 import com.gameupapp.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 
 import android.content.Context;
@@ -29,6 +30,7 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 	private Context context;
 	private LocationClient locationClient;
 	private GameUpInterface gameup;
+	private boolean PLAY_SERVICES = false;
 
 	/* here we must override the constructor for ArrayAdapter
 	 * the only variable we care about now is ArrayList<Item> objects,
@@ -38,9 +40,11 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 		super(context, textViewResourceId, gamesList);
 		this.objects = gamesList;
 		this.layout = textViewResourceId;
-
+		this.context = context;
+		
 		this.gameup = GameUpInterface.getInstance();
 		if(gameup.CAN_CONNECT) {
+			PLAY_SERVICES = true;
 			this.locationClient = new LocationClient(context, this, this);
 			this.locationClient.connect();
 		}
@@ -55,13 +59,23 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 
 		double latitude = 0;
 		double longitude = 0;
+		
 		// assign the view we are converting to a local variable
 		View v = convertView;
-		if(gameup.CAN_CONNECT) {
+		if(PLAY_SERVICES) {
 			Location location = locationClient.getLastLocation();
 			latitude = location.getLatitude();
 			longitude = location.getLongitude();
 		}
+		
+		// Hackery to deal with race conditions so second pass is right
+		if(PLAY_SERVICES != gameup.CAN_CONNECT) {
+			locationClient = new LocationClient(context, this, this);
+			locationClient.connect();
+		}
+		
+		
+		
 		// first check to see if the view is null. if so, we have to inflate it.
 		// to inflate it basically means to render, or show, the view.
 		if (v == null) {
@@ -146,8 +160,7 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 
 	@Override
 	public void onConnected(Bundle connectionHint) {
-		// TODO Auto-generated method stub
-		
+		PLAY_SERVICES = true;
 	}
 
 	@Override

@@ -320,7 +320,9 @@ public class MainActivity extends Activity implements OnGameClicked,
     public void onConnected(Bundle dataBundle) {
         // Display the connection status
         gameup.CAN_CONNECT = true;
-
+        SetGameList setGameList = new SetGameList();
+        setGameList.execute();
+        updateView();
     }
     
     /*
