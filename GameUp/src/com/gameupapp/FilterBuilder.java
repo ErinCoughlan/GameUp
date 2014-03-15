@@ -58,6 +58,22 @@ public class FilterBuilder {
 		query.whereMatchesQuery("startDateTime", temporalFilter);
 	}
 	
+	public void addSortAscendingOnKey(String key) {
+		query.addAscendingOrder(key);
+	}
+	
+	public void addSortDescendingOnKey(String key) {
+		query.addDescendingOrder(key);
+	}
+	
+	public void exclusivelySortAscendingOnKey(String key) {
+		query.orderByAscending(key);
+	}
+	
+	public void exclusivelySortDescendingOnKey(String key) {
+		query.orderByDescending(key);
+	}
+	
 	/**
 	 * TODO I'm not sure if we actually always need to include sport?
 	 * @return A query constructed to match all desired parameters 
