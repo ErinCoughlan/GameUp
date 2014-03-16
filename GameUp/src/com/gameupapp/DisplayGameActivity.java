@@ -38,6 +38,7 @@ public class DisplayGameActivity extends Activity implements
 	private LocationClient mLocationClient;
 	private Location mCurrentLocation;
 	private GoogleMap map;
+	private boolean connected = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -67,17 +68,18 @@ public class DisplayGameActivity extends Activity implements
 		} else {
 			// Create a client for location in maps
     		mLocationClient = new LocationClient(this, this, this);
+    		mLocationClient.connect();
     		FragmentManager fm = getFragmentManager();
             MapFragment mf = (MapFragment) fm.findFragmentById(R.id.gameMap);
             map = mf.getMap();
             map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-            
-            getCurrentLocation();
 		}
 		
 		// Set info based on game
 		String[] params = {GAME_ID};
-		new SetGame().execute(params);
+		if(!gameup.CAN_CONNECT || connected) {
+			new SetGame().execute(params);
+		}
 	}
 	
 	private class SetGame extends AsyncTask<String, Integer, Void> {
@@ -133,7 +135,7 @@ public class DisplayGameActivity extends Activity implements
 			//String locationString = HelperFunction.convertParseGeoToString(i.getLocation());
 			//location.setText(locationString);
 			
-			if (gameup.CAN_CONNECT) {
+			if (connected) {
 				double distance = 
 						gameup.getDistanceBetweenLocationAndGame(mCurrentLocation.getLatitude(), 
 								mCurrentLocation.getLongitude(), g.getGameId());
@@ -285,7 +287,10 @@ public class DisplayGameActivity extends Activity implements
 
 	@Override
 	public void onConnected(Bundle connectionHint) {
-		gameup.CAN_CONNECT = true;
+		connected = true;
+        getCurrentLocation();
+        String[] params = {GAME_ID};
+        new SetGame().execute(params);
 	}
 
 	@Override
