@@ -83,6 +83,14 @@ public class FilterBuilder {
 	}
 	
 	/**
+	 * 
+	 * @param n How many results the query should return
+	 */
+	public void setQuerySize(int n) {
+		query.setLimit(n);
+	}
+	
+	/**
 	 * TODO I'm not sure if we actually always need to include sport?
 	 * @return A query constructed to match all desired parameters 
 	 */
