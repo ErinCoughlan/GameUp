@@ -7,9 +7,6 @@ import com.gameupapp.GameFragment.OnGameClicked;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.location.LocationClient;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
@@ -17,7 +14,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -27,52 +23,25 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 
 
 // TODO Play Services check per https://developer.android.com/training/location/retrieve-current.html
-public class MainActivity extends Activity implements OnGameClicked, 
-					GooglePlayServicesClient.ConnectionCallbacks,
-					GooglePlayServicesClient.OnConnectionFailedListener {
+public class MainActivity extends Activity implements OnGameClicked {
 	
 	// General info about user and app
 	private String USERNAME;
 	private GameUpInterface gameup;
 	private List<GameParse> gameList = new ArrayList<GameParse>();
-	// used to get this bool from onCreate to onStart
-	private boolean PLAY_SERVICES;
 
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		PLAY_SERVICES = true;
-		int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-        try {
-            if (status != ConnectionResult.SUCCESS) {
-            	GooglePlayServicesUtil.getErrorDialog(status, this,
-            			AppConstant.RQS_GooglePlayServices).show();
-            	PLAY_SERVICES = false;
-            }
-            
-            // Create a client for location in maps
-  
-        } catch (Exception e) {
-        	PLAY_SERVICES = false;
-            Log.e("Error: GooglePlayServiceUtil: ", "" + e);
-        }
-        
-        gameup = GameUpInterface.getInstance();
-        gameup.CAN_CONNECT = PLAY_SERVICES;
-		
 		setContentView(R.layout.activity_main);
-		
 
-		
 		// Parse information
 		// Register GameParse subclass
 		ParseObject.registerSubclass(GameParse.class);
@@ -110,7 +79,29 @@ public class MainActivity extends Activity implements OnGameClicked,
 	@Override
 	public void onStart() {
 		super.onStart();
-		startGameUp();
+		
+		gameup = GameUpInterface.getInstance();
+		gameup.registerObserver(this);
+
+		int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        try {
+            if (status != ConnectionResult.SUCCESS) {
+            	if (!gameup.SEEN_MAPS_ALERT) {
+	            	GooglePlayServicesUtil.getErrorDialog(status, this,
+	            			AppConstant.RQS_GooglePlayServices).show();
+	            	gameup.SEEN_MAPS_ALERT = true;
+            	}
+            	gameup.CAN_CONNECT = false;
+            } else {
+            	gameup.CAN_CONNECT = true;
+            }
+  
+        } catch (Exception e) {
+        	gameup.CAN_CONNECT = false;
+            Log.e("Error: GooglePlayServiceUtil: ", "" + e);
+        }
+
+		new SetGameList().execute();
 		updateView();
 	}
 
@@ -163,14 +154,6 @@ public class MainActivity extends Activity implements OnGameClicked,
 		editor.putString(AppConstant.USER, USERNAME);
 		editor.apply();
 	}
-
-	public void startGameUp() {
-		gameup.registerObserver(this);
-		gameup.CAN_CONNECT = PLAY_SERVICES;
-		new SetGameList().execute();
-		
-	}
-
 
 	private class SetGameList extends AsyncTask<Void, Integer, Void> {
 		List<GameParse> gs;
@@ -313,65 +296,4 @@ public class MainActivity extends Activity implements OnGameClicked,
 	private void refreshGames() {
 		new SetGameList().execute();
 	}
-	
-	
-	
-	 /*
-     * Called by Location Services when the request to connect the
-     * client finishes successfully. At this point, you can
-     * request the current location or start periodic updates
-     */
-    @Override
-    public void onConnected(Bundle dataBundle) {
-        // Display the connection status
-        gameup.CAN_CONNECT = true;
-    }
-    
-    /*
-     * Called by Location Services if the connection to the
-     * location client drops because of an error.
-     */
-    @Override
-    public void onDisconnected() {
-        // Display the connection status
-        gameup.CAN_CONNECT = false;
-    }
-    
-    /*
-     * Called by Location Services if the attempt to
-     * Location Services fails.
-     */
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        /*
-         * Google Play services can resolve some errors it detects.
-         * If the error has a resolution, try sending an Intent to
-         * start a Google Play services activity that can resolve
-         * error.
-         */
-        if (connectionResult.hasResolution()) {
-            try {
-                // Start an Activity that tries to resolve the error
-                connectionResult.startResolutionForResult(
-                        this,
-                        AppConstant.CONNECTION_FAILURE_RESOLUTION_REQUEST);
-                /*
-                 * Thrown if Google Play services canceled the original
-                 * PendingIntent
-                 */
-            } catch (IntentSender.SendIntentException e) {
-                // Log the error
-                e.printStackTrace();
-            }
-        } else {
-            /*
-             * If no resolution is available, display a dialog to the
-             * user with the error.
-             */
-        	//TODO in the docs, this is showErrorDialog, but I can't find
-        	// anything with that method?
-            showDialog(connectionResult.getErrorCode());
-        }
-    }
-
 }

@@ -1,8 +1,9 @@
 package com.gameupapp;
 
+import java.text.DecimalFormat;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -15,7 +16,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -27,7 +27,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class DisplayGameActivity extends Activity implements
+public class DisplayGameActivity extends Activity implements 
 		GooglePlayServicesClient.ConnectionCallbacks,
 		GooglePlayServicesClient.OnConnectionFailedListener {
 	
@@ -46,34 +46,12 @@ public class DisplayGameActivity extends Activity implements
 		
 		// Back button in app
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-        
-		int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-        try {
-            if (status != ConnectionResult.SUCCESS) {
-            	GooglePlayServicesUtil.getErrorDialog(status, this,
-            			AppConstant.RQS_GooglePlayServices).show();
-            	LinearLayout mapView = (LinearLayout) findViewById(R.id.gameMapView);
-            	mapView.setVisibility(View.INVISIBLE);
-            }
-            
-            // Create a client for location in maps
-    		mLocationClient = new LocationClient(this, this, this);
-    		FragmentManager fm = getFragmentManager();
-            MapFragment mf = (MapFragment) fm.findFragmentById(R.id.gameMap);
-            map = mf.getMap();
-            map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-        } catch (Exception e) {
-            Log.e("Error: GooglePlayServiceUtil: ", "" + e);
-        }
 	}
 	
 	@Override
 	public void onStart() {
 		super.onStart();
 		
-		// Connect maps and get current location
-		mLocationClient.connect();
-
 		// Get the game id so we can retrieve info
 		Intent intent = getIntent();
 		GAME_ID = intent.getStringExtra(AppConstant.GAME);
@@ -81,6 +59,21 @@ public class DisplayGameActivity extends Activity implements
 		// GameUp instance
 		gameup = GameUpInterface.getInstance();
 		gameup.registerObserver(this);
+		
+		// Maps
+		if (!gameup.CAN_CONNECT) {
+			LinearLayout mapView = (LinearLayout) findViewById(R.id.gameMapView);
+        	mapView.setVisibility(View.INVISIBLE);
+		} else {
+			// Create a client for location in maps
+    		mLocationClient = new LocationClient(this, this, this);
+    		FragmentManager fm = getFragmentManager();
+            MapFragment mf = (MapFragment) fm.findFragmentById(R.id.gameMap);
+            map = mf.getMap();
+            map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+            
+            getCurrentLocation();
+		}
 		
 		// Set info based on game
 		String[] params = {GAME_ID};
@@ -122,6 +115,7 @@ public class DisplayGameActivity extends Activity implements
 		TextView players = (TextView) this.findViewById(R.id.gamePlayers);
 		TextView sport = (TextView) this.findViewById(R.id.gameSport);
 		TextView abilityLevel = (TextView) this.findViewById(R.id.gameAbilityLevel);
+		TextView distLocation = (TextView) this.findViewById(R.id.gameDistance);
 		
 		// check to see if each individual textview is null.
 		// if not, assign some text
@@ -133,6 +127,24 @@ public class DisplayGameActivity extends Activity implements
 		if (location != null) {
 			String locationString = g.getReadableLocation();
 			location.setText(locationString);
+		}
+		
+		if (distLocation != null){
+			//String locationString = HelperFunction.convertParseGeoToString(i.getLocation());
+			//location.setText(locationString);
+			
+			if (gameup.CAN_CONNECT) {
+				double distance = 
+						gameup.getDistanceBetweenLocationAndGame(mCurrentLocation.getLatitude(), 
+								mCurrentLocation.getLongitude(), g.getGameId());
+				
+				DecimalFormat df = new DecimalFormat();
+				df.setMaximumFractionDigits(1);
+				
+				distLocation.setText(df.format(distance) + " mi. away");
+			} else {
+				distLocation.setVisibility(View.INVISIBLE);
+			}
 		}
 		
 		if (sport != null) {
@@ -176,8 +188,10 @@ public class DisplayGameActivity extends Activity implements
 	protected void onStop() {
 		super.onStop();
 		
-		// Disconnecting maps
-        mLocationClient.disconnect();
+		if (gameup.CAN_CONNECT) {
+			// Disconnecting maps
+	        mLocationClient.disconnect();
+		}
 
 		// Clear the observers
 		if (gameup != null) {
@@ -246,18 +260,9 @@ public class DisplayGameActivity extends Activity implements
 			}
 		}
 	}
-
-	/*
-     * Called by Location Services when the request to connect the
-     * client finishes successfully. At this point, you can
-     * request the current location or start periodic updates
-     */
-    @Override
-    public void onConnected(Bundle dataBundle) {
-        // Display the connection status
-        Log.d("maps", "Connected");
-        
-        mCurrentLocation = mLocationClient.getLastLocation();
+    
+    public void getCurrentLocation() {
+    	mCurrentLocation = mLocationClient.getLastLocation();
 
         //map.setMyLocationEnabled(true);
         //Location location = map.getMyLocation();
@@ -270,51 +275,22 @@ public class DisplayGameActivity extends Activity implements
                     .title("Current Location")
                     .position(myLocation));
         }
-
     }
-
-    /*
-     * Called by Location Services if the connection to the
-     * location client drops because of an error.
-     */
+    
     @Override
-    public void onDisconnected() {
-        // Display the connection status
-        Log.d("maps", "Disconnected. Please re-connect.");
-    }
+	public void onConnectionFailed(ConnectionResult result) {
+		// TODO Auto-generated method stub
+		
+	}
 
-    /*
-     * Called by Location Services if the attempt to
-     * Location Services fails.
-     */
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        /*
-         * Google Play services can resolve some errors it detects.
-         * If the error has a resolution, try sending an Intent to
-         * start a Google Play services activity that can resolve
-         * error.
-         */
-        if (connectionResult.hasResolution()) {
-            try {
-                // Start an Activity that tries to resolve the error
-                connectionResult.startResolutionForResult(
-                        this,
-                        AppConstant.CONNECTION_FAILURE_RESOLUTION_REQUEST);
-                /*
-                 * Thrown if Google Play services canceled the original
-                 * PendingIntent
-                 */
-            } catch (IntentSender.SendIntentException e) {
-                // Log the error
-                e.printStackTrace();
-            }
-        } else {
-            /*
-             * If no resolution is available, display a dialog to the
-             * user with the error.
-             */
-            //showErrorDialog(connectionResult.getErrorCode());
-        }
-    }
+	@Override
+	public void onConnected(Bundle connectionHint) {
+		gameup.CAN_CONNECT = true;
+	}
+
+	@Override
+	public void onDisconnected() {
+		// TODO Auto-generated method stub
+		
+	}
 }

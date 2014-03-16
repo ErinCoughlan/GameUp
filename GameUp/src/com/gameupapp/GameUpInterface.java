@@ -30,6 +30,7 @@ public class GameUpInterface {
 	 * to true.
 	*/
 	public boolean CAN_CONNECT = false;
+	public boolean SEEN_MAPS_ALERT = false;
 	
 	private List<GameParse> gameList;
 	private Collection<Activity> observers;
