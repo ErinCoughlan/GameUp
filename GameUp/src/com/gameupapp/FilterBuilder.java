@@ -75,6 +75,14 @@ public class FilterBuilder {
 	}
 	
 	/**
+	 * 
+	 * @param n How many games to skip
+	 */
+	public void getMoreGames(int n) {
+		query.setSkip(n);
+	}
+	
+	/**
 	 * TODO I'm not sure if we actually always need to include sport?
 	 * @return A query constructed to match all desired parameters 
 	 */
