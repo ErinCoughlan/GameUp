@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
+import com.parse.ParseQuery.CachePolicy;
 
 /**
  * TODO add temporal filtering (ie allow excluding past games)
@@ -88,6 +89,15 @@ public class FilterBuilder {
 	 */
 	public void setQuerySize(int n) {
 		query.setLimit(n);
+	}
+	
+	/**
+	 * 
+	 * @param cacheLength Time (in milliseconds) to remain cached
+	 */
+	public void setCached(long cacheLength) {
+		query.setCachePolicy(CachePolicy.CACHE_ELSE_NETWORK);
+		query.setMaxCacheAge(cacheLength);
 	}
 	
 	/**
