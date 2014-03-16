@@ -39,13 +39,13 @@
     <string name="choose_start_time_prompt">Start time:</string>
     <string name="choose_end_time_prompt">End time:</string>
     <string name="choose_ability_prompt">Ability Level:</string>
+    <string name="venue_name_hint">Save this venue as...</string>
+    <string name="venue_addr_hint">Location (e.g. Parents Field or address)</string>
     
     <string name="unlink_prompt">Unlinking your account from Facebook will permanently delete all of your information from GameUp.</string>
 
     <color name="nice_blue">#33b5e5</color>
     <color name="nice_blue_dark">#0099cc</color>
     <color name="transparent">#00000000</color>
-    <string name="venue_name_hint">Save this venue as...</string>
-    <string name="venue_addr_hint">Location (e.g. Parents Field)</string>
 
 </resources>

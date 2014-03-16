@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.gameupapp.GameFragment.OnGameClicked;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.parse.Parse;
 import com.parse.ParseObject;
@@ -16,7 +15,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.Menu;
@@ -133,6 +131,9 @@ public class MainActivity extends Activity implements OnGameClicked {
 	        	return true;
 	        case R.id.menu_refresh:
 	        	refreshGames();
+	        	return true;
+	        case R.id.menu_filter:
+	        	filter();
 	        	return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
@@ -295,5 +296,18 @@ public class MainActivity extends Activity implements OnGameClicked {
 	
 	private void refreshGames() {
 		new SetGameList().execute();
+	}
+	
+	private void filter() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this)
+			.setTitle("Filter!")
+			.setMessage("This is totally a filter")
+			.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+				}
+		});
+		builder.show();
 	}
 }
