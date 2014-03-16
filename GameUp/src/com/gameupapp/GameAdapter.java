@@ -45,7 +45,7 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 		this.context = context;
 		
 		this.gameup = GameUpInterface.getInstance();
-		if(gameup.CAN_CONNECT) {
+		if (gameup.CAN_CONNECT) {
 			PLAY_SERVICES = true;
 			this.locationClient = new LocationClient(context, this, this);
 			this.locationClient.connect();
@@ -63,14 +63,16 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 		double longitude = 0;
 		
 		// Hackery to deal with race conditions so second pass is right
-		if(PLAY_SERVICES != gameup.CAN_CONNECT) {
+		/*
+		if (PLAY_SERVICES != gameup.CAN_CONNECT) {
 			locationClient = new LocationClient(context, this, this);
 			locationClient.connect();
 		}
+		*/
 		
 		// assign the view we are converting to a local variable
 		View v = convertView;
-		if(PLAY_SERVICES) {
+		if (PLAY_SERVICES) {
 			Location location = locationClient.getLastLocation();
 			latitude = location.getLatitude();
 			longitude = location.getLongitude();
@@ -119,14 +121,18 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 				//String locationString = HelperFunction.convertParseGeoToString(i.getLocation());
 				//location.setText(locationString);
 				
-				double distance = 
-						gameup.getDistanceBetweenLocationAndGame(latitude, 
-								longitude, i.getGameId());
-				
-				DecimalFormat df = new DecimalFormat();
-				df.setMaximumFractionDigits(1);
-				
-				textLocation.setText(df.format(distance) + " mi. away");
+				if (gameup.CAN_CONNECT) {
+					double distance = 
+							gameup.getDistanceBetweenLocationAndGame(latitude, 
+									longitude, i.getGameId());
+					
+					DecimalFormat df = new DecimalFormat();
+					df.setMaximumFractionDigits(1);
+					
+					textLocation.setText(df.format(distance) + " mi. away");
+				} else {
+					textLocation.setText(i.getReadableLocation());
+				}
 			}
 			
 			
