@@ -24,6 +24,7 @@ public class AppConstant {
 	static final int FILTER_SPORT = 0;
 	static final int FILTER_LOCATION = 1;
 	static final int FILTER_TIME = 2;
+	static final int FILTER_CLEAR = 500;
 	
 	// Initial List of Sports	
 	static final List<String> SPORTS = Arrays.asList(

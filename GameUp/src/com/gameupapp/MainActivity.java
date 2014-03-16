@@ -35,6 +35,7 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	private String USERNAME;
 	private GameUpInterface gameup;
 	private List<GameParse> gameList = new ArrayList<GameParse>();
+	private FilterBuilder filterBuilder = new FilterBuilder();
 
 	
 	@Override
@@ -145,6 +146,9 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	        	return true;
 	        case R.id.menu_filter_time:
 	        	filter(AppConstant.FILTER_TIME);
+	        	return true;
+	        case R.id.menu_filter_clear:
+	        	filter(AppConstant.FILTER_CLEAR);
 	        	return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
@@ -332,14 +336,35 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 				break;
 			case AppConstant.FILTER_TIME:
 				break;
+			case AppConstant.FILTER_CLEAR:
+				filterBuilder = new FilterBuilder();
+				new SetGameList().execute();
+				AlertDialog.Builder builder = new AlertDialog.Builder(this)
+					.setTitle("Filter!")
+					.setMessage("Cleared all filters")
+					.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+						}
+				});
+				builder.show();
+				break;
 		}
 	}
 
 	@Override
 	public void onDialogPositiveClick(FilterSportFragment dialog) {
+		String sport = dialog.getSport();
+		if (sport != null) {
+			gameList = filterBuilder.setSport(sport).execute();
+			displayGames();
+		}
+		
+		
 		AlertDialog.Builder builder = new AlertDialog.Builder(this)
 			.setTitle("Filter!")
-			.setMessage("Filtered by sport: " + dialog.getSport())
+			.setMessage("Filtered by sport: " + sport)
 			.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {

@@ -151,7 +151,6 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 	@Override
 	public void onConnectionFailed(ConnectionResult result) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

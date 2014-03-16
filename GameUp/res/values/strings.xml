@@ -16,6 +16,7 @@
     <string name="menu_filter_sport">By sport</string>
     <string name="menu_filter_location">By location</string>
     <string name="menu_filter_time">By time</string>
+    <string name="menu_filter_clear">Clear all filters</string>
     <string name="new_game">New Game</string>
     <string name="sign_up">Sign Up / Login</string>
     <string name="ok">OK</string>
