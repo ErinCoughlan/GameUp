@@ -49,7 +49,7 @@ public class FilterBuilder {
 	 */
 	public FilterBuilder setSport(String sport) {
 		ParseQuery<GameParse> sportQuery = gameup.getQueryWithSportName(sport);
-		query.whereMatchesQuery("sport", sportQuery);
+		query.whereMatchesKeyInQuery("sport", "sport", sportQuery);
 		return this;
 	}
 	

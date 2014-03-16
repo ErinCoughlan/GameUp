@@ -9,6 +9,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.parse.Parse;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -88,9 +89,11 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
         try {
             if (status != ConnectionResult.SUCCESS) {
             	if (!gameup.SEEN_MAPS_ALERT) {
+            		/*
 	            	GooglePlayServicesUtil.getErrorDialog(status, this,
 	            			AppConstant.RQS_GooglePlayServices).show();
 	            	gameup.SEEN_MAPS_ALERT = true;
+	            	*/
             	}
             	gameup.CAN_CONNECT = false;
             } else {
@@ -357,7 +360,8 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	public void onDialogPositiveClick(FilterSportFragment dialog) {
 		String sport = dialog.getSport();
 		if (sport != null) {
-			gameList = filterBuilder.setSport(sport).execute();
+			gameList = filterBuilder.setSport(sport).filterIntoFuture().execute();
+			Log.d("games", Integer.toString(gameList.size()));
 			displayGames();
 		}
 		
