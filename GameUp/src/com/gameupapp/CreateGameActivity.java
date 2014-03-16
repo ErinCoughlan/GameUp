@@ -291,12 +291,12 @@ public class CreateGameActivity extends Activity implements
 			public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
 				String selectedItem = locationSpinner.getSelectedItem().toString();
 				Log.d("locationSpinner", selectedItem);
-				if(selectedItem.equals("Add New")) {
+				if (selectedItem.equals("Add New")) {
 					DialogFragment dialogFrag = new AddVenueFragment();
 					dialogFrag.show(getFragmentManager(), "AddVenueFragment");
 				} else {
-					for(Venue venue : venues) {
-						if(selectedItem.equals(venue.getName())) {
+					for (Venue venue : venues) {
+						if (selectedItem.equals(venue.getName())) {
 							ImmutablePair<Double, Double> location = 
 									venue.getLocation();
 							readableLocation = venue.getReadableLocation();

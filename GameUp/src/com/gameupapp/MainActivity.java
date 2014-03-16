@@ -3,6 +3,7 @@ package com.gameupapp;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gameupapp.FilterSportFragment.FilterSportDialogListener;
 import com.gameupapp.GameFragment.OnGameClicked;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -13,6 +14,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,7 +29,7 @@ import com.parse.ParseUser;
 
 
 // TODO Play Services check per https://developer.android.com/training/location/retrieve-current.html
-public class MainActivity extends Activity implements OnGameClicked {
+public class MainActivity extends Activity implements OnGameClicked, FilterSportDialogListener {
 	
 	// General info about user and app
 	private String USERNAME;
@@ -308,6 +310,7 @@ public class MainActivity extends Activity implements OnGameClicked {
 	}
 	
 	private void filter(int filterType) {
+		/*
 		AlertDialog.Builder builder = new AlertDialog.Builder(this)
 			.setTitle("Filter!")
 			.setMessage("This is totally a filter")
@@ -318,5 +321,32 @@ public class MainActivity extends Activity implements OnGameClicked {
 				}
 		});
 		builder.show();
+		*/
+		
+		switch (filterType) {
+			case AppConstant.FILTER_SPORT:
+				DialogFragment dialogFrag = new FilterSportFragment();
+				dialogFrag.show(getFragmentManager(), "FilterSportFragment");
+				break;
+			case AppConstant.FILTER_LOCATION:
+				break;
+			case AppConstant.FILTER_TIME:
+				break;
+		}
+	}
+
+	@Override
+	public void onDialogPositiveClick(FilterSportFragment dialog) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this)
+			.setTitle("Filter!")
+			.setMessage("Filtered by sport: " + dialog.getSport())
+			.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+				}
+		});
+		builder.show();
+		
 	}
 }
