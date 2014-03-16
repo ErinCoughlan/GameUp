@@ -20,6 +20,11 @@ public class AppConstant {
 	static final int LOGIN_ID = 2;
 	static final int SETTINGS_ID = 3;
 	
+	// Types of filters
+	static final int FILTER_SPORT = 0;
+	static final int FILTER_LOCATION = 1;
+	static final int FILTER_TIME = 2;
+	
 	// Initial List of Sports	
 	static final List<String> SPORTS = Arrays.asList(
 			"Baseball", "Basketball", "Football", "Soccer",

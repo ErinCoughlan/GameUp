@@ -1,25 +1,38 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    
-    <item
-        android:id="@+id/menu_filter"
-        android:orderInCategory="1"
-        android:showAsAction="always"
-        android:icon="@drawable/ic_action_filter"
-        android:title="@string/menu_refresh"/>
 
     <item
+        android:id="@+id/menu_filter"
+        android:icon="@drawable/ic_action_filter"
+        android:orderInCategory="1"
+        android:showAsAction="always"
+        android:title="@string/menu_filter">
+        <menu>
+            <item
+                android:id="@+id/menu_filter_sport"
+                android:orderInCategory="1"
+                android:title="@string/menu_filter_sport"/>
+            <item
+                android:id="@+id/menu_filter_location"
+                android:orderInCategory="2"
+                android:title="@string/menu_filter_location"/>
+            <item
+                android:id="@+id/menu_filter_time"
+                android:orderInCategory="3"
+                android:title="@string/menu_filter_time"/>
+        </menu>
+    </item>
+    
+    <item
         android:id="@+id/menu_refresh"
+        android:icon="@drawable/ic_action_refresh"
         android:orderInCategory="2"
         android:showAsAction="ifRoom"
-        android:icon="@drawable/ic_action_refresh"
         android:title="@string/menu_refresh"/>
-    
     <item
         android:id="@+id/menu_settings"
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/menu_settings"/>
-    
     <item
         android:id="@+id/menu_logout"
         android:orderInCategory="500"

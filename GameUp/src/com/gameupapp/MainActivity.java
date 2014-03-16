@@ -133,7 +133,16 @@ public class MainActivity extends Activity implements OnGameClicked {
 	        	refreshGames();
 	        	return true;
 	        case R.id.menu_filter:
-	        	filter();
+	        	// Nothing here -- all actions are on children
+	        	return true;
+	        case R.id.menu_filter_sport:
+	        	filter(AppConstant.FILTER_SPORT);
+	        	return true;
+	        case R.id.menu_filter_location:
+	        	filter(AppConstant.FILTER_LOCATION);
+	        	return true;
+	        case R.id.menu_filter_time:
+	        	filter(AppConstant.FILTER_TIME);
 	        	return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
@@ -298,7 +307,7 @@ public class MainActivity extends Activity implements OnGameClicked {
 		new SetGameList().execute();
 	}
 	
-	private void filter() {
+	private void filter(int filterType) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this)
 			.setTitle("Filter!")
 			.setMessage("This is totally a filter")
