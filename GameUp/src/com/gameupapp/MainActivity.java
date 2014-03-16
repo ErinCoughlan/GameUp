@@ -40,6 +40,24 @@ public class MainActivity extends Activity implements OnGameClicked {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		boolean PLAY_SERVICES = true;
+		int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+		 try {
+			 if (status != ConnectionResult.SUCCESS) {
+				 GooglePlayServicesUtil.getErrorDialog(status, this,
+						 AppConstant.RQS_GooglePlayServices).show();
+				 PLAY_SERVICES = false;
+			 }
+		 
+		 // Create a client for location in maps
+		 } catch (Exception e) {
+			 PLAY_SERVICES = false;
+			 Log.e("Error: GooglePlayServiceUtil: ", "" + e);
+		 }
+		 
+		 gameup = GameUpInterface.getInstance();
+		 gameup.CAN_CONNECT = PLAY_SERVICES;
 		setContentView(R.layout.activity_main);
 
 		// Parse information
@@ -80,26 +98,8 @@ public class MainActivity extends Activity implements OnGameClicked {
 	public void onStart() {
 		super.onStart();
 		
-		gameup = GameUpInterface.getInstance();
+		//gameup = GameUpInterface.getInstance();
 		gameup.registerObserver(this);
-
-		int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-        try {
-            if (status != ConnectionResult.SUCCESS) {
-            	if (!gameup.SEEN_MAPS_ALERT) {
-	            	GooglePlayServicesUtil.getErrorDialog(status, this,
-	            			AppConstant.RQS_GooglePlayServices).show();
-	            	gameup.SEEN_MAPS_ALERT = true;
-            	}
-            	gameup.CAN_CONNECT = false;
-            } else {
-            	gameup.CAN_CONNECT = true;
-            }
-  
-        } catch (Exception e) {
-        	gameup.CAN_CONNECT = false;
-            Log.e("Error: GooglePlayServiceUtil: ", "" + e);
-        }
 
 		new SetGameList().execute();
 		updateView();

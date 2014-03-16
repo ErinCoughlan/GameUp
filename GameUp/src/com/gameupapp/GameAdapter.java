@@ -43,6 +43,7 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 		
 		this.gameup = GameUpInterface.getInstance();
 		if (gameup.CAN_CONNECT) {
+			Log.d("foo", "bar");
 			PLAY_SERVICES = true;
 			this.locationClient = new LocationClient(context, this, this);
 			this.locationClient.connect();
