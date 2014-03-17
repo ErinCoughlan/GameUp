@@ -39,7 +39,7 @@ public class FilterBuilder {
 		assert(level >= 0);
 		
 		ParseQuery<GameParse> abilityQuery = gameup.getQueryWithAbility(level);
-		query.whereMatchesQuery("abilityLevel", abilityQuery);
+		query.whereMatchesKeyInQuery("abilityLevel", "abilityLevel", abilityQuery);
 		return this;
 	}
 	
@@ -58,7 +58,7 @@ public class FilterBuilder {
 	 */
 	public FilterBuilder filterIntoFuture() {
 		ParseQuery<GameParse> temporalFilter = gameup.getQueryOnFutureGames();
-		query.whereMatchesQuery("startDateTime", temporalFilter);
+		query.whereMatchesKeyInQuery("startDateTime", "startDateTime", temporalFilter);
 		return this;
 	}
 	

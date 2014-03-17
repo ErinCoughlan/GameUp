@@ -1,7 +1,6 @@
 package com.gameupapp;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import android.app.Activity;
@@ -15,48 +14,45 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Spinner;
+import android.widget.AdapterView.OnItemSelectedListener;
 
-public class FilterSportFragment extends DialogFragment {
-	public interface FilterSportDialogListener {
-		public void onDialogPositiveClick(FilterSportFragment dialog);
+public class FilterAbilityFragment extends DialogFragment {
+	public interface FilterAbilityDialogListener {
+		public void onDialogPositiveClick(FilterAbilityFragment dialog);
 	}
 	
-	private FilterSportDialogListener mListener;
-	private GameUpInterface gameup;
-	private String sport;
+	private FilterAbilityDialogListener mListener;
+	private int abilityLevel;
 	
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 
 		try {
-			mListener = (FilterSportDialogListener) activity;
+			mListener = (FilterAbilityDialogListener) activity;
 		} catch (ClassCastException e) {
-			Log.e("FilterSportDialogFragment", activity.toString() + " must implement FilterSportDialogListener");
+			Log.e("FilterAbilityDialogFragment", activity.toString() + " must implement FilterAbilityDialogListener");
 		}
 	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		gameup = GameUpInterface.getInstance();
 	}
 	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		LayoutInflater inflater = getActivity().getLayoutInflater();
-		View v = inflater.inflate(R.layout.filter_sport_fragment, null);
-		initSportSpinner(v);
+		View v = inflater.inflate(R.layout.filter_ability_fragment, null);
+		initAbilitySpinner(v);
 		builder.setView(v);
 		
 		 builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
 		        @Override
 		        public void onClick(DialogInterface dialog, int which) {
-		        	mListener.onDialogPositiveClick(FilterSportFragment.this);
+		        	mListener.onDialogPositiveClick(FilterAbilityFragment.this);
 		            //save info where you want it
 		        }
 		 });
@@ -73,27 +69,12 @@ public class FilterSportFragment extends DialogFragment {
 		
 	}
 	
-	@Override
-	public void onStop() {
-		super.onStop();
-
-		// Clear the observers
-		if (gameup != null) {
-			gameup.removeObserver(getActivity());
-		}
-	}
-	
-	private void initSportSpinner(View v) {
-		AutoCompleteTextView sportDropdown = (AutoCompleteTextView) v.findViewById(R.id.sport_dropdown);
+	private void initAbilitySpinner(View v) {
+		final Spinner abilitySpinner = (Spinner) v.findViewById(R.id.ability_spinner);
 
 		// Custom choices
 		List<String> choices = new ArrayList<String>();
-
-		for (Sport sport : gameup.getAllSports()) {
-			choices.add(sport.getName());
-		}
-		
-		Collections.sort(choices);
+		choices.addAll(AppConstant.ABILITY_LEVELS);
 
 		// Create an ArrayAdapter with custom choices
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.drawable.spinner_item, choices);
@@ -102,18 +83,21 @@ public class FilterSportFragment extends DialogFragment {
 		adapter.setDropDownViewResource(R.drawable.spinner_dropdown_item);
 
 		// Set the adapter to the spinner
-		sportDropdown.setAdapter(adapter);
-		sportDropdown.setOnItemClickListener(new OnItemClickListener() {
+		abilitySpinner.setAdapter(adapter);
+		abilitySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+				abilityLevel = AppConstant.ABILITY_LEVELS.indexOf(abilitySpinner.getSelectedItem().toString());
+			}
 
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-				sport = (String) parent.getItemAtPosition(pos);
+			public void onNothingSelected(AdapterView<?> arg0) {
+				abilityLevel = -1;
 			}
 		});
-		
 	}
 	
-	public String getSport() {
-		return sport;
+	public int getAbilityLevel() {
+		return abilityLevel;
 	}
 }

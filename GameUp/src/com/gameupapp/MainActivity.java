@@ -3,13 +3,13 @@ package com.gameupapp;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gameupapp.FilterAbilityFragment.FilterAbilityDialogListener;
 import com.gameupapp.FilterSportFragment.FilterSportDialogListener;
 import com.gameupapp.GameFragment.OnGameClicked;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.parse.Parse;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,7 +30,8 @@ import com.parse.ParseUser;
 
 
 // TODO Play Services check per https://developer.android.com/training/location/retrieve-current.html
-public class MainActivity extends Activity implements OnGameClicked, FilterSportDialogListener {
+public class MainActivity extends Activity implements OnGameClicked, FilterSportDialogListener,
+		FilterAbilityDialogListener {
 	
 	// General info about user and app
 	private String USERNAME;
@@ -149,6 +150,9 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	        	return true;
 	        case R.id.menu_filter_time:
 	        	filter(AppConstant.FILTER_TIME);
+	        	return true;
+	        case R.id.menu_filter_ability:
+	        	filter(AppConstant.FILTER_ABILITY);
 	        	return true;
 	        case R.id.menu_filter_clear:
 	        	filter(AppConstant.FILTER_CLEAR);
@@ -313,31 +317,25 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	}
 	
 	private void refreshGames() {
-		new SetGameList().execute();
+		gameList = filterBuilder.execute();
+		displayGames();
 	}
 	
 	private void filter(int filterType) {
-		/*
-		AlertDialog.Builder builder = new AlertDialog.Builder(this)
-			.setTitle("Filter!")
-			.setMessage("This is totally a filter")
-			.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.cancel();
-				}
-		});
-		builder.show();
-		*/
+		DialogFragment dialogFrag;
 		
 		switch (filterType) {
 			case AppConstant.FILTER_SPORT:
-				DialogFragment dialogFrag = new FilterSportFragment();
+				dialogFrag = new FilterSportFragment();
 				dialogFrag.show(getFragmentManager(), "FilterSportFragment");
 				break;
 			case AppConstant.FILTER_LOCATION:
 				break;
 			case AppConstant.FILTER_TIME:
+				break;
+			case AppConstant.FILTER_ABILITY:
+				dialogFrag = new FilterAbilityFragment();
+				dialogFrag.show(getFragmentManager(), "FilterAbilityFragment");
 				break;
 			case AppConstant.FILTER_CLEAR:
 				filterBuilder = new FilterBuilder();
@@ -360,15 +358,34 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	public void onDialogPositiveClick(FilterSportFragment dialog) {
 		String sport = dialog.getSport();
 		if (sport != null) {
-			gameList = filterBuilder.setSport(sport).filterIntoFuture().execute();
-			Log.d("games", Integer.toString(gameList.size()));
+			gameList = filterBuilder.setSport(sport).execute();
 			displayGames();
 		}
-		
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(this)
 			.setTitle("Filter!")
 			.setMessage("Filtered by sport: " + sport)
+			.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+				}
+		});
+		builder.show();
+		
+	}
+
+	@Override
+	public void onDialogPositiveClick(FilterAbilityFragment dialog) {
+		int ability = dialog.getAbilityLevel();
+		if (ability != -1) {
+			gameList = filterBuilder.setAbilityLevel(ability).execute();
+			displayGames();
+		}
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(this)
+			.setTitle("Filter!")
+			.setMessage("Filtered by ability: " + AppConstant.ABILITY_LEVELS.get(ability))
 			.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
