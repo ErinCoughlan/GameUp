@@ -15,6 +15,7 @@ import com.parse.ParseFacebookUtils;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseException;
+import com.parse.ParseQuery.CachePolicy;
 import com.parse.ParseUser;
 
 import android.app.Activity;
@@ -177,6 +178,8 @@ public class GameUpInterface {
 	public List<GameParse> getFutureGames() {
 		ParseQuery<GameParse> query = getQueryOnFutureGames();
 		query.setLimit(10);
+		query.setCachePolicy(CachePolicy.CACHE_ELSE_NETWORK);
+		query.setMaxCacheAge(TimeUnit.MINUTES.toMillis(5));
 		
 		return filterGamesWithQuery(query);
 	}

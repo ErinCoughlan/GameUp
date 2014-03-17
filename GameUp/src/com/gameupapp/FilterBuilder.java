@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
+import com.parse.ParseQuery.CachePolicy;
 
 /**
  * TODO add temporal filtering (ie allow excluding past games)
@@ -80,6 +81,31 @@ public class FilterBuilder {
 	public FilterBuilder exclusivelySortDescendingOnKey(String key) {
 		query.orderByDescending(key);
 		return this;
+	}
+	
+	/**
+	 * 
+	 * @param n How many games to skip
+	 */
+	public void getMoreGames(int n) {
+		query.setSkip(n);
+	}
+	
+	/**
+	 * 
+	 * @param n How many results the query should return
+	 */
+	public void setQuerySize(int n) {
+		query.setLimit(n);
+	}
+	
+	/**
+	 * 
+	 * @param cacheLength Time (in milliseconds) to remain cached
+	 */
+	public void setCached(long cacheLength) {
+		query.setCachePolicy(CachePolicy.CACHE_ELSE_NETWORK);
+		query.setMaxCacheAge(cacheLength);
 	}
 	
 	/**
