@@ -47,7 +47,7 @@ public class AppConstant {
     static final int RQS_GooglePlayServices = 1;
     
     // Unknown sport icon
-    static final Integer UNKNOWN_IMG = R.drawable.unknown_icon;
+    static final Integer UNKNOWN_IMG = R.drawable.unknown;
     
     // Parse RequestCodes
     static final int FB_REQUEST = 32665;
