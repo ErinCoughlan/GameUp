@@ -25,6 +25,7 @@ public class AppConstant {
 	static final int FILTER_LOCATION = 1;
 	static final int FILTER_TIME = 2;
 	static final int FILTER_ABILITY = 3;
+	static final int FILTER_DISTANCE = 4;
 	static final int FILTER_CLEAR = 500;
 	
 	// Initial List of Sports	

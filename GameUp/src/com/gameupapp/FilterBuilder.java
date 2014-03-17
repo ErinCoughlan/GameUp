@@ -26,7 +26,7 @@ public class FilterBuilder {
 	public FilterBuilder setRadius(double radius, double latitude, double longitude) {
 		ParseQuery<GameParse> radQuery = gameup.getQueriesWithinMiles(
 				radius, latitude, longitude);
-		query.whereMatchesQuery("location", radQuery);
+		query.whereMatchesKeyInQuery("location","location", radQuery);
 		return this;
 	}
 	

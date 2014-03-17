@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gameupapp.FilterAbilityFragment.FilterAbilityDialogListener;
+import com.gameupapp.FilterDistanceFragment.FilterDistanceDialogListener;
 import com.gameupapp.FilterSportFragment.FilterSportDialogListener;
 import com.gameupapp.GameFragment.OnGameClicked;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.LocationClient;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
@@ -31,13 +34,17 @@ import com.parse.ParseUser;
 
 // TODO Play Services check per https://developer.android.com/training/location/retrieve-current.html
 public class MainActivity extends Activity implements OnGameClicked, FilterSportDialogListener,
-		FilterAbilityDialogListener {
+		FilterAbilityDialogListener, FilterDistanceDialogListener {
 	
 	// General info about user and app
 	private String USERNAME;
 	private GameUpInterface gameup;
 	private List<GameParse> gameList = new ArrayList<GameParse>();
 	private FilterBuilder filterBuilder = new FilterBuilder();
+	
+	// Maps info
+	private LocationClient mLocationClient;
+	private Location mCurrentLocation;
 
 	
 	@Override
@@ -145,8 +152,8 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	        case R.id.menu_filter_sport:
 	        	filter(AppConstant.FILTER_SPORT);
 	        	return true;
-	        case R.id.menu_filter_location:
-	        	filter(AppConstant.FILTER_LOCATION);
+	        case R.id.menu_filter_distance:
+	        	filter(AppConstant.FILTER_DISTANCE);
 	        	return true;
 	        case R.id.menu_filter_time:
 	        	filter(AppConstant.FILTER_TIME);
@@ -329,7 +336,9 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 				dialogFrag = new FilterSportFragment();
 				dialogFrag.show(getFragmentManager(), "FilterSportFragment");
 				break;
-			case AppConstant.FILTER_LOCATION:
+			case AppConstant.FILTER_DISTANCE:
+				dialogFrag = new FilterDistanceFragment();
+				dialogFrag.show(getFragmentManager(), "FilterDistanceFragment");
 				break;
 			case AppConstant.FILTER_TIME:
 				break;
@@ -394,5 +403,23 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 		});
 		builder.show();
 		
+	}
+
+	@Override
+	public void onDialogPositiveClick(FilterDistanceFragment dialog) {
+		int distance = dialog.getDistance();
+		gameList = filterBuilder.setRadius(distance, 0, 0).execute();
+		displayGames();
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(this)
+			.setTitle("Filter!")
+			.setMessage("Filtered by distance: " + Integer.toString(distance) + " miles from me")
+			.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+				}
+		});
+		builder.show();
 	}
 }

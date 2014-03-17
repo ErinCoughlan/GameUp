@@ -15,6 +15,7 @@
     <string name="menu_filter">Filter</string>
     <string name="menu_filter_sport">By sport</string>
     <string name="menu_filter_location">By location</string>
+    <string name="menu_filter_distance">By distance from me</string>
     <string name="menu_filter_time">By time</string>
     <string name="menu_filter_ability">By ability level</string>
     <string name="menu_filter_clear">Clear all filters</string>
@@ -49,6 +50,7 @@
     <string name="venue_addr_hint">Location (e.g. Parents Field or address)</string>
     <string name="filter_sport_prompt">Choose a sport to filter on:</string>
     <string name="filter_ability_prompt">Choose an ability level to filter on:</string>
+    <string name="filter_distance_prompt">Choose distance to filter on:</string>
     <string name="sport_hint">Start typing to find sports</string>
     
     <string name="unlink_prompt">Unlinking your account from Facebook will permanently delete all of your information from GameUp.</string>
