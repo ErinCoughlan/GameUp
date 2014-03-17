@@ -8,6 +8,7 @@ import com.gameupapp.FilterDistanceFragment.FilterDistanceDialogListener;
 import com.gameupapp.FilterSportFragment.FilterSportDialogListener;
 import com.gameupapp.GameFragment.OnGameClicked;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.parse.Parse;
@@ -34,7 +35,9 @@ import com.parse.ParseUser;
 
 // TODO Play Services check per https://developer.android.com/training/location/retrieve-current.html
 public class MainActivity extends Activity implements OnGameClicked, FilterSportDialogListener,
-FilterAbilityDialogListener, FilterDistanceDialogListener {
+		FilterAbilityDialogListener, FilterDistanceDialogListener,
+		GooglePlayServicesClient.ConnectionCallbacks,
+		GooglePlayServicesClient.OnConnectionFailedListener {
 
 	// General info about user and app
 	private String USERNAME;
@@ -45,6 +48,7 @@ FilterAbilityDialogListener, FilterDistanceDialogListener {
 	// Maps info
 	private LocationClient mLocationClient;
 	private Location mCurrentLocation;
+	private boolean connected = false;
 
 
 	@Override
@@ -132,6 +136,11 @@ FilterAbilityDialogListener, FilterDistanceDialogListener {
 			settings.setVisible(false);
 			logout.setVisible(false);
 		}
+		
+		if (!gameup.CAN_CONNECT) {
+			MenuItem distance = (MenuItem) menu.findItem(R.id.menu_filter_distance);
+			distance.setVisible(false);
+		}
 		return true;
 	}
 
@@ -175,6 +184,11 @@ FilterAbilityDialogListener, FilterDistanceDialogListener {
 	@Override
 	protected void onStop() {
 		super.onStop();
+		
+		if (connected) {
+			// Disconnecting maps
+	        mLocationClient.disconnect();
+		}
 
 		// Clear the observers
 		if (gameup != null) {
@@ -411,7 +425,17 @@ FilterAbilityDialogListener, FilterDistanceDialogListener {
 	@Override
 	public void onDialogPositiveClick(FilterDistanceFragment dialog) {
 		int distance = dialog.getDistance();
-		gameList = filterBuilder.setRadius(distance, 0, 0).execute();
+		if (!connected && gameup.CAN_CONNECT) {
+			mLocationClient = new LocationClient(this, this, this);
+    		mLocationClient.connect();
+		}
+		while (!connected) {
+			// I just want to wait until connected
+		}
+		
+		gameList = filterBuilder
+				.setRadius(distance, mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())
+				.execute();
 		displayGames();
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(this)
@@ -424,5 +448,23 @@ FilterAbilityDialogListener, FilterDistanceDialogListener {
 			}
 		});
 		builder.show();
+	}
+	
+	@Override
+	public void onConnectionFailed(ConnectionResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onConnected(Bundle connectionHint) {
+		connected = true;
+		mCurrentLocation = mLocationClient.getLastLocation();
+	}
+
+	@Override
+	public void onDisconnected() {
+		// TODO Auto-generated method stub
+		
 	}
 }
