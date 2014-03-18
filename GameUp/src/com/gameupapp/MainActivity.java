@@ -167,9 +167,6 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 		case R.id.menu_filter_distance:
 			filter(AppConstant.FILTER_DISTANCE);
 			return true;
-		case R.id.menu_filter_time:
-			filter(AppConstant.FILTER_TIME);
-			return true;
 		case R.id.menu_filter_ability:
 			filter(AppConstant.FILTER_ABILITY);
 			return true;
