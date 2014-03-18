@@ -205,7 +205,7 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 		@Override
 		protected Void doInBackground(Void... params) {
 			Log.d("DisplayGame", "Setting gameList async");
-			gs = gameup.getFutureGames();
+			gs = filterBuilder.filterIntoFuture().execute();
 			return null;
 		}
 
@@ -383,7 +383,6 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 		if (sport != null) {
 			gameList = filterBuilder
 							.setSport(sport)
-							.filterIntoFuture()
 							.execute();
 			displayGames();
 		}
@@ -407,7 +406,6 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 		if (ability != -1) {
 			gameList = filterBuilder
 							.setAbilityLevel(ability)
-							.filterIntoFuture()
 							.execute();
 			displayGames();
 		}
@@ -438,7 +436,6 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 		
 		gameList = filterBuilder
 				.setRadius(distance, mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())
-				.filterIntoFuture()
 				.execute();
 		displayGames();
 
