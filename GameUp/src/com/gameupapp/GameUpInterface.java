@@ -313,11 +313,11 @@ public class GameUpInterface {
 	 */
 	public ParseQuery<GameParse> getQueriesWithinMiles(double miles, 
 			double latitude, double longitude) {
-		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
+		ParseQuery<GameParse> query = ParseQuery.getQuery("GameParse");
 		query.setTrace(AppConstant.SHOULD_TRACE);
 		query.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
 		query.setMaxCacheAge(TimeUnit.MINUTES.toMillis(5));
-		query.include("sport");
+//		query.include("sport");
 		ParseGeoPoint currentLocation = new ParseGeoPoint(latitude, longitude);
 		query.whereWithinMiles("location", currentLocation, miles);
 		

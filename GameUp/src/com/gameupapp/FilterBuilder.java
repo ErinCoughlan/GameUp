@@ -16,7 +16,7 @@ public class FilterBuilder {
 	private GameUpInterface gameup;
 	
 	public FilterBuilder() {
-		query = ParseQuery.getQuery(GameParse.class);
+		query = ParseQuery.getQuery("GameParse");
 		gameup = GameUpInterface.getInstance();
 	}
 	
@@ -29,7 +29,7 @@ public class FilterBuilder {
 	public FilterBuilder setRadius(double radius, double latitude, double longitude) {
 		ParseQuery<GameParse> radQuery = gameup.getQueriesWithinMiles(
 				radius, latitude, longitude);
-		query.whereMatchesKeyInQuery("location", "location", radQuery);
+		query.whereMatchesKeyInQuery("objectId", "objectId", radQuery);
 		return this;
 	}
 	
@@ -60,8 +60,8 @@ public class FilterBuilder {
 	 * Filters out all games that have already happened
 	 */
 	public FilterBuilder filterIntoFuture() {
-		Date currentDate = Calendar.getInstance().getTime();
-		query.whereGreaterThanOrEqualTo("startDateTime", currentDate);
+		ParseQuery<GameParse> gameQuery = gameup.getQueryOnFutureGames();
+		query.whereMatchesKeyInQuery("objectId", "objectId", gameQuery);
 		return this;
 	}
 	
