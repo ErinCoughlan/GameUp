@@ -465,6 +465,7 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 		gameList = filterBuilder
 				.setRadius(distance, mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())
 				.execute();
+		Log.d("filter", Integer.toString(gameList.size()));
 		displayGames();
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(this)
