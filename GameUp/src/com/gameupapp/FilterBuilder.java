@@ -88,25 +88,28 @@ public class FilterBuilder {
 	 * 
 	 * @param n How many games to skip
 	 */
-	public void getMoreGames(int n) {
+	public FilterBuilder getMoreGames(int n) {
 		query.setSkip(n);
+		return this;
 	}
 	
 	/**
 	 * 
 	 * @param n How many results the query should return
 	 */
-	public void setQuerySize(int n) {
+	public FilterBuilder setQuerySize(int n) {
 		query.setLimit(n);
+		return this;
 	}
 	
 	/**
 	 * 
 	 * @param cacheLength Time (in milliseconds) to remain cached
 	 */
-	public void setCached(long cacheLength) {
+	public FilterBuilder setCached(long cacheLength) {
 		query.setCachePolicy(CachePolicy.CACHE_ELSE_NETWORK);
 		query.setMaxCacheAge(cacheLength);
+		return this;
 	}
 	
 	/**
