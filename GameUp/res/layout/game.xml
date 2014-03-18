@@ -10,7 +10,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_margin="10dp"
-        android:background="@drawable/unknown_icon"
+        android:background="@drawable/unknown"
         android:contentDescription="@string/access_sport_icon" />
 
     <LinearLayout

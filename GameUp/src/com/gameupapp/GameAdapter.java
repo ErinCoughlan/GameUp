@@ -128,6 +128,7 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 			
 			if (sportIcon != null){
 				String s = i.getSport().toLowerCase(Locale.US);
+				s = s.replaceAll(" ", "_");
 				int id = HelperFunction.getResId(s, context, R.drawable.class);
 				if (id != -1) {
 					sportIcon.setBackgroundResource(id);
@@ -152,7 +153,6 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 	@Override
 	public void onConnectionFailed(ConnectionResult result) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

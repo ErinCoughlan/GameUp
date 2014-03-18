@@ -190,7 +190,7 @@ public class DisplayGameActivity extends Activity implements
 	protected void onStop() {
 		super.onStop();
 		
-		if (gameup.CAN_CONNECT) {
+		if (connected) {
 			// Disconnecting maps
 	        mLocationClient.disconnect();
 		}
