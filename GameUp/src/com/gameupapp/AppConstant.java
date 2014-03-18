@@ -7,6 +7,7 @@ public class AppConstant {
 	// Debug information
 	static final boolean DEBUG = true;
 	static final String SHARED_PREF = "settings";
+	static final int NUM_GAMES = 10;
 
 	// Intent information ids
 	static final String GAME = "game";
