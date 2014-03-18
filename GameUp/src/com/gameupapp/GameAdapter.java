@@ -202,7 +202,7 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 		@Override
 		protected void onPostExecute(String result) {
 			this.sportText.setText(result);
-			result.toLowerCase(Locale.US);
+			result = result.toLowerCase(Locale.US);
 			result = result.replaceAll(" ", "_");
 			int id = HelperFunction.getResId(result, this.context, 
 					R.drawable.class);
