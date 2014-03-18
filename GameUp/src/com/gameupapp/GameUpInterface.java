@@ -167,12 +167,12 @@ public class GameUpInterface {
 	
 	/**
 	 * TODO filter on "isn't already in the past"
-	 * @return The first 10 games in the DB
+	 * @return The first NUM_GAMES games in the DB
 	 */
 	public ParseQuery<GameParse> getGamesQuery() {
 		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
 		query.setTrace(AppConstant.SHOULD_TRACE);
-		query.setLimit(10);
+		query.setLimit(AppConstant.NUM_GAMES);
 		
 		return query;
 	}
@@ -180,7 +180,7 @@ public class GameUpInterface {
 	public List<GameParse> getFutureGames() {
 		ParseQuery<GameParse> query = getQueryOnFutureGames();
 		query.setTrace(AppConstant.SHOULD_TRACE);
-		query.setLimit(10);
+		query.setLimit(AppConstant.NUM_GAMES);
 		query.setCachePolicy(CachePolicy.CACHE_ELSE_NETWORK);
 		query.setMaxCacheAge(TimeUnit.MINUTES.toMillis(5));
 		
