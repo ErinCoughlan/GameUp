@@ -119,15 +119,9 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 			}
 			
 			
-			if (sport != null){
-				Object[] params = {i, sport};
-				new SetSportText().execute(params);
-			}
-			
-			if (sportIcon != null){
-				// We need to save context because it can go out of scope
-				Object[] params = {i, sportIcon, context};
-				new SetSportIcon().execute(params);
+			if (sport != null && sportIcon != null){
+				Object[] params = {i, sport, sportIcon, context};
+				new SetSportInfo().execute(params);
 			}
 		}
 
@@ -184,38 +178,21 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 		}
 	}
 	
-	private class SetSportText extends AsyncTask<Object, Integer, ImmutablePair<String, Object>> {
-		@Override
-		protected ImmutablePair<String, Object> doInBackground(Object... params) {
-			String sport = ((GameParse) params[0]).getSport();
-			
-			ImmutablePair<String, Object> toReturn = new ImmutablePair<String, Object>(sport, params[1]);
-			return toReturn;
-		}
-		
-		@Override
-		protected void onProgressUpdate(Integer...progress) {
-			// TODO set progress percent here
-		}
-		
-		@Override
-		protected void onPostExecute(ImmutablePair<String, Object> result) {
-			((TextView) result.right).setText(result.left);
-		}
-	}
 	
-	
-	private class SetSportIcon extends AsyncTask<Object, Integer, ImmutablePair<String, Object>> {
+	private class SetSportInfo extends AsyncTask<Object, Integer, String> {
 		// Shadow copy for when the broader class is done executing
 		Context context;
-		
+		TextView sportText;
+		ImageView icon;
 		@Override
-		protected ImmutablePair<String, Object> doInBackground(Object... params) {
-			this.context = (Context) params[2];
+		protected String doInBackground(Object... params) {
+			this.sportText = (TextView) params[1];
+			this.icon = (ImageView) params[2];
+			this.context = (Context) params[3];
 			String sport = ((GameParse) params[0]).getSport().toLowerCase(Locale.US);
 			sport = sport.replaceAll(" ", "_");
-			ImmutablePair<String, Object> toReturn = new ImmutablePair<String, Object>(sport, params[1]);
-			return toReturn;
+			
+			return sport;
 		}
 		
 		@Override
@@ -224,14 +201,15 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 		}
 		
 		@Override
-		protected void onPostExecute(ImmutablePair<String, Object> result) {
-			int id = HelperFunction.getResId(result.left, this.context, 
+		protected void onPostExecute(String result) {
+			this.sportText.setText(result);
+			int id = HelperFunction.getResId(result, this.context, 
 					R.drawable.class);
-
+		
 			if (id != -1) {
-				((ImageView) result.right).setBackgroundResource(id);
+				((ImageView) this.icon).setBackgroundResource(id);
 			} else {
-				((ImageView) result.right).setBackgroundResource(AppConstant.UNKNOWN_IMG);
+				((ImageView) this.icon).setBackgroundResource(AppConstant.UNKNOWN_IMG);
 			};
 		}
 	}
