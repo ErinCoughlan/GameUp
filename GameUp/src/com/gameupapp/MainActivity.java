@@ -49,6 +49,7 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	private LocationClient mLocationClient;
 	private Location mCurrentLocation;
 	private boolean connected = false;
+	private int distance;
 
 
 	@Override
@@ -382,8 +383,8 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 		String sport = dialog.getSport();
 		if (sport != null) {
 			gameList = filterBuilder
-							.setSport(sport)
-							.execute();
+					.setSport(sport)
+					.execute();
 			displayGames();
 		}
 
@@ -405,8 +406,8 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 		int ability = dialog.getAbilityLevel();
 		if (ability != -1) {
 			gameList = filterBuilder
-							.setAbilityLevel(ability)
-							.execute();
+					.setAbilityLevel(ability)
+					.execute();
 			displayGames();
 		}
 
@@ -425,15 +426,42 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 
 	@Override
 	public void onDialogPositiveClick(FilterDistanceFragment dialog) {
-		int distance = dialog.getDistance();
+		distance = dialog.getDistance();
 		if (!connected && gameup.CAN_CONNECT) {
 			mLocationClient = new LocationClient(this, this, this);
     		mLocationClient.connect();
 		}
-		while (!connected) {
-			// I just want to wait until connected
-		}
 		
+		if (connected) {
+			filterByDistance();
+		}
+	}
+	
+	@Override
+	public void onConnectionFailed(ConnectionResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onConnected(Bundle connectionHint) {
+		connected = true;
+		mCurrentLocation = mLocationClient.getLastLocation();
+		filterByDistance();
+	}
+
+	@Override
+	public void onDisconnected() {
+		// TODO Auto-generated method stub
+	}
+	
+	/**
+	 * Must already be connected to LocationClient.
+	 */
+	private void filterByDistance() {
+		Log.d("filter", Boolean.toString(connected) + " current location: " +
+					Double.toString(mCurrentLocation.getLatitude()) + 
+					"," + Double.toString(mCurrentLocation.getLongitude()));
 		gameList = filterBuilder
 				.setRadius(distance, mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())
 				.execute();
@@ -449,23 +477,5 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 			}
 		});
 		builder.show();
-	}
-	
-	@Override
-	public void onConnectionFailed(ConnectionResult result) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onConnected(Bundle connectionHint) {
-		connected = true;
-		mCurrentLocation = mLocationClient.getLastLocation();
-	}
-
-	@Override
-	public void onDisconnected() {
-		// TODO Auto-generated method stub
-		
 	}
 }
