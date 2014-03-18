@@ -264,7 +264,6 @@ public class GameUpInterface {
 		gameQuery.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
 		
 		gameQuery.whereMatchesQuery("sport", sportQuery);
-		gameQuery.setLimit(10);
 		
 		return gameQuery;
 	}
