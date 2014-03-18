@@ -427,7 +427,7 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	@Override
 	public void onDialogPositiveClick(FilterDistanceFragment dialog) {
 		distance = dialog.getDistance();
-		if (distance != -1) {
+		if (distance != 0 || distance != -1) {
 			if (!connected && gameup.CAN_CONNECT) {
 				mLocationClient = new LocationClient(this, this, this);
 	    		mLocationClient.connect();
