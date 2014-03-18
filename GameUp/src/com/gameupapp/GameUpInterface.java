@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import org.json.JSONArray;
@@ -246,7 +247,8 @@ public class GameUpInterface {
 	 * @param sportName Name of the sport to be selected
 	 * @return A list with the first 10 games of that sport.
 	 */
-	public ParseQuery<GameParse> getQueryWithSportName(String sportName) {
+	public ParseQuery<GameParse> getQueryWithSportName(String sportName) {		
+		sportName = sportName.toLowerCase(Locale.US);
 		ParseQuery<Sport> sportQuery = ParseQuery.getQuery(Sport.class);
 		
 		// This query should always return the same thing, so setting it to 

@@ -146,7 +146,6 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 	@Override
 	public void onConnectionFailed(ConnectionResult result) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -212,8 +211,9 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 		
 		@Override
 		protected ImmutablePair<String, Object> doInBackground(Object... params) {
-			context = (Context) params[2];
-			String sport = ((GameParse) params[0]).getSport();
+			this.context = (Context) params[2];
+			String sport = ((GameParse) params[0]).getSport().toLowerCase(Locale.US);
+			sport = sport.replaceAll(" ", "_");
 			ImmutablePair<String, Object> toReturn = new ImmutablePair<String, Object>(sport, params[1]);
 			return toReturn;
 		}
@@ -225,7 +225,7 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 		
 		@Override
 		protected void onPostExecute(ImmutablePair<String, Object> result) {
-			int id = HelperFunction.getResId(result.left, context, 
+			int id = HelperFunction.getResId(result.left, this.context, 
 					R.drawable.class);
 
 			if (id != -1) {

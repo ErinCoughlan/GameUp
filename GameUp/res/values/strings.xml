@@ -12,6 +12,13 @@
     <string name="menu_settings">Settings</string>
     <string name="menu_logout">Logout</string>
     <string name="menu_refresh">Refresh</string>
+    <string name="menu_filter">Filter</string>
+    <string name="menu_filter_sport">By sport</string>
+    <string name="menu_filter_location">By location</string>
+    <string name="menu_filter_distance">By distance from me</string>
+    <string name="menu_filter_time">By time</string>
+    <string name="menu_filter_ability">By ability level</string>
+    <string name="menu_filter_clear">Clear all filters</string>
     <string name="new_game">New Game</string>
     <string name="sign_up">Sign Up / Login</string>
     <string name="ok">OK</string>
@@ -39,13 +46,17 @@
     <string name="choose_start_time_prompt">Start time:</string>
     <string name="choose_end_time_prompt">End time:</string>
     <string name="choose_ability_prompt">Ability Level:</string>
+    <string name="venue_name_hint">Save this venue as&#8230;</string>
+    <string name="venue_addr_hint">Location (e.g. Parents Field or address)</string>
+    <string name="filter_sport_prompt">Choose a sport to filter on:</string>
+    <string name="filter_ability_prompt">Choose an ability level to filter on:</string>
+    <string name="filter_distance_prompt">Choose distance to filter on:</string>
+    <string name="sport_hint">Start typing to find sports</string>
     
     <string name="unlink_prompt">Unlinking your account from Facebook will permanently delete all of your information from GameUp.</string>
 
     <color name="nice_blue">#33b5e5</color>
     <color name="nice_blue_dark">#0099cc</color>
     <color name="transparent">#00000000</color>
-    <string name="venue_name_hint">Save this venue as...</string>
-    <string name="venue_addr_hint">Location (e.g. Parents Field)</string>
 
 </resources>

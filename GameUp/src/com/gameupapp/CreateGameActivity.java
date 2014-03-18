@@ -23,7 +23,6 @@ import android.app.DatePickerDialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -32,12 +31,10 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -291,12 +288,12 @@ public class CreateGameActivity extends Activity implements
 			public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
 				String selectedItem = locationSpinner.getSelectedItem().toString();
 				Log.d("locationSpinner", selectedItem);
-				if(selectedItem.equals("Add New")) {
+				if (selectedItem.equals("Add New")) {
 					DialogFragment dialogFrag = new AddVenueFragment();
 					dialogFrag.show(getFragmentManager(), "AddVenueFragment");
 				} else {
-					for(Venue venue : venues) {
-						if(selectedItem.equals(venue.getName())) {
+					for (Venue venue : venues) {
+						if (selectedItem.equals(venue.getName())) {
 							ImmutablePair<Double, Double> location = 
 									venue.getLocation();
 							readableLocation = venue.getReadableLocation();

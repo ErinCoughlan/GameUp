@@ -20,6 +20,14 @@ public class AppConstant {
 	static final int LOGIN_ID = 2;
 	static final int SETTINGS_ID = 3;
 	
+	// Types of filters
+	static final int FILTER_SPORT = 0;
+	static final int FILTER_LOCATION = 1;
+	static final int FILTER_TIME = 2;
+	static final int FILTER_ABILITY = 3;
+	static final int FILTER_DISTANCE = 4;
+	static final int FILTER_CLEAR = 500;
+	
 	// Initial List of Sports	
 	static final List<String> SPORTS = Arrays.asList(
 			"Baseball", "Basketball", "Football", "Soccer",
@@ -39,7 +47,7 @@ public class AppConstant {
     static final int RQS_GooglePlayServices = 1;
     
     // Unknown sport icon
-    static final Integer UNKNOWN_IMG = R.drawable.unknown_icon;
+    static final Integer UNKNOWN_IMG = R.drawable.unknown;
     
     // Parse RequestCodes
     static final int FB_REQUEST = 32665;

@@ -1,5 +1,6 @@
 package com.gameupapp;
 
+import java.util.Date;
 import java.util.List;
 
 import com.parse.ParseGeoPoint;
@@ -24,55 +25,63 @@ public class FilterBuilder {
 	 * @param latitude
 	 * @param longitude
 	 */
-	public void setRadius(double radius, double latitude, double longitude) {
+	public FilterBuilder setRadius(double radius, double latitude, double longitude) {
 		ParseQuery<GameParse> radQuery = gameup.getQueriesWithinMiles(
 				radius, latitude, longitude);
-		query.whereMatchesQuery("location", radQuery);
+		query.whereMatchesKeyInQuery("location","location", radQuery);
+		return this;
 	}
 	
 	/**
 	 * 
-	 * @param level Takes the desired ability level (from 1-5)
+	 * @param level Takes the desired ability level (from 1-4)
 	 */
-	public void setAbilityLevel(int level) {
+	public FilterBuilder setAbilityLevel(int level) {
 		assert(level < 4);
 		assert(level >= 0);
 		
 		ParseQuery<GameParse> abilityQuery = gameup.getQueryWithAbility(level);
-		query.whereMatchesQuery("abilityLevel", abilityQuery);
+		query.whereMatchesKeyInQuery("abilityLevel", "abilityLevel", abilityQuery);
+		return this;
 	}
 	
 	/**
 	 * 
 	 * @param sport The name of the desired sport
 	 */
-	public void setSport(String sport) {
+	public FilterBuilder setSport(String sport) {
 		ParseQuery<GameParse> sportQuery = gameup.getQueryWithSportName(sport);
-		query.whereMatchesQuery("sport", sportQuery);
+		query.whereMatchesKeyInQuery("sport", "sport", sportQuery);
+		return this;
 	}
 	
 	/**
 	 * Filters out all games that have already happened
 	 */
-	public void filterIntoFuture() {
-		ParseQuery<GameParse> temporalFilter = gameup.getQueryOnFutureGames();
-		query.whereMatchesQuery("startDateTime", temporalFilter);
+	public FilterBuilder filterIntoFuture() {
+		Date currentDate = new Date(System.currentTimeMillis());
+		query.whereGreaterThan("startDateTime", currentDate);
+		return this;
 	}
 	
-	public void addSortAscendingOnKey(String key) {
+	public FilterBuilder addSortAscendingOnKey(String key) {
 		query.addAscendingOrder(key);
+		return this;
 	}
 	
-	public void addSortDescendingOnKey(String key) {
+	public FilterBuilder addSortDescendingOnKey(String key) {
 		query.addDescendingOrder(key);
+		return this;
 	}
 	
-	public void exclusivelySortAscendingOnKey(String key) {
+	public FilterBuilder exclusivelySortAscendingOnKey(String key) {
 		query.orderByAscending(key);
+		return this;
 	}
 	
-	public void exclusivelySortDescendingOnKey(String key) {
+	public FilterBuilder exclusivelySortDescendingOnKey(String key) {
 		query.orderByDescending(key);
+		return this;
 	}
 	
 	/**
@@ -104,7 +113,7 @@ public class FilterBuilder {
 	 * TODO I'm not sure if we actually always need to include sport?
 	 * @return A query constructed to match all desired parameters 
 	 */
-	public ParseQuery<GameParse> getQuery() {
+	public ParseQuery<GameParse> build() {
 		query.include("sport");
 		return query;
 	}
@@ -113,7 +122,7 @@ public class FilterBuilder {
 	 * TODO I'm not sure if we actually always need to include sport?
 	 * @return A list of all games matching the constructed query
 	 */
-	public List<GameParse> executeFilter() {
+	public List<GameParse> execute() {
 		query.include("sport");
 		return gameup.filterGamesWithQuery(query);
 		
