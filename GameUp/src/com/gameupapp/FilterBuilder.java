@@ -1,5 +1,6 @@
 package com.gameupapp;
 
+import java.util.Date;
 import java.util.List;
 
 import com.parse.ParseGeoPoint;
@@ -58,8 +59,8 @@ public class FilterBuilder {
 	 * Filters out all games that have already happened
 	 */
 	public FilterBuilder filterIntoFuture() {
-		ParseQuery<GameParse> temporalFilter = gameup.getQueryOnFutureGames();
-		query.whereMatchesKeyInQuery("startDateTime", "startDateTime", temporalFilter);
+		Date currentDate = new Date(System.currentTimeMillis());
+		query.whereGreaterThan("startDateTime", currentDate);
 		return this;
 	}
 	

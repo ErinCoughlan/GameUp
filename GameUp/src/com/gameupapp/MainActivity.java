@@ -381,7 +381,10 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	public void onDialogPositiveClick(FilterSportFragment dialog) {
 		String sport = dialog.getSport();
 		if (sport != null) {
-			gameList = filterBuilder.setSport(sport).execute();
+			gameList = filterBuilder
+							.setSport(sport)
+							.filterIntoFuture()
+							.execute();
 			displayGames();
 		}
 
@@ -402,7 +405,10 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	public void onDialogPositiveClick(FilterAbilityFragment dialog) {
 		int ability = dialog.getAbilityLevel();
 		if (ability != -1) {
-			gameList = filterBuilder.setAbilityLevel(ability).execute();
+			gameList = filterBuilder
+							.setAbilityLevel(ability)
+							.filterIntoFuture()
+							.execute();
 			displayGames();
 		}
 
@@ -432,6 +438,7 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 		
 		gameList = filterBuilder
 				.setRadius(distance, mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())
+				.filterIntoFuture()
 				.execute();
 		displayGames();
 
