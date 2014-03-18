@@ -277,6 +277,7 @@ public class GameUpInterface {
 	 */
 	public List<GameParse> getGamesWithSportName(String sportName) {
 		List<GameParse> games;
+		sportName = sportName.toLowerCase(Locale.US);
 		ParseQuery<GameParse> gameQuery = getQueryWithSportName(sportName);
 		gameQuery.setTrace(AppConstant.SHOULD_TRACE);
 		gameQuery.include("sport");
