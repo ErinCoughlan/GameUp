@@ -373,9 +373,6 @@ public class GameUpInterface {
 	public List<GameParse> filterGamesWithQuery(ParseQuery<GameParse> query) {
 		query.whereEqualTo("isDebugGame", AppConstant.DEBUG);
 		
-		// TODO REMOVE THIS
-		ParseQuery.clearAllCachedResults();
-		query.setLimit(500);
 		try {
 			return query.find();
 		} catch (ParseException e) {
