@@ -46,7 +46,12 @@ public class FilterDistanceFragment extends DialogFragment {
 		        @Override
 		        public void onClick(DialogInterface dialog, int which) {
 		        	final EditText editText = (EditText) v.findViewById(R.id.edittext_distance);
-		        	distance = Integer.parseInt(editText.getText().toString());
+		        	String s = editText.getText().toString();
+		        	if (!s.equals("")) {
+		        		distance = Integer.parseInt(s);
+		        	} else {
+		        		distance = -1;
+		        	}
 		        	mListener.onDialogPositiveClick(FilterDistanceFragment.this);
 		        }
 		 });
@@ -70,7 +75,8 @@ public class FilterDistanceFragment extends DialogFragment {
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 				if (actionId == EditorInfo.IME_ACTION_DONE) {
 					editText.clearFocus();
-					distance = Integer.parseInt(editText.getText().toString());
+					String s = editText.getText().toString();
+					distance = Integer.parseInt(s);
 				}
 				return false;
 			}

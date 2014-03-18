@@ -1,10 +1,7 @@
 package com.gameupapp;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
-import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseQuery.CachePolicy;
 

@@ -386,18 +386,18 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 					.setSport(sport)
 					.execute();
 			displayGames();
-		}
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(this)
-		.setTitle("Filter!")
-		.setMessage("Filtered by sport: " + sport)
-		.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.cancel();
-			}
-		});
-		builder.show();
+			AlertDialog.Builder builder = new AlertDialog.Builder(this)
+			.setTitle("Filter!")
+			.setMessage("Filtered by sport: " + sport)
+			.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+				}
+			});
+			builder.show();
+		}
 
 	}
 
@@ -409,31 +409,33 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 					.setAbilityLevel(ability)
 					.execute();
 			displayGames();
-		}
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(this)
-		.setTitle("Filter!")
-		.setMessage("Filtered by ability: " + AppConstant.ABILITY_LEVELS.get(ability))
-		.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.cancel();
-			}
-		});
-		builder.show();
+			AlertDialog.Builder builder = new AlertDialog.Builder(this)
+			.setTitle("Filter!")
+			.setMessage("Filtered by ability: " + AppConstant.ABILITY_LEVELS.get(ability))
+			.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+				}
+			});
+			builder.show();
+		}
 
 	}
 
 	@Override
 	public void onDialogPositiveClick(FilterDistanceFragment dialog) {
 		distance = dialog.getDistance();
-		if (!connected && gameup.CAN_CONNECT) {
-			mLocationClient = new LocationClient(this, this, this);
-    		mLocationClient.connect();
-		}
-		
-		if (connected) {
-			filterByDistance();
+		if (distance != -1) {
+			if (!connected && gameup.CAN_CONNECT) {
+				mLocationClient = new LocationClient(this, this, this);
+	    		mLocationClient.connect();
+			}
+			
+			if (connected) {
+				filterByDistance();
+			}
 		}
 	}
 	
