@@ -44,4 +44,6 @@ public class AppConstant {
     // Parse RequestCodes
     static final int FB_REQUEST = 32665;
 	static final int MAX_GEOCODER_RESULTS = 1;
+	
+	static final boolean SHOULD_TRACE = false;
 }

@@ -153,6 +153,7 @@ public class GameUpInterface {
 	 */
 	public List<GameParse> getGames() {
 		ParseQuery<GameParse> query = getGamesQuery();
+		query.setTrace(AppConstant.SHOULD_TRACE);
 		query.include("sport");
 		// This is just a really, really general filter, so we can still use
 		// filterGamesWithQuery
@@ -169,6 +170,7 @@ public class GameUpInterface {
 	 */
 	public ParseQuery<GameParse> getGamesQuery() {
 		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
+		query.setTrace(AppConstant.SHOULD_TRACE);
 		query.setLimit(10);
 		
 		return query;
@@ -176,6 +178,7 @@ public class GameUpInterface {
 	
 	public List<GameParse> getFutureGames() {
 		ParseQuery<GameParse> query = getQueryOnFutureGames();
+		query.setTrace(AppConstant.SHOULD_TRACE);
 		query.setLimit(10);
 		query.setCachePolicy(CachePolicy.CACHE_ELSE_NETWORK);
 		query.setMaxCacheAge(TimeUnit.MINUTES.toMillis(5));
@@ -191,6 +194,7 @@ public class GameUpInterface {
 	public GameParse getGame(String gameId) {
 		GameParse game;
 		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
+		query.setTrace(AppConstant.SHOULD_TRACE);
 		
 		// We hit this too often not to use cache when we can.
 		query.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
@@ -218,6 +222,7 @@ public class GameUpInterface {
 	 */
 	public List<GameParse> getGamesWithAbility(int ability) {
 		ParseQuery<GameParse> query = getQueryWithAbility(ability);
+		query.setTrace(AppConstant.SHOULD_TRACE);
 		query.include("sport");
 		
 		
@@ -231,6 +236,7 @@ public class GameUpInterface {
 	 */
 	public ParseQuery<GameParse> getQueryWithAbility(int ability) {
 		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
+		query.setTrace(AppConstant.SHOULD_TRACE);
 		query.whereEqualTo("abilityLevel", ability);
 		return query;
 	}
@@ -245,12 +251,14 @@ public class GameUpInterface {
 		
 		// This query should always return the same thing, so setting it to 
 		// try cache first should be safe, as should a very long cache.
+		sportQuery.setTrace(AppConstant.SHOULD_TRACE);
 		sportQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
 		sportQuery.setMaxCacheAge(TimeUnit.DAYS.toMillis(14));
 		
 		sportQuery.whereEqualTo("sport", sportName);
 		
 		ParseQuery<GameParse> gameQuery = ParseQuery.getQuery(GameParse.class);
+		gameQuery.setTrace(AppConstant.SHOULD_TRACE);
 		gameQuery.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
 		
 		gameQuery.whereMatchesQuery("sport", sportQuery);
@@ -268,6 +276,7 @@ public class GameUpInterface {
 	public List<GameParse> getGamesWithSportName(String sportName) {
 		List<GameParse> games;
 		ParseQuery<GameParse> gameQuery = getQueryWithSportName(sportName);
+		gameQuery.setTrace(AppConstant.SHOULD_TRACE);
 		gameQuery.include("sport");
 		
 		games = filterGamesWithQuery(gameQuery);
@@ -286,6 +295,7 @@ public class GameUpInterface {
 		List<GameParse> games;
 		ParseQuery<GameParse> query = getQueriesWithinMiles(miles, 
 				latitude, longitude);
+		query.setTrace(AppConstant.SHOULD_TRACE);
 		query.include("sport");
 		
 		games = filterGamesWithQuery(query);
@@ -302,6 +312,7 @@ public class GameUpInterface {
 	public ParseQuery<GameParse> getQueriesWithinMiles(double miles, 
 			double latitude, double longitude) {
 		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
+		query.setTrace(AppConstant.SHOULD_TRACE);
 		query.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
 		query.include("sport");
 		ParseGeoPoint currentLocation = new ParseGeoPoint(latitude, longitude);
@@ -322,6 +333,7 @@ public class GameUpInterface {
 		List<GameParse> games;
 		ParseQuery<GameParse> query = getQueriesWithinKilometers(kilometers, 
 				latitude, longitude);
+		query.setTrace(AppConstant.SHOULD_TRACE);
 		query.include("sport");
 		
 		games = filterGamesWithQuery(query);
@@ -340,6 +352,7 @@ public class GameUpInterface {
 	public ParseQuery<GameParse> getQueriesWithinKilometers(double kilometers, 
 			double latitude, double longitude) {
 		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
+		query.setTrace(AppConstant.SHOULD_TRACE);
 		query.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
 		query.include("sport");
 		ParseGeoPoint currentLocation = new ParseGeoPoint(latitude, longitude);
@@ -378,10 +391,12 @@ public class GameUpInterface {
 	
 	public ParseQuery<Sport> getAllSportsQuery() {
 		ParseQuery<Sport> query = ParseQuery.getQuery(Sport.class);
+		query.setTrace(AppConstant.SHOULD_TRACE);
 		
 		// The sports list is essentially static, so we can make it mostly
 		// just use cache
 		query.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+		
 		query.setMaxCacheAge(TimeUnit.DAYS.toMillis(7));
 		
 		query.whereExists("sport");
@@ -465,6 +480,7 @@ public class GameUpInterface {
 	 */
 	public ParseQuery<GameParse> getQueryOnFutureGames() {
 		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
+		query.setTrace(AppConstant.SHOULD_TRACE);
 		Date currentDate = new Date(System.currentTimeMillis());
 		query.whereGreaterThan("startDateTime", currentDate);
 		

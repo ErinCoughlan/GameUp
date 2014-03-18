@@ -4,6 +4,8 @@ import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+
 import com.gameupapp.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -11,6 +13,7 @@ import com.google.android.gms.location.LocationClient;
 
 import android.content.Context;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +33,8 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 	private LocationClient locationClient;
 	private GameUpInterface gameup;
 	private boolean PLAY_SERVICES = false;
+	private double latitude = 0;
+	private double longitude = 0;
 
 	/* here we must override the constructor for ArrayAdapter
 	 * the only variable we care about now is ArrayList<Item> objects,
@@ -57,8 +62,6 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 	 */
 	public View getView(final int position, View convertView, ViewGroup parent) {
 
-		double latitude = 0;
-		double longitude = 0;
 		
 		// assign the view we are converting to a local variable
 		View v = convertView;
@@ -108,14 +111,8 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 				//location.setText(locationString);
 				
 				if (gameup.CAN_CONNECT) {
-					double distance = 
-							gameup.getDistanceBetweenLocationAndGame(latitude, 
-									longitude, i.getGameId());
-					
-					DecimalFormat df = new DecimalFormat();
-					df.setMaximumFractionDigits(1);
-					
-					textLocation.setText(df.format(distance) + " mi. away");
+					Object[] params = {i, textLocation};
+					new SetDistanceText().execute(params);
 				} else {
 					textLocation.setText(i.getReadableLocation());
 				}
@@ -123,17 +120,14 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 			
 			
 			if (sport != null){
-				sport.setText(i.getSport());
+				Object[] params = {i, sport};
+				new SetSportText().execute(params);
 			}
 			
 			if (sportIcon != null){
-				String s = i.getSport().toLowerCase(Locale.US);
-				int id = HelperFunction.getResId(s, context, R.drawable.class);
-				if (id != -1) {
-					sportIcon.setBackgroundResource(id);
-				} else {
-					sportIcon.setBackgroundResource(AppConstant.UNKNOWN_IMG);
-				}
+				// We need to save context because it can go out of scope
+				Object[] params = {i, sportIcon, context};
+				new SetSportIcon().execute(params);
 			}
 		}
 
@@ -164,5 +158,81 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 	public void onDisconnected() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private class SetDistanceText extends AsyncTask<Object, Integer, ImmutablePair<Double, Object>> {
+		@Override
+		protected ImmutablePair<Double, Object> doInBackground(Object... params) {
+			double distance = 
+					gameup.getDistanceBetweenLocationAndGame(latitude, 
+							longitude, ((GameParse) params[0]).getGameId());
+			
+			ImmutablePair<Double, Object> toReturn = new ImmutablePair<Double, Object>(distance, params[1]);
+			return toReturn;
+		}
+		
+		@Override
+		protected void onProgressUpdate(Integer...progress) {
+			// TODO set progress percent here
+		}
+		
+		@Override
+		protected void onPostExecute(ImmutablePair<Double, Object> result) {
+			DecimalFormat df = new DecimalFormat();
+			df.setMaximumFractionDigits(1);
+			
+			((TextView) result.right).setText(df.format(result.left) + " mi. away");
+		}
+	}
+	
+	private class SetSportText extends AsyncTask<Object, Integer, ImmutablePair<String, Object>> {
+		@Override
+		protected ImmutablePair<String, Object> doInBackground(Object... params) {
+			String sport = ((GameParse) params[0]).getSport();
+			
+			ImmutablePair<String, Object> toReturn = new ImmutablePair<String, Object>(sport, params[1]);
+			return toReturn;
+		}
+		
+		@Override
+		protected void onProgressUpdate(Integer...progress) {
+			// TODO set progress percent here
+		}
+		
+		@Override
+		protected void onPostExecute(ImmutablePair<String, Object> result) {
+			((TextView) result.right).setText(result.left);
+		}
+	}
+	
+	
+	private class SetSportIcon extends AsyncTask<Object, Integer, ImmutablePair<String, Object>> {
+		// Shadow copy for when the broader class is done executing
+		Context context;
+		
+		@Override
+		protected ImmutablePair<String, Object> doInBackground(Object... params) {
+			context = (Context) params[2];
+			String sport = ((GameParse) params[0]).getSport();
+			ImmutablePair<String, Object> toReturn = new ImmutablePair<String, Object>(sport, params[1]);
+			return toReturn;
+		}
+		
+		@Override
+		protected void onProgressUpdate(Integer...progress) {
+			// TODO set progress percent here
+		}
+		
+		@Override
+		protected void onPostExecute(ImmutablePair<String, Object> result) {
+			int id = HelperFunction.getResId(result.left, context, 
+					R.drawable.class);
+
+			if (id != -1) {
+				((ImageView) result.right).setBackgroundResource(id);
+			} else {
+				((ImageView) result.right).setBackgroundResource(AppConstant.UNKNOWN_IMG);
+			};
+		}
 	}
 }
