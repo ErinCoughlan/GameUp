@@ -315,7 +315,8 @@ public class GameUpInterface {
 			double latitude, double longitude) {
 		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
 		query.setTrace(AppConstant.SHOULD_TRACE);
-		query.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
+		query.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+		query.setMaxCacheAge(TimeUnit.MINUTES.toMillis(5));
 		query.include("sport");
 		ParseGeoPoint currentLocation = new ParseGeoPoint(latitude, longitude);
 		query.whereWithinMiles("location", currentLocation, miles);
@@ -372,6 +373,9 @@ public class GameUpInterface {
 	public List<GameParse> filterGamesWithQuery(ParseQuery<GameParse> query) {
 		query.whereEqualTo("isDebugGame", AppConstant.DEBUG);
 		
+		// TODO REMOVE THIS
+		ParseQuery.clearAllCachedResults();
+		query.setLimit(500);
 		try {
 			return query.find();
 		} catch (ParseException e) {

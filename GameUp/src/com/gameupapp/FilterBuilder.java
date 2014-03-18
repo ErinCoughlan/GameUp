@@ -1,5 +1,6 @@
 package com.gameupapp;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -59,8 +60,8 @@ public class FilterBuilder {
 	 * Filters out all games that have already happened
 	 */
 	public FilterBuilder filterIntoFuture() {
-		Date currentDate = new Date(System.currentTimeMillis());
-		query.whereGreaterThan("startDateTime", currentDate);
+		Date currentDate = Calendar.getInstance().getTime();
+		query.whereGreaterThanOrEqualTo("startDateTime", currentDate);
 		return this;
 	}
 	
