@@ -3,6 +3,8 @@
 		<title> GameUp </title>
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans:800,600' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" type="text/css" href="css/gameup.css">
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+		<script type="text/javascript" src="js/gameup.js"></script>
 	</head>
 	<body>
 		<div id="container">
@@ -15,8 +17,8 @@
 				</div>
 				<div class="email">
 					<form action="#" method="post">
-						<input type="text" name="email" size="30" placeholder="my_email@awesome.com"><br>
-						<div class="submit" onclick="submit()">Tell me when the games begin</div>
+						<input type="text" id="email" name="email" size="30" placeholder="my_email@awesome.com"><br>
+						<div class="submit" onclick="submit(event)">Tell me when the games begin</div>
 					</form>
 				</div>
 			</div>
