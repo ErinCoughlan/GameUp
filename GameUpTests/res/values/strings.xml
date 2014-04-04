@@ -2,5 +2,6 @@
 <resources>
 
     <string name="app_name">GameUpTestsTest</string>
-
+    <string name="fb_app_id" translatable="false">388247841278612</string>
+    <string name="map_api_key" translatable="false">AIzaSyB_Hh3iDwK7kgxnmZpHMD27wlXxRvpXBBE</string>
 </resources>

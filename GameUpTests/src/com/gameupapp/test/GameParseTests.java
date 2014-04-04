@@ -4,7 +4,13 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import android.content.Context;
+import android.test.ActivityInstrumentationTestCase2;
+import android.test.AndroidTestCase;
+import android.test.mock.MockContext;
+
 import com.gameupapp.GameParse;
+import com.gameupapp.MainActivity;
 import com.gameupapp.R;
 import com.gameupapp.Sport;
 import com.parse.Parse;
@@ -16,7 +22,7 @@ import com.parse.ParseUser;
 
 import junit.framework.TestCase;
 
-public class GameParseTests extends TestCase {
+public class GameParseTests extends AndroidTestCase {
 	protected GameParse firstGame;
 	protected GameParse secondGame;
 	protected GameParse thirdGame;
@@ -25,20 +31,24 @@ public class GameParseTests extends TestCase {
 	protected Sport tennis;
 	protected Sport pingpong;
 	
+	protected Context localContext;
+	protected ParseUser user;
+	
 	@Override
 	protected void setUp() {
 		// Parse information
 		// Register GameParse subclass
+		localContext = getContext();
 		ParseObject.registerSubclass(GameParse.class);
 		ParseObject.registerSubclass(Sport.class);
 		// erin@gameupapp.com Parse
-		Parse.initialize(this, "yYt3t3sH7XMU81BXgvYaXnWEsoahXCJb5dhupvP5",
+		Parse.initialize(localContext, "yYt3t3sH7XMU81BXgvYaXnWEsoahXCJb5dhupvP5",
 				"dZCnn1DrZJMXyZOkZ7pbM7Z0ePwTyIJsZzgY77FU");
 		// Phil's Parse
 		// Parse.initialize(this, "a0k4KhDMvl3Mz2CUDcDMLAgnt5uaCLuIBxK41NGa",
 		//		"3EJKdG7SuoK89gkFkN1rcDNbFvIgN71iH0mJyfDC");
 
-		ParseFacebookUtils.initialize(getString(R.string.fb_app_id));
+		ParseFacebookUtils.initialize(localContext.getString(R.string.fb_app_id));
 		
 		
 		// We need a few sports to make games.
@@ -62,15 +72,13 @@ public class GameParseTests extends TestCase {
 		}
 		
 		try {
-			pingpong = query.whereMatches("sport", "pingpong").getFirst();
+			pingpong = query.whereMatches("sport", "ping pong").getFirst();
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			fail();
 		}
-		
-		// We need a user.
-		ParseUser.enableAutomaticUser();
+
 		
 		Calendar start1 = Calendar.getInstance();
 		Calendar start2 = Calendar.getInstance();
@@ -88,21 +96,35 @@ public class GameParseTests extends TestCase {
 		end2.set(2014,3,15,2,14);
 		end3.set(2014,9,27,23,0,0);
 		
+		firstGame = new GameParse();
+		secondGame = new GameParse();
+		thirdGame = new GameParse();
+		
+		
+		ParseUser.enableAutomaticUser();
+		user = ParseUser.getCurrentUser();
+		try {
+			user.save();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			fail("Couldn't save anonymous user for testing");
+		}
 		
 		// Assert these so we die immediately if parse errors out on us. Note
 		// that these implicitly test adding a player as well.
 		assertTrue(firstGame.createGame(start1.getTime(), end1.getTime(), 3, 8, 
-				"Parents Field", 37, 36, "Soccer"));
+				"Parents Field", 37, 36, "Soccer", user));
 		assertEquals("Failed to properly add player on creation", 1, 
 				firstGame.getCurrentPlayerCount());
 		
 		assertTrue(secondGame.createGame(start2.getTime(), end2.getTime(), 1, 10, "LAC", 37,
-				37, "ping pong"));
+				37, "ping pong", user));
 		assertEquals("Failed to properly add player on creation", 1, 
 				secondGame.getCurrentPlayerCount());
 		
 		assertTrue(thirdGame.createGame(start3.getTime(), end3.getTime(), 1, 10, 
-				"Tennis Center", 37, 37, "tennis"));
+				"Tennis Center", 37, 37, "tennis", user));
 		assertEquals("Failed to properly add player on creation", 1, 
 				thirdGame.getCurrentPlayerCount());
 	}
@@ -133,13 +155,11 @@ public class GameParseTests extends TestCase {
 			fail("Error cleaning up: could not delete games.");
 		}
 		
-		try {
-			ParseUser.getCurrentUser().delete();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			fail("Error cleaning up: couldn't delete anonymous user");
-		}
+		soccer = null;
+		tennis = null;
+		pingpong = null;
+		
+		user.logOut();
 	}
 
 
@@ -175,7 +195,8 @@ public class GameParseTests extends TestCase {
 		
 		String sport = secondGame.getSport();
 		
-		assertTrue("Setting sport failed.", sport.equals("tennis"));
+		assertTrue("Setting sport failed. Got " + sport + ", should have been "
+				+ "tennis", sport.equals("Tennis"));
 	}
 	
 	

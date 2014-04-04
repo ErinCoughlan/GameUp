@@ -286,11 +286,12 @@ public class GameParse extends ParseObject {
 	 * @param latitude Latitude of game 
 	 * @param longitude Longitude of game
 	 * @param sport Name of sport
+	 * @param user User to add by default
 	 * @return True on successful creation, false on error or validation problem.
 	 */
 	public boolean createGame(Date startDate, Date endDate, int abilityLevel,
 			int playerCount, String readableLocation, double latitude,
-			double longitude, String sport) {
+			double longitude, String sport, ParseUser user) {
 		
 		assert(abilityLevel < 4);
 		assert(abilityLevel >= 0);
@@ -325,8 +326,17 @@ public class GameParse extends ParseObject {
 		
 		// And automatically add the player who created the game
 		// TODO: Figure out what to do if add fails, but create works
-		addPlayer();
+		addPlayer(user);
 		return true;
+	}
+	
+	public boolean createGame(Date startDate, Date endDate, int abilityLevel,
+			int playerCount, String readableLocation, double latitude,
+			double longitude, String sport) {
+		
+		return createGame(startDate, endDate, abilityLevel, playerCount, 
+				readableLocation, latitude, longitude, sport, 
+				ParseUser.getCurrentUser());
 	}
 	
 	public boolean getDebug() {
