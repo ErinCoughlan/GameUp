@@ -136,9 +136,9 @@ public class FilterBuilder {
 		query.include("sport");
 		if (refresh) {
 			query.clearCachedResult();
+			refresh = false;
 		}	
 		
 		return gameup.filterGamesWithQuery(query);
-		
 	}
 }
