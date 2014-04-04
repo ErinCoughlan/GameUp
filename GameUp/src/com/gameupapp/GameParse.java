@@ -88,10 +88,24 @@ public class GameParse extends ParseObject {
 	
 	public void incrementCurrentPlayerCount() {
 		increment("currentPlayerCount");
+		if(getCurrentPlayerCount() == getMaxPlayerCount()) {
+			setFullness(true);
+		}
 	}
 
 	public void decrementCurrentPlayerCount() {
+		if(getCurrentPlayerCount() == getMaxPlayerCount()) {
+			setFullness(false);
+		}
 		increment("currentPlayerCount", -1);
+	}
+	
+	public boolean getFullness() {
+		return getBoolean("isFull");
+	}
+	
+	public void setFullness(boolean isFull) {
+		put("isFull", isFull);
 	}
 	
 	/**
@@ -139,13 +153,15 @@ public class GameParse extends ParseObject {
 		return getJSONArray("Users");
 	}
 
+	
 	/**
 	 * TODO Throw error up to UI
+	 * @param user User to add.
 	 * @return True on successful add. False if the player had already joined,
 	 * 				the game is full, or the save fails.
 	 */
-	public boolean addPlayer() {
-		if(checkPlayerJoined()) {
+	public boolean addPlayer(ParseUser user) {
+		if(checkPlayerJoined(user)) {
 			return false;
 		}
 		
@@ -160,17 +176,16 @@ public class GameParse extends ParseObject {
 		if(currentCount < maxCount) {
 			// Update game
 			incrementCurrentPlayerCount();
-			ParseUser currentUser = ParseUser.getCurrentUser();
-			addUnique("Users", currentUser.getObjectId());
+			addUnique("Users", user.getObjectId());
 			
 			// Update user
-			currentUser.addUnique("listOfGames", getObjectId());
+			user.addUnique("listOfGames", getObjectId());
 			try {
 				/** TODO handle possible inconsistent state if one save
 				 * succeeds but the other fails.
 				 */
 				save();
-				currentUser.save();
+				user.save();
 				return true;
 			} catch (ParseException e) {
 				Log.e("addPlayer", "Failed to add player", e);
@@ -182,30 +197,39 @@ public class GameParse extends ParseObject {
 	}
 	
 	/**
+	 * TODO Throw error up to UI
+	 * @return True on successful add. False if the player had already joined,
+	 * 				the game is full, or the save fails.
+	 */
+	public boolean addPlayer() {
+		return addPlayer(ParseUser.getCurrentUser());
+	}
+	
+	/**
 	 * Remove a player from the game
+	 * @param user User to be removed
 	 * @return True if the player was successfully removed. False if the remove 
 	 * 		   		failed or player hadn't joined.
 	 */
-	public boolean removePlayer() {
-		if(checkPlayerJoined()) {
+	public boolean removePlayer(ParseUser user) {
+		if(checkPlayerJoined(user)) {
 			// Update game
-			ParseUser currentUser = ParseUser.getCurrentUser();
 			List<String> currentUserList = new ArrayList<String>();
-			currentUserList.add(currentUser.getObjectId());
+			currentUserList.add(user.getObjectId());
 			removeAll("Users", currentUserList);
 			decrementCurrentPlayerCount();
 			
 			// Update user
 			List<String> game = new ArrayList<String>();
 			game.add(getObjectId());
-			currentUser.removeAll("listOofGames", game);
+			user.removeAll("listOfGames", game);
 			
 			try {
 				/** TODO handle possible inconsistent state if one save
 				 * succeeds but the other fails.
 				 */
 				save();
-				currentUser.save();
+				user.save();
 				return true;
 			} catch (ParseException e) {
 				Log.e("removePlayer", "Failed to fuly remove player", e);
@@ -217,23 +241,31 @@ public class GameParse extends ParseObject {
 	}
 	
 	/**
+	 * Remove a player from the game
+	 * @return True if the player was successfully removed. False if the remove 
+	 * 		   		failed or player hadn't joined.
+	 */
+	public boolean removePlayer() {
+		return removePlayer(ParseUser.getCurrentUser());
+	}
+	
+	/**
 	 * Checks if the current user has already joined a game
+	 * @param user User to check for
 	 * @return true if the user has joined. False otherwise (including on error).
 	 */
-	public boolean checkPlayerJoined() { 
+	public boolean checkPlayerJoined(ParseUser user) { 
 		JSONArray joinedPlayers = getJSONArray("Users");
 		if (joinedPlayers == null) {
 			// We have no players
 			return false;
 		}
 		
-		ParseUser currentUser = ParseUser.getCurrentUser();
-		
 		// Anonymous users can't have joined 
-		if(currentUser == null) {
+		if(user == null) {
 			return false;
 		}
-		String currentUID = currentUser.getObjectId();
+		String currentUID = user.getObjectId();
 		for (int i = 0; i < joinedPlayers.length(); i++) {
 			String candidateUID;
 			try {
@@ -251,6 +283,14 @@ public class GameParse extends ParseObject {
 	}
 	
 	/**
+	 * Checks if the current user has already joined a game
+	 * @return true if the user has joined. False otherwise (including on error).
+	 */
+	public boolean checkPlayerJoined() { 
+		return checkPlayerJoined(ParseUser.getCurrentUser());
+	}
+	
+	/**
 	 * 
 	 * @param startDate Start date/time of game
 	 * @param endDate End date/time of game (must be after startDate)
@@ -260,11 +300,12 @@ public class GameParse extends ParseObject {
 	 * @param latitude Latitude of game 
 	 * @param longitude Longitude of game
 	 * @param sport Name of sport
+	 * @param user User to add by default
 	 * @return True on successful creation, false on error or validation problem.
 	 */
 	public boolean createGame(Date startDate, Date endDate, int abilityLevel,
 			int playerCount, String readableLocation, double latitude,
-			double longitude, String sport) {
+			double longitude, String sport, ParseUser user) {
 		
 		assert(abilityLevel < 4);
 		assert(abilityLevel >= 0);
@@ -299,8 +340,17 @@ public class GameParse extends ParseObject {
 		
 		// And automatically add the player who created the game
 		// TODO: Figure out what to do if add fails, but create works
-		addPlayer();
+		addPlayer(user);
 		return true;
+	}
+	
+	public boolean createGame(Date startDate, Date endDate, int abilityLevel,
+			int playerCount, String readableLocation, double latitude,
+			double longitude, String sport) {
+		
+		return createGame(startDate, endDate, abilityLevel, playerCount, 
+				readableLocation, latitude, longitude, sport, 
+				ParseUser.getCurrentUser());
 	}
 	
 	public boolean getDebug() {
