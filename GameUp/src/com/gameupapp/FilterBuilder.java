@@ -1,6 +1,7 @@
 package com.gameupapp;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import com.parse.ParseQuery;
 import com.parse.ParseQuery.CachePolicy;
@@ -11,9 +12,12 @@ import com.parse.ParseQuery.CachePolicy;
 public class FilterBuilder {
 	private ParseQuery<GameParse> query;
 	private GameUpInterface gameup;
+	private boolean refresh;
 	
 	public FilterBuilder() {
 		query = ParseQuery.getQuery("GameParse");
+		query.setMaxCacheAge(TimeUnit.MINUTES.toMillis(5));
+		query.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
 		gameup = GameUpInterface.getInstance();
 	}
 	
@@ -119,14 +123,22 @@ public class FilterBuilder {
 		return query;
 	}
 	
+	public FilterBuilder shouldRefresh(boolean shouldRefresh) {
+		refresh = shouldRefresh;
+		return this;
+	}
+	
 	/**
 	 * TODO I'm not sure if we actually always need to include sport?
 	 * @return A list of all games matching the constructed query
 	 */
 	public List<GameParse> execute() {
 		query.include("sport");
+		if (refresh) {
+			query.clearCachedResult();
+		}	
+		
 		return gameup.filterGamesWithQuery(query);
 		
 	}
-	
 }
