@@ -55,4 +55,5 @@ public class AppConstant {
 	static final int MAX_GEOCODER_RESULTS = 1;
 	
 	static final boolean SHOULD_TRACE = false;
+	static final boolean ANALYTICS = true;
 }

@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.parse.ParseAnalytics;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
@@ -239,6 +240,11 @@ public class GameUpInterface {
 		ParseQuery<GameParse> query = ParseQuery.getQuery(GameParse.class);
 		query.setTrace(AppConstant.SHOULD_TRACE);
 		query.whereEqualTo("abilityLevel", ability);
+		
+		if(AppConstant.ANALYTICS) {
+			ParseAnalytics.trackEvent("Query on ability level");
+		}
+		
 		return query;
 	}
 
@@ -263,6 +269,10 @@ public class GameUpInterface {
 		gameQuery.setTrace(AppConstant.SHOULD_TRACE);
 		gameQuery.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
 		
+		if(AppConstant.ANALYTICS) {
+			ParseAnalytics.trackEvent("Query on games for " + sportName);
+		}
+		
 		gameQuery.whereMatchesQuery("sport", sportQuery);
 		
 		return gameQuery;
@@ -280,6 +290,8 @@ public class GameUpInterface {
 		ParseQuery<GameParse> gameQuery = getQueryWithSportName(sportName);
 		gameQuery.setTrace(AppConstant.SHOULD_TRACE);
 		gameQuery.include("sport");
+		
+
 		
 		games = filterGamesWithQuery(gameQuery);
 		return games;
@@ -320,6 +332,10 @@ public class GameUpInterface {
 //		query.include("sport");
 		ParseGeoPoint currentLocation = new ParseGeoPoint(latitude, longitude);
 		query.whereWithinMiles("location", currentLocation, miles);
+		
+		if(AppConstant.ANALYTICS) {
+			ParseAnalytics.trackEvent("Query on games within distance");
+		}
 		
 		return query;
 	}
@@ -402,6 +418,10 @@ public class GameUpInterface {
 		
 		query.setMaxCacheAge(TimeUnit.DAYS.toMillis(7));
 		
+		if(AppConstant.ANALYTICS) {
+			ParseAnalytics.trackEvent("Query on all sports");
+		}
+		
 		query.whereExists("sport");
 		return query;
 	}
@@ -455,6 +475,10 @@ public class GameUpInterface {
 		double latitude = location.getLatitude();
 		double longitude = location.getLongitude();
 		
+		if(AppConstant.ANALYTICS) {
+			ParseAnalytics.trackEvent("Got lat/long of game");
+		}
+
 		return new ImmutablePair<Double, Double>(latitude, longitude);
 	}
 	
@@ -472,6 +496,10 @@ public class GameUpInterface {
 		GameParse game = getGame(gameId);
 		ParseGeoPoint gameLocation = game.getLocation();
 		ParseGeoPoint location = new ParseGeoPoint(latitude, longitude);
+
+		if(AppConstant.ANALYTICS) {
+			ParseAnalytics.trackEvent("Got distance to game");
+		}
 		
 		return gameLocation.distanceInMilesTo(location);
 		
@@ -486,6 +514,10 @@ public class GameUpInterface {
 		query.setTrace(AppConstant.SHOULD_TRACE);
 		Date currentDate = new Date(System.currentTimeMillis());
 		query.whereGreaterThan("startDateTime", currentDate);
+		
+		if(AppConstant.ANALYTICS) {
+			ParseAnalytics.trackEvent("Query on future games");
+		}
 		
 		return query;
 	}
