@@ -124,7 +124,7 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 			if (i.checkPlayerJoined()) {
 				//joinedIcon.setVisibility(View.VISIBLE);
 				Drawable img = getContext().getResources().getDrawable(R.drawable.up);
-				img.setBounds( 0, 0, 40, 40 );
+				img.setBounds(1, 1, 40, 40);
 				sport.setCompoundDrawables(img, null, null, null);
 			} else {
 				//joinedIcon.setVisibility(View.GONE);
