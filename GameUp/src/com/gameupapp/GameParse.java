@@ -88,10 +88,24 @@ public class GameParse extends ParseObject {
 	
 	public void incrementCurrentPlayerCount() {
 		increment("currentPlayerCount");
+		if(getCurrentPlayerCount() == getMaxPlayerCount()) {
+			setFullness(true);
+		}
 	}
 
 	public void decrementCurrentPlayerCount() {
+		if(getCurrentPlayerCount() == getMaxPlayerCount()) {
+			setFullness(false);
+		}
 		increment("currentPlayerCount", -1);
+	}
+	
+	public boolean getFullness() {
+		return getBoolean("isFull");
+	}
+	
+	public void setFullness(boolean isFull) {
+		put("isFull", isFull);
 	}
 	
 	/**

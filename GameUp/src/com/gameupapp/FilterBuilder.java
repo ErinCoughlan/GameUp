@@ -128,6 +128,11 @@ public class FilterBuilder {
 		return this;
 	}
 	
+	public FilterBuilder nonFull() {
+		query.whereEqualTo("isFull", false);
+		return this;
+	}
+	
 	/**
 	 * TODO I'm not sure if we actually always need to include sport?
 	 * @return A list of all games matching the constructed query
