@@ -7,9 +7,10 @@ function submit(e) {
 	// Actually submit the rating to the database
     $.ajax({
     	type: 'POST',
-    	url: 'cgi-bin/gameup.php',
+    	url: '../cgi-bin/gameup.php',
      	data: dataObject,
      	success: function (msg){
+            // Redirect somewhere smart
      		alert('Everything is AWESOME!');
       	}
     });

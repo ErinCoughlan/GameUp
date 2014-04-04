@@ -12,7 +12,9 @@ import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -98,6 +100,7 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 			TextView textLocation = (TextView) v.findViewById(R.id.gameLocation);
 			TextView sport = (TextView) v.findViewById(R.id.gameSport);
 			ImageView sportIcon = (ImageView) v.findViewById(R.id.gameSportIcon);
+			//ImageView joinedIcon = (ImageView) v.findViewById(R.id.gameSportJoined);
 
 			// check to see if each individual textview is null.
 			// if not, assign some text!
@@ -118,6 +121,16 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 				}
 			}
 			
+			if (i.checkPlayerJoined()) {
+				//joinedIcon.setVisibility(View.VISIBLE);
+				Drawable img = getContext().getResources().getDrawable(R.drawable.up);
+				img.setBounds( 0, 0, 40, 40 );
+				sport.setCompoundDrawables(img, null, null, null);
+			} else {
+				//joinedIcon.setVisibility(View.GONE);
+				sport.setCompoundDrawables(null, null, null, null);
+			}
+ 			
 			
 			if (sport != null && sportIcon != null){
 				Object[] params = {i, sport, sportIcon, context};
