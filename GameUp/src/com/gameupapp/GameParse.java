@@ -222,7 +222,7 @@ public class GameParse extends ParseObject {
 			// Update user
 			List<String> game = new ArrayList<String>();
 			game.add(getObjectId());
-			user.removeAll("listOofGames", game);
+			user.removeAll("listOfGames", game);
 			
 			try {
 				/** TODO handle possible inconsistent state if one save
