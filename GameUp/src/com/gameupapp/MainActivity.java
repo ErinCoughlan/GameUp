@@ -50,8 +50,8 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	private LocationClient mLocationClient;
 	private Location mCurrentLocation;
 	private boolean connected = false;
-	private int distance = -1;
-	private int ability = -1;
+	private int distance;
+	private int ability;
 	private String sport;
 
 
@@ -84,21 +84,20 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 		setContentView(R.layout.activity_main);
 
 		// Parse information
-		// Register GameParse subclass
 		ParseObject.registerSubclass(GameParse.class);
 		ParseObject.registerSubclass(Sport.class);
 		// erin@gameupapp.com Parse
 		Parse.initialize(this, "yYt3t3sH7XMU81BXgvYaXnWEsoahXCJb5dhupvP5",
 				"dZCnn1DrZJMXyZOkZ7pbM7Z0ePwTyIJsZzgY77FU");
-		// Phil's Parse
-		// Parse.initialize(this, "a0k4KhDMvl3Mz2CUDcDMLAgnt5uaCLuIBxK41NGa",
-		//		"3EJKdG7SuoK89gkFkN1rcDNbFvIgN71iH0mJyfDC");
 
 		ParseFacebookUtils.initialize(getString(R.string.fb_app_id));
 
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences("settings", 0);
 		USERNAME = settings.getString(AppConstant.USER, null);
+		sport = settings.getString(AppConstant.SPORT, null);
+		ability = settings.getInt(AppConstant.ABILITY, -1);
+		distance = settings.getInt(AppConstant.DISTANCE, -1);
 
 		// Set up on click for creating new games
 		final Button button = (Button) findViewById(R.id.new_game);
@@ -121,9 +120,9 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	public void onStart() {
 		super.onStart();
 
-		//gameup = GameUpInterface.getInstance();
 		gameup.registerObserver(this);
 
+		createFilterBuilder();
 		new SetGameList().execute();
 		updateView();
 	}
@@ -183,6 +182,9 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString(AppConstant.USER, USERNAME);
+		editor.putString(AppConstant.SPORT, sport);
+		editor.putInt(AppConstant.ABILITY, ability);
+		editor.putInt(AppConstant.DISTANCE, distance);
 		editor.apply();
 	}
 
@@ -371,18 +373,15 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	
 	@Override
 	public void onDialogPositiveClick(FilterFragment dialog) {
-		filterBuilder = new FilterBuilder().filterIntoFuture();
 		String message = "Filtered by everything:";
 		
 		sport = dialog.getSport();
 		if (sport != null) {
-			filterBuilder = filterBuilder.setSport(sport);
 			message += " sport=" + sport + ";";
 		}
 		
 		ability = dialog.getAbilityLevel();
 		if (ability != -1) {
-			filterBuilder = filterBuilder.setAbilityLevel(ability);
 			String abilityString = AppConstant.ABILITY_LEVELS.get(ability);
 			message += " ability=" + abilityString + ";";
 		}
@@ -390,16 +389,9 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 		distance = dialog.getDistance();
 		if (distance != 0 && distance != -1) {
 			message += " distance=" + distance + ";";
-			if (!connected && gameup.CAN_CONNECT) {
-				mLocationClient = new LocationClient(this, this, this);
-	    		mLocationClient.connect();
-			}
-			
-			if (connected) {
-				filterByDistanceNoExecute();
-			}
 		}
 		
+		createFilterBuilder();
 		gameList = filterBuilder.execute();
 		displayGames();
 		
@@ -540,6 +532,32 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 					}
 				});
 		builder.show();
+	}
+	
+	/**
+	 * Using the private data members, construct a FilterBuilder
+	 */
+	private void createFilterBuilder() {
+		filterBuilder = new FilterBuilder().filterIntoFuture();
+
+		if (sport != null) {
+			filterBuilder = filterBuilder.setSport(sport);
+		}
+
+		if (ability != -1) {
+			filterBuilder = filterBuilder.setAbilityLevel(ability);
+		}
+		
+		if (distance != 0 && distance != -1) {
+			if (!connected && gameup.CAN_CONNECT) {
+				mLocationClient = new LocationClient(this, this, this);
+	    		mLocationClient.connect();
+			}
+			
+			if (connected) {
+				filterByDistanceNoExecute();
+			}
+		}
 	}
 	
 	public String getSport() {

@@ -15,6 +15,11 @@ public class AppConstant {
 	static final String LOGIN = "logged_in";
 	static final String SETTINGS = "settings";
 	
+	// Stored variables in Shared Preferences
+	static final String SPORT = "sport";
+	static final String ABILITY = "ability";
+	static final String DISTANCE = "distance";
+	
 	// Response from activities
 	static final int DETAIL_ID = 0;
 	static final int CREATE_ID = 1;
