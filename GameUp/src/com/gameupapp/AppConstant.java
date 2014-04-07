@@ -22,11 +22,12 @@ public class AppConstant {
 	static final int SETTINGS_ID = 3;
 	
 	// Types of filters
-	static final int FILTER_SPORT = 0;
-	static final int FILTER_LOCATION = 1;
-	static final int FILTER_TIME = 2;
-	static final int FILTER_ABILITY = 3;
-	static final int FILTER_DISTANCE = 4;
+	static final int FILTER_SPORT = 50;
+	static final int FILTER_LOCATION = 51;
+	static final int FILTER_TIME = 52;
+	static final int FILTER_ABILITY = 53;
+	static final int FILTER_DISTANCE = 54;
+	static final int FILTER_ALL = 55;
 	static final int FILTER_CLEAR = 500;
 	
 	// Initial List of Sports	
