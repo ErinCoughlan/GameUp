@@ -158,13 +158,7 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 			refreshGames();
 			return true;
 		case R.id.menu_filter:
-			// Nothing here -- all actions are on children
-			return true;
-		case R.id.menu_filter_all:
 			filter(AppConstant.FILTER_ALL);
-			return true;
-		case R.id.menu_filter_clear:
-			filter(AppConstant.FILTER_CLEAR);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -224,6 +218,13 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 				.findFragmentById(R.id.games);
 		if (fragment != null) {
 			fragment.update(gameList);
+		}
+		
+		// If there are no games, show error screen
+		if (gameList.size() == 0) {
+			this.findViewById(R.id.no_game_view).setVisibility(View.VISIBLE);
+		} else {
+			this.findViewById(R.id.no_game_view).setVisibility(View.GONE);
 		}
 	}
 

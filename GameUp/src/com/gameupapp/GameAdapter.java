@@ -100,7 +100,6 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 			TextView textLocation = (TextView) v.findViewById(R.id.gameLocation);
 			TextView sport = (TextView) v.findViewById(R.id.gameSport);
 			ImageView sportIcon = (ImageView) v.findViewById(R.id.gameSportIcon);
-			//ImageView joinedIcon = (ImageView) v.findViewById(R.id.gameSportJoined);
 
 			// check to see if each individual textview is null.
 			// if not, assign some text!
@@ -110,24 +109,24 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 			}
 			
 			if (textLocation != null){
-				//String locationString = HelperFunction.convertParseGeoToString(i.getLocation());
-				//location.setText(locationString);
+				textLocation.setText(i.getReadableLocation());
 				
+				// Depends on use case we want to support
+				/*
 				if (gameup.CAN_CONNECT) {
 					Object[] params = {i, textLocation};
 					new SetDistanceText().execute(params);
 				} else {
 					textLocation.setText(i.getReadableLocation());
 				}
+				*/
 			}
 			
 			if (i.checkPlayerJoined()) {
-				//joinedIcon.setVisibility(View.VISIBLE);
 				Drawable img = getContext().getResources().getDrawable(R.drawable.up);
 				img.setBounds(1, 1, 40, 40);
 				sport.setCompoundDrawables(img, null, null, null);
 			} else {
-				//joinedIcon.setVisibility(View.GONE);
 				sport.setCompoundDrawables(null, null, null, null);
 			}
  			

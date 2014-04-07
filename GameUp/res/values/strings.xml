@@ -18,7 +18,7 @@
     <string name="menu_filter_distance">By distance from me</string>
     <string name="menu_filter_time">By time</string>
     <string name="menu_filter_ability">By ability level</string>
-    <string name="menu_filter_all">By everything</string>
+    <string name="menu_filter_all">All filters</string>
     <string name="menu_filter_clear">Clear all filters</string>
     <string name="new_game">New Game</string>
     <string name="sign_up">Sign Up / Login</string>
@@ -42,6 +42,7 @@
     <string name="access_success">Success icon</string>
     <string name="access_failure">Failure icon</string>
     <string name="access_facebook">Facebook login</string>
+    <string name="access_no_game_help">No games are present. Try clearing any filters or creating a new game.</string>
     <string name="choose_sport_prompt">Sport:</string>
     <string name="choose_location_prompt">Venue:</string>
     <string name="choose_players_prompt">Number of Players:</string>

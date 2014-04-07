@@ -79,8 +79,7 @@ public class FilterFragment extends DialogFragment {
 		        //save info where you want it
 		        }
 		});
-		
-		/*
+
 		builder.setNeutralButton("Clear All Filters", new DialogInterface.OnClickListener() {
 		    @Override
 		    public void onClick(DialogInterface dialog, int which) {
@@ -88,7 +87,6 @@ public class FilterFragment extends DialogFragment {
 		        //save info where you want it
 		        }
 		});
-		*/
 		 
 		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {	
 			@Override
