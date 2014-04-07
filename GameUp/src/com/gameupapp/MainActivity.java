@@ -24,6 +24,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -182,7 +183,7 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString(AppConstant.USER, USERNAME);
-		editor.putString(AppConstant.SPORT, sport);
+		editor.putString(AppConstant.SPORT, null);
 		editor.putInt(AppConstant.ABILITY, ability);
 		editor.putInt(AppConstant.DISTANCE, distance);
 		editor.apply();

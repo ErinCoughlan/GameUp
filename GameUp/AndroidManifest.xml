@@ -22,7 +22,8 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.gameupapp.MainActivity"
-            android:label="@string/main_activity_display_message" >
+            android:label="@string/main_activity_display_message"
+            android:configChanges="keyboardHidden|orientation|screenSize" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
