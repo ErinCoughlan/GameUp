@@ -50,7 +50,9 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	private LocationClient mLocationClient;
 	private Location mCurrentLocation;
 	private boolean connected = false;
-	private int distance;
+	private int distance = -1;
+	private int ability = -1;
+	private String sport;
 
 
 	@Override
@@ -138,11 +140,6 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 			settings.setVisible(false);
 			logout.setVisible(false);
 		}
-		
-		if (!gameup.CAN_CONNECT) {
-			MenuItem distance = (MenuItem) menu.findItem(R.id.menu_filter_distance);
-			distance.setVisible(false);
-		}
 		return true;
 	}
 
@@ -162,15 +159,6 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 			return true;
 		case R.id.menu_filter:
 			// Nothing here -- all actions are on children
-			return true;
-		case R.id.menu_filter_sport:
-			filter(AppConstant.FILTER_SPORT);
-			return true;
-		case R.id.menu_filter_distance:
-			filter(AppConstant.FILTER_DISTANCE);
-			return true;
-		case R.id.menu_filter_ability:
-			filter(AppConstant.FILTER_ABILITY);
 			return true;
 		case R.id.menu_filter_all:
 			filter(AppConstant.FILTER_ALL);
@@ -383,19 +371,24 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	@Override
 	public void onDialogPositiveClick(FilterFragment dialog) {
 		filterBuilder = new FilterBuilder().filterIntoFuture();
+		String message = "Filtered by everything:";
 		
-		String sport = dialog.getSport();
+		sport = dialog.getSport();
 		if (sport != null) {
 			filterBuilder = filterBuilder.setSport(sport);
+			message += " sport=" + sport + ";";
 		}
 		
-		int ability = dialog.getAbilityLevel();
+		ability = dialog.getAbilityLevel();
 		if (ability != -1) {
 			filterBuilder = filterBuilder.setAbilityLevel(ability);
+			String abilityString = AppConstant.ABILITY_LEVELS.get(ability);
+			message += " ability=" + abilityString + ";";
 		}
 		
 		distance = dialog.getDistance();
-		if (distance != 0 || distance != -1) {
+		if (distance != 0 && distance != -1) {
+			message += " distance=" + distance + ";";
 			if (!connected && gameup.CAN_CONNECT) {
 				mLocationClient = new LocationClient(this, this, this);
 	    		mLocationClient.connect();
@@ -411,7 +404,7 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(this)
 				.setTitle("Filter!")
-				.setMessage("Filtered by everything: sport=" + sport + "; ability="+ ability + "; distance="+ distance + "; ")
+				.setMessage(message)
 				.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -423,7 +416,7 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 
 	@Override
 	public void onDialogPositiveClick(FilterSportFragment dialog) {
-		String sport = dialog.getSport();
+		sport = dialog.getSport();
 		if (sport != null) {
 			gameList = filterBuilder
 					.setSport(sport)
@@ -446,7 +439,7 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 
 	@Override
 	public void onDialogPositiveClick(FilterAbilityFragment dialog) {
-		int ability = dialog.getAbilityLevel();
+		ability = dialog.getAbilityLevel();
 		if (ability != -1) {
 			gameList = filterBuilder
 					.setAbilityLevel(ability)
@@ -470,7 +463,7 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	@Override
 	public void onDialogPositiveClick(FilterDistanceFragment dialog) {
 		distance = dialog.getDistance();
-		if (distance != 0 || distance != -1) {
+		if (distance != 0 && distance != -1) {
 			if (!connected && gameup.CAN_CONNECT) {
 				mLocationClient = new LocationClient(this, this, this);
 	    		mLocationClient.connect();
@@ -546,5 +539,17 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 					}
 				});
 		builder.show();
+	}
+	
+	public String getSport() {
+		return sport;
+	}
+	
+	public int getAbilityLevel() {
+		return ability;
+	}
+	
+	public int getDistance() {
+		return distance;
 	}
 }

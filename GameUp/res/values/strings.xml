@@ -50,10 +50,16 @@
     <string name="choose_ability_prompt">Ability Level:</string>
     <string name="venue_name_hint">Save this venue as&#8230;</string>
     <string name="venue_addr_hint">Location (e.g. Parents Field or address)</string>
+    <string name="filter_title">Filter by:</string>
+    <string name="filter_sport_none">None</string>
     <string name="filter_sport_prompt">Choose a sport to filter on:</string>
     <string name="filter_ability_prompt">Choose an ability level to filter on:</string>
     <string name="filter_distance_prompt">Choose distance to filter on:</string>
+    <string name="filter_sport_prompt_short">Sport:</string>
+    <string name="filter_ability_prompt_short">Ability level:</string>
+    <string name="filter_distance_prompt_short">Distance:</string>
     <string name="sport_hint">Start typing to find sports</string>
+    <string name="clear_button">Clear the current text</string>
     
     <string name="unlink_prompt">Unlinking your account from Facebook will permanently delete all of your information from GameUp.</string>
 

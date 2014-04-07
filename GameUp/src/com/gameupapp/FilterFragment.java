@@ -14,11 +14,13 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -62,26 +64,33 @@ public class FilterFragment extends DialogFragment {
 		View v = inflater.inflate(R.layout.filter_fragment, null);
 		initSportSpinner(v);
 		initAbilitySpinner(v);
-		initDistanceEditText(v);
+		// If we can connect, show the distance fields
+		if (gameup.CAN_CONNECT) {
+			v.findViewById(R.id.text_distance).setVisibility(View.VISIBLE);
+			v.findViewById(R.id.edittext_distance).setVisibility(View.VISIBLE);
+			initDistanceEditText(v);
+		}
 		builder.setView(v);
 		
-		 builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-		        @Override
-		        public void onClick(DialogInterface dialog, int which) {
-		        	mListener.onDialogPositiveClick(FilterFragment.this);
-		            //save info where you want it
+		builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+		    @Override
+		    public void onClick(DialogInterface dialog, int which) {
+		    	mListener.onDialogPositiveClick(FilterFragment.this);
+		        //save info where you want it
 		        }
-		 });
-		 
-		 builder.setNeutralButton("Clear All Filters", new DialogInterface.OnClickListener() {
-		        @Override
-		        public void onClick(DialogInterface dialog, int which) {
-		        	mListener.onDialogNeutralClick(FilterFragment.this);
-		            //save info where you want it
+		});
+		
+		/*
+		builder.setNeutralButton("Clear All Filters", new DialogInterface.OnClickListener() {
+		    @Override
+		    public void onClick(DialogInterface dialog, int which) {
+		    	mListener.onDialogNeutralClick(FilterFragment.this);
+		        //save info where you want it
 		        }
-		 });
+		});
+		*/
 		 
-		 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {	
+		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {	
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
@@ -104,7 +113,7 @@ public class FilterFragment extends DialogFragment {
 	}
 	
 	private void initSportSpinner(View v) {
-		AutoCompleteTextView sportDropdown = (AutoCompleteTextView) v.findViewById(R.id.sport_dropdown);
+		final AutoCompleteTextView sportDropdown = (AutoCompleteTextView) v.findViewById(R.id.sport_dropdown);
 
 		// Custom choices
 		List<String> choices = new ArrayList<String>();
@@ -120,6 +129,12 @@ public class FilterFragment extends DialogFragment {
 
 		// Specify the layout to use when the list of choices appears
 		adapter.setDropDownViewResource(R.drawable.spinner_dropdown_item);
+		
+		// Current sport selected
+		String currSport = ((MainActivity) this.getActivity()).getSport();
+		if (currSport != null) {
+			sportDropdown.setText(currSport);
+		}
 
 		// Set the adapter to the spinner
 		sportDropdown.setAdapter(adapter);
@@ -131,6 +146,18 @@ public class FilterFragment extends DialogFragment {
 			}
 		});
 		
+		// Set up the clear button
+		ImageButton clear = (ImageButton) v.findViewById(R.id.sport_dropdown_clear);
+		clear.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				sportDropdown.setText("");
+				sport = null;
+				
+			}
+		});
+		
 	}
 	
 	private void initAbilitySpinner(View v) {
@@ -138,19 +165,30 @@ public class FilterFragment extends DialogFragment {
 
 		// Custom choices
 		List<String> choices = new ArrayList<String>();
-		choices.addAll(AppConstant.ABILITY_LEVELS);
+		choices.addAll(AppConstant.ABILITY_LEVELS_ANY);
 
 		// Create an ArrayAdapter with custom choices
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.drawable.spinner_item, choices);
 
 		// Specify the layout to use when the list of choices appears
 		adapter.setDropDownViewResource(R.drawable.spinner_dropdown_item);
-
+		
 		// Set the adapter to the spinner
 		abilitySpinner.setAdapter(adapter);
+		
+		// Current ability level
+		int currAbility = ((MainActivity) this.getActivity()).getAbilityLevel();
+		if (currAbility != -1) {
+			// Translate from ABILITY_LEVELS to ABILITY_LEVELS_ANY
+			String abilityString = AppConstant.ABILITY_LEVELS.get(currAbility);
+			abilitySpinner.setSelection(AppConstant.ABILITY_LEVELS_ANY.indexOf(abilityString), false);
+		}
+
 		abilitySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+				// Use ABILITY_LEVELS here to match the create ability levels
+				// Equals -1 if string was not found
 				abilityLevel = AppConstant.ABILITY_LEVELS.indexOf(abilitySpinner.getSelectedItem().toString());
 			}
 
@@ -163,6 +201,13 @@ public class FilterFragment extends DialogFragment {
 	
 	private void initDistanceEditText(View v) {
 		final EditText editText = (EditText) v.findViewById(R.id.edittext_distance);
+		// Current ability level
+		int currDistance = ((MainActivity) this.getActivity()).getDistance();
+		if (currDistance != -1 && currDistance != 0) {
+			// Translate from ABILITY_LEVELS to ABILITY_LEVELS_ANY
+			editText.setText(Integer.toString(currDistance));
+		}
+		
 		editText.setOnEditorActionListener(new OnEditorActionListener() {        
 			@Override
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {

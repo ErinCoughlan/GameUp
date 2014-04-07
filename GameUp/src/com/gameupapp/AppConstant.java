@@ -38,6 +38,8 @@ public class AppConstant {
 	// Ability Levels
 	static final List<String> ABILITY_LEVELS = Arrays.asList(
 			"Beginner", "Intermediate", "Advanced", "All Star");
+	static final List<String> ABILITY_LEVELS_ANY = Arrays.asList(
+			"Any", "Beginner", "Intermediate", "Advanced", "All Star");
 	
 	/*
      * Define a request code to send to Google Play services
