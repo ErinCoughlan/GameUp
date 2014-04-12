@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.gameupapp.FilterAbilityFragment.FilterAbilityDialogListener;
 import com.gameupapp.FilterDistanceFragment.FilterDistanceDialogListener;
+import com.gameupapp.FilterFragment.FilterDialogListener;
 import com.gameupapp.FilterSportFragment.FilterSportDialogListener;
 import com.gameupapp.GameFragment.OnGameClicked;
 import com.google.android.gms.common.ConnectionResult;
@@ -35,7 +36,7 @@ import com.parse.ParseUser;
 
 // TODO Play Services check per https://developer.android.com/training/location/retrieve-current.html
 public class MainActivity extends Activity implements OnGameClicked, FilterSportDialogListener,
-		FilterAbilityDialogListener, FilterDistanceDialogListener,
+		FilterAbilityDialogListener, FilterDistanceDialogListener, FilterDialogListener,
 		GooglePlayServicesClient.ConnectionCallbacks,
 		GooglePlayServicesClient.OnConnectionFailedListener {
 
@@ -50,6 +51,8 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	private Location mCurrentLocation;
 	private boolean connected = false;
 	private int distance;
+	private int ability;
+	private String sport;
 
 
 	@Override
@@ -81,21 +84,20 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 		setContentView(R.layout.activity_main);
 
 		// Parse information
-		// Register GameParse subclass
 		ParseObject.registerSubclass(GameParse.class);
 		ParseObject.registerSubclass(Sport.class);
 		// erin@gameupapp.com Parse
 		Parse.initialize(this, "yYt3t3sH7XMU81BXgvYaXnWEsoahXCJb5dhupvP5",
 				"dZCnn1DrZJMXyZOkZ7pbM7Z0ePwTyIJsZzgY77FU");
-		// Phil's Parse
-		// Parse.initialize(this, "a0k4KhDMvl3Mz2CUDcDMLAgnt5uaCLuIBxK41NGa",
-		//		"3EJKdG7SuoK89gkFkN1rcDNbFvIgN71iH0mJyfDC");
 
 		ParseFacebookUtils.initialize(getString(R.string.fb_app_id));
 
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences("settings", 0);
 		USERNAME = settings.getString(AppConstant.USER, null);
+		sport = settings.getString(AppConstant.SPORT, null);
+		ability = settings.getInt(AppConstant.ABILITY, -1);
+		distance = settings.getInt(AppConstant.DISTANCE, -1);
 
 		// Set up on click for creating new games
 		final Button button = (Button) findViewById(R.id.new_game);
@@ -118,9 +120,9 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	public void onStart() {
 		super.onStart();
 
-		//gameup = GameUpInterface.getInstance();
 		gameup.registerObserver(this);
 
+		createFilterBuilder();
 		new SetGameList().execute();
 		updateView();
 	}
@@ -136,11 +138,6 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 		if (user == null) {
 			settings.setVisible(false);
 			logout.setVisible(false);
-		}
-		
-		if (!gameup.CAN_CONNECT) {
-			MenuItem distance = (MenuItem) menu.findItem(R.id.menu_filter_distance);
-			distance.setVisible(false);
 		}
 		return true;
 	}
@@ -160,19 +157,7 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 			refreshGames();
 			return true;
 		case R.id.menu_filter:
-			// Nothing here -- all actions are on children
-			return true;
-		case R.id.menu_filter_sport:
-			filter(AppConstant.FILTER_SPORT);
-			return true;
-		case R.id.menu_filter_distance:
-			filter(AppConstant.FILTER_DISTANCE);
-			return true;
-		case R.id.menu_filter_ability:
-			filter(AppConstant.FILTER_ABILITY);
-			return true;
-		case R.id.menu_filter_clear:
-			filter(AppConstant.FILTER_CLEAR);
+			filter(AppConstant.FILTER_ALL);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -197,6 +182,9 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 		SharedPreferences settings = getSharedPreferences(AppConstant.SHARED_PREF, 0);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString(AppConstant.USER, USERNAME);
+		editor.putString(AppConstant.SPORT, null);
+		editor.putInt(AppConstant.ABILITY, ability);
+		editor.putInt(AppConstant.DISTANCE, distance);
 		editor.apply();
 	}
 
@@ -232,6 +220,13 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 				.findFragmentById(R.id.games);
 		if (fragment != null) {
 			fragment.update(gameList);
+		}
+		
+		// If there are no games, show error screen
+		if (gameList.size() == 0) {
+			this.findViewById(R.id.no_game_view).setVisibility(View.VISIBLE);
+		} else {
+			this.findViewById(R.id.no_game_view).setVisibility(View.GONE);
 		}
 	}
 
@@ -347,6 +342,10 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 		DialogFragment dialogFrag;
 
 		switch (filterType) {
+		case AppConstant.FILTER_ALL:
+			dialogFrag = new FilterFragment();
+			dialogFrag.show(getFragmentManager(), "FilterFragment");
+			break;
 		case AppConstant.FILTER_SPORT:
 			dialogFrag = new FilterSportFragment();
 			dialogFrag.show(getFragmentManager(), "FilterSportFragment");
@@ -362,25 +361,55 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 			dialogFrag.show(getFragmentManager(), "FilterAbilityFragment");
 			break;
 		case AppConstant.FILTER_CLEAR:
-			filterBuilder = new FilterBuilder();
-			new SetGameList().execute();
-			AlertDialog.Builder builder = new AlertDialog.Builder(this)
-			.setTitle("Filter!")
-			.setMessage("Cleared all filters")
-			.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.cancel();
-				}
-			});
-			builder.show();
+			clearFilters();
 			break;
 		}
+	}
+	
+	@Override
+	public void onDialogNeutralClick(FilterFragment dialog) {
+		clearFilters();
+	}
+	
+	@Override
+	public void onDialogPositiveClick(FilterFragment dialog) {
+		String message = "Filtered by everything:";
+		
+		sport = dialog.getSport();
+		if (sport != null) {
+			message += " sport=" + sport + ";";
+		}
+		
+		ability = dialog.getAbilityLevel();
+		if (ability != -1) {
+			String abilityString = AppConstant.ABILITY_LEVELS.get(ability);
+			message += " ability=" + abilityString + ";";
+		}
+		
+		distance = dialog.getDistance();
+		if (distance != 0 && distance != -1) {
+			message += " distance=" + distance + ";";
+		}
+		
+		createFilterBuilder();
+		gameList = filterBuilder.execute();
+		displayGames();
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(this)
+				.setTitle("Filter!")
+				.setMessage(message)
+				.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.cancel();
+					}
+				});
+		builder.show();
 	}
 
 	@Override
 	public void onDialogPositiveClick(FilterSportFragment dialog) {
-		String sport = dialog.getSport();
+		sport = dialog.getSport();
 		if (sport != null) {
 			gameList = filterBuilder
 					.setSport(sport)
@@ -388,14 +417,14 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 			displayGames();
 
 			AlertDialog.Builder builder = new AlertDialog.Builder(this)
-			.setTitle("Filter!")
-			.setMessage("Filtered by sport: " + sport)
-			.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.cancel();
-				}
-			});
+					.setTitle("Filter!")
+					.setMessage("Filtered by sport: " + sport)
+					.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+						}
+					});
 			builder.show();
 		}
 
@@ -403,7 +432,7 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 
 	@Override
 	public void onDialogPositiveClick(FilterAbilityFragment dialog) {
-		int ability = dialog.getAbilityLevel();
+		ability = dialog.getAbilityLevel();
 		if (ability != -1) {
 			gameList = filterBuilder
 					.setAbilityLevel(ability)
@@ -411,14 +440,14 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 			displayGames();
 
 			AlertDialog.Builder builder = new AlertDialog.Builder(this)
-			.setTitle("Filter!")
-			.setMessage("Filtered by ability: " + AppConstant.ABILITY_LEVELS.get(ability))
-			.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.cancel();
-				}
-			});
+					.setTitle("Filter!")
+					.setMessage("Filtered by ability: " + AppConstant.ABILITY_LEVELS.get(ability))
+					.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+						}
+					});
 			builder.show();
 		}
 
@@ -427,7 +456,7 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	@Override
 	public void onDialogPositiveClick(FilterDistanceFragment dialog) {
 		distance = dialog.getDistance();
-		if (distance != 0 || distance != -1) {
+		if (distance != 0 && distance != -1) {
 			if (!connected && gameup.CAN_CONNECT) {
 				mLocationClient = new LocationClient(this, this, this);
 	    		mLocationClient.connect();
@@ -449,7 +478,7 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	public void onConnected(Bundle connectionHint) {
 		connected = true;
 		mCurrentLocation = mLocationClient.getLastLocation();
-		filterByDistance();
+		filterByDistanceNoExecute();
 	}
 
 	@Override
@@ -471,14 +500,75 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 		displayGames();
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(this)
-		.setTitle("Filter!")
-		.setMessage("Filtered by distance: " + Integer.toString(distance) + " miles from me")
-		.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.cancel();
-			}
-		});
+				.setTitle("Filter!")
+				.setMessage("Filtered by distance: " + Integer.toString(distance) + " miles from me")
+				.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.cancel();
+					}
+				});
 		builder.show();
+	}
+	
+	/**
+	 * Must already be connected to LocationClient.
+	 */
+	private void filterByDistanceNoExecute() {
+		filterBuilder = filterBuilder
+				.setRadius(distance, mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+	}
+	
+	private void clearFilters() {
+		filterBuilder = new FilterBuilder();
+		new SetGameList().execute();
+		AlertDialog.Builder builder = new AlertDialog.Builder(this)
+				.setTitle("Filter!")
+				.setMessage("Cleared all filters")
+				.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.cancel();
+					}
+				});
+		builder.show();
+	}
+	
+	/**
+	 * Using the private data members, construct a FilterBuilder
+	 */
+	private void createFilterBuilder() {
+		filterBuilder = new FilterBuilder().filterIntoFuture();
+
+		if (sport != null) {
+			filterBuilder = filterBuilder.setSport(sport);
+		}
+
+		if (ability != -1) {
+			filterBuilder = filterBuilder.setAbilityLevel(ability);
+		}
+		
+		if (distance != 0 && distance != -1) {
+			if (!connected && gameup.CAN_CONNECT) {
+				mLocationClient = new LocationClient(this, this, this);
+	    		mLocationClient.connect();
+			}
+			
+			if (connected) {
+				filterByDistanceNoExecute();
+			}
+		}
+	}
+	
+	public String getSport() {
+		return sport;
+	}
+	
+	public int getAbilityLevel() {
+		return ability;
+	}
+	
+	public int getDistance() {
+		return distance;
 	}
 }
