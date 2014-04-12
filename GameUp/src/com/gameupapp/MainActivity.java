@@ -532,6 +532,11 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 					}
 				});
 		builder.show();
+		
+		// Reset the stored filters as well
+		distance = -1;
+		ability = -1;
+		sport = null;
 	}
 	
 	/**
