@@ -521,6 +521,15 @@ public class CreateGameActivity extends Activity implements
 					endC.set(Calendar.YEAR, year);
 					endC.set(Calendar.MONTH, month);
 					endC.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+					
+					// Display error is end time is before start time
+					TextView tv = (TextView) findViewById(R.id.end_text_time);
+					if ((endC.getTime()).before(startC.getTime())) {
+						Log.d("validate", "error: end time is before start time");
+						tv.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+					} else {
+						tv.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+					}
 				}
 				updateTimes();
 				
@@ -528,39 +537,6 @@ public class CreateGameActivity extends Activity implements
 		}, year, monthOfYear, dayOfMonth);
 		
 		diag.show();
-	}
-	
-	private void updateView() {
-		// Set up the create button
-		final Button button = (Button) findViewById(R.id.createButton);
-		ParseUser user = ParseUser.getCurrentUser();
-		final boolean loggedIn = (user != null);
-		if (loggedIn) {
-			button.setText(R.string.create);
-	        button.setOnClickListener(new View.OnClickListener() {
-	            public void onClick(View v) {
-	            	boolean succeeded = createGame();
-	            	
-	            	if (succeeded) {
-	            		AlertDialog dialog = HelperFunction.createGameAlert(
-	            				R.string.alert_success_create, true, CreateGameActivity.this, loggedIn, true);
-	            		dialog.show();
-	            	} else {
-	            		// We're already showing the error message
-	            	}
-	            }
-	        });
-		} else {
-			button.setText(R.string.sign_up);
-			button.setOnClickListener(new View.OnClickListener() {
-	            public void onClick(View v) {
-	            	// Go to a new activity for logging in and out
-	        		Intent intent = new Intent();
-	        		intent.setClass(CreateGameActivity.this, LoginActivity.class);
-	        		startActivityForResult(intent, AppConstant.LOGIN_ID);
-	            }
-	        });
-		}
 	}
 	
 	private void updateTimes() {
@@ -615,6 +591,40 @@ public class CreateGameActivity extends Activity implements
 		});
 	}
 	
+
+	private void updateView() {
+		// Set up the create button
+		final Button button = (Button) findViewById(R.id.createButton);
+		ParseUser user = ParseUser.getCurrentUser();
+		final boolean loggedIn = (user != null);
+		if (loggedIn) {
+			button.setText(R.string.create);
+	        button.setOnClickListener(new View.OnClickListener() {
+	            public void onClick(View v) {
+	            	boolean succeeded = createGame();
+	            	
+	            	if (succeeded) {
+	            		AlertDialog dialog = HelperFunction.createGameAlert(
+	            				R.string.alert_success_create, true, CreateGameActivity.this, loggedIn, true);
+	            		dialog.show();
+	            	} else {
+	            		// We're already showing the error message
+	            	}
+	            }
+	        });
+		} else {
+			button.setText(R.string.sign_up);
+			button.setOnClickListener(new View.OnClickListener() {
+	            public void onClick(View v) {
+	            	// Go to a new activity for logging in and out
+	        		Intent intent = new Intent();
+	        		intent.setClass(CreateGameActivity.this, LoginActivity.class);
+	        		startActivityForResult(intent, AppConstant.LOGIN_ID);
+	            }
+	        });
+		}
+	}
+	
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == Activity.RESULT_OK) {
 			switch (requestCode) {
@@ -661,6 +671,17 @@ public class CreateGameActivity extends Activity implements
 		// Validate start and end dates
 		Date startDate = startC.getTime();
 		Date endDate = endC.getTime();
+		if (endDate.before(startDate)) {
+			Log.d("validate", "error: end date before start date");
+			if (!shownError) {
+				HelperFunction.errorAlert(R.string.create_error_message_time, this);
+				shownError = true;
+			}
+        	
+        	TextView timeTV = (TextView) findViewById(R.id.end_text_time);
+			timeTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+			allCorrect = false;
+		}
 		
 		// Validate venue
         if (readableLocation.equals("") ||
@@ -706,6 +727,7 @@ public class CreateGameActivity extends Activity implements
 	    			longitude, sport);
 	    	return succeeded;
         } else {
+        	HelperFunction.errorAlert(R.string.create_error_message_server, this);
         	return false;
         }
 	}
