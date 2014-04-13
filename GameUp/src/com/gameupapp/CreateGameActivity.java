@@ -181,6 +181,10 @@ public class CreateGameActivity extends Activity implements
 		readableLocation = dialog.getLocation();
 		Log.d("locationAddNew", "name: " + venueName + " location: " + readableLocation);
 		
+		if (readableLocation.equals("")) {
+			dialog.dismiss();
+		}
+		
 		if (gameup.CAN_CONNECT) {
 			// Get current user location so we can create a lat/long box for 
 			// the Geocoder

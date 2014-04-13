@@ -69,6 +69,11 @@ public class AddVenueFragment extends DialogFragment {
 	}
 	
 	public String getName() {
-		return name;
+		// Name is optional, so if there is not name, return the location instead
+		if (!name.equals("")) {
+			return name;
+		} else {
+			return location;
+		}
 	}
 }
