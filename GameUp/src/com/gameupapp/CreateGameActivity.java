@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.json.JSONArray;
@@ -18,6 +19,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
 import com.parse.FindCallback;
+import com.parse.LocationCallback;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.ParseException;
@@ -70,6 +73,7 @@ public class CreateGameActivity extends Activity implements
 	private LocationClient locationClient;
 	private List<Venue> venues;
 	private String readableLocation = null;
+	private List<String> choices = new ArrayList<String>();
 
 	// illegal latitude and longitude as sentinels.
 	private double latitude = -181;
@@ -96,12 +100,7 @@ public class CreateGameActivity extends Activity implements
         endC.add(Calendar.HOUR,  1);
         updateTimes();
         locationClient = new LocationClient(this, this, this);
-        venues = new ArrayList<Venue>();/*
-        venues.add(new Venue(34.099204, -117.705262, "Biszantz Tennis Center", "Biszantz"));
-        venues.add(new Venue(34.062431, -117.673231, "Ontario Ice Skating Center", "Ontario Ice"));
-        venues.add(new Venue(34.228108, -118.449804, "LA Kings Valley Ice Center", "LA Kings"));
-        venues.add(new Venue(34.053186, -117.658522, "Cyprus Avenue Park", "Cyprus Ave"));*/
-        
+        venues = new ArrayList<Venue>();
 	}
 	
 	@Override
@@ -295,7 +294,6 @@ public class CreateGameActivity extends Activity implements
 		final Spinner locationSpinner = (Spinner) findViewById(R.id.location_spinner);
 
 		// Custom choices
-		List<String> choices = new ArrayList<String>();
 		for(Venue venue : venues) {
 			choices.add(venue.getName());
 		}
@@ -306,6 +304,31 @@ public class CreateGameActivity extends Activity implements
 		// Only people with Google Play Services can add new locations
 		if (gameup.CAN_CONNECT) {
 			choices.add("Add New");
+		} else if(venues.isEmpty()) {
+			ParseGeoPoint.getCurrentLocationInBackground(TimeUnit.SECONDS.toMillis(2),
+					new LocationCallback() {
+				@Override
+				public void done(ParseGeoPoint geoPoint, ParseException e) {
+					if(e == null) {
+						ParseQuery<Venue> venueQuery = ParseQuery.getQuery(Venue.class);
+						venueQuery.whereWithinMiles("location", geoPoint, 5);
+						venueQuery.findInBackground(new FindCallback<Venue>() {
+							@Override
+							public void done(List<Venue> gotVenues, ParseException e) {
+								if(e == null) {
+									venues = gotVenues;
+									for(Venue venue : venues) {
+										choices.add(venue.getName());
+									}
+								}
+							}
+						});
+					}
+				}
+				
+			});
+			
+			
 		}
 
 		// Create an ArrayAdapter with custom choices
@@ -487,7 +510,7 @@ public class CreateGameActivity extends Activity implements
 	            }
 	        });
 	        
-
+	        
 	        //TODO this query should be in gameupinterface
 	        ParseUser currentUser = ParseUser.getCurrentUser();
 	        JSONArray JSONVenues = currentUser.getJSONArray("venues");
