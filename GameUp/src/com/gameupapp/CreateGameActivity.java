@@ -645,10 +645,24 @@ public class CreateGameActivity extends Activity implements
 		boolean shownError = false;
 		
 		// Validate sport
-		if (sport == null) {
+		AutoCompleteTextView tv = (AutoCompleteTextView) findViewById(R.id.sport_dropdown);
+		String textSport = tv.getText().toString();
+		if (textSport.equals("")) {
 			Log.d("validate", "error: sport not entered");
 			if (!shownError) {
 				HelperFunction.errorAlert(R.string.create_error_message_sport, this);
+				shownError = true;
+			}
+			
+			TextView sportTV = (TextView) findViewById(R.id.text_sport);
+			sportTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+			allCorrect = false;
+		}
+		
+		if (sport == null) {
+			Log.d("validate", "error: sport not valid");
+			if (!shownError) {
+				HelperFunction.errorAlert(R.string.create_error_message_sport_valid, this);
 				shownError = true;
 			}
 				
@@ -656,16 +670,6 @@ public class CreateGameActivity extends Activity implements
 			sportTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
 			allCorrect = false;
 			
-		} else if (sport.equals("")) {
-			Log.d("validate", "error: sport not entered");
-			if (!shownError) {
-				HelperFunction.errorAlert(R.string.create_error_message_sport, this);
-				shownError = true;
-			}
-			
-			TextView sportTV = (TextView) findViewById(R.id.text_sport);
-			sportTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
-			allCorrect = false;
 		}
 		
 		// Validate start and end dates

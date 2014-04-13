@@ -69,6 +69,7 @@
     <string name="play_services_error_message_add_new">Google Play Services does not exist on your device. You cannot add new locations.</string>
     <string name="create_error_message_player_count">You must select the number of players to create a game.</string>
     <string name="create_error_message_sport">You must select a sport to create a game.</string>
+    <string name="create_error_message_sport_valid">You sport you entered is not valid or does not exist. Check your spelling or try a different sport.</string>
     <string name="create_error_message_venue">You must select a venue to create a game.</string>
     <string name="create_error_message_time">The start time must be before the end time.</string>
     <string name="create_error_message_server">There is a problem saving your game. Please try again.</string>
