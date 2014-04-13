@@ -2,33 +2,42 @@ package com.gameupapp;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
-public class Venue {
-	private String readableLocation;
-	private String name;
-	private ImmutablePair<Double, Double> location;
-	
-	/**
-	 * 
-	 * @param latitude
-	 * @param longitude
-	 * @param place
-	 * @param aName
-	 */
-	public Venue(double latitude, double longitude, String place, String aName) {
-		location = new ImmutablePair<Double, Double>(latitude, longitude);
-		readableLocation = place;
-		name = aName;
+import com.parse.ParseClassName;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
+
+@ParseClassName("Venue")
+public class Venue extends ParseObject {
+		public String getReadableLocation() {
+		return getString("readableLocation"); 
 	}
 	
-	public String getReadableLocation() {
-		return readableLocation; 
+	public void setReadableLocation(String readableLocation) {
+		put("readableLocation", readableLocation);
+		saveEventually();
+	}
+	
+	public void setLocation(ImmutablePair<Double, Double> location) {
+		ParseGeoPoint geoLocation = new ParseGeoPoint(location.left, location.right);
+		put("location", geoLocation);
+		saveEventually();
 	}
 	
 	public ImmutablePair<Double, Double> getLocation() {
-		return location;
+		ParseGeoPoint location = getParseGeoPoint("location");
+		double latitude = location.getLatitude();
+		double longitude = location.getLongitude();
+		ImmutablePair<Double, Double> latLong = 
+				new ImmutablePair<Double, Double>(latitude, longitude);
+		return latLong;
 	}
 	
 	public String getName() {
-		return name;
+		return getString("name");
+	}
+	
+	public void setName(String name) {
+		put("name", name);
+		saveEventually();
 	}
 }
