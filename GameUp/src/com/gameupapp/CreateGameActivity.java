@@ -305,7 +305,7 @@ public class CreateGameActivity extends Activity implements
 		if (gameup.CAN_CONNECT) {
 			choices.add("Add New");
 		} else if(venues.isEmpty()) {
-			ParseGeoPoint.getCurrentLocationInBackground(TimeUnit.SECONDS.toMillis(2),
+			ParseGeoPoint.getCurrentLocationInBackground(TimeUnit.SECONDS.toMillis(5),
 					new LocationCallback() {
 				@Override
 				public void done(ParseGeoPoint geoPoint, ParseException e) {
