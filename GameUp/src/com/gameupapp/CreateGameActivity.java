@@ -25,6 +25,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -59,6 +60,7 @@ public class CreateGameActivity extends Activity implements
 	
 	private GameUpInterface gameup;
 	private int abilityLevel;
+	private int playerCount;
 	private String sport;
 	private Calendar startC;
 	private Calendar endC;
@@ -371,8 +373,21 @@ public class CreateGameActivity extends Activity implements
 			@Override
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 				if (actionId == EditorInfo.IME_ACTION_DONE) {
-					editText.clearFocus();
-					releaseFocus();
+					String count = v.getText().toString();
+					if (!count.equals("")) {
+						playerCount = Integer.parseInt(count);
+						
+						// Remove any error messages that used to exist
+						TextView playerTV = (TextView) findViewById(R.id.text_players_prompt);
+						playerTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+						
+						// Clear focus
+						editText.clearFocus();
+						releaseFocus();
+					} else {
+						TextView playerTV = (TextView) findViewById(R.id.text_players_prompt);
+						playerTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+					}
 				}
 				return false;
 			}
@@ -399,6 +414,15 @@ public class CreateGameActivity extends Activity implements
 				} else if (v.getId() == R.id.end_time_picker) {
 					endC.set(Calendar.HOUR_OF_DAY, hourOfDay);
 					endC.set(Calendar.MINUTE, minute);
+					
+					// Display error is end time is before start time
+					TextView tv = (TextView) findViewById(R.id.end_text_time);
+					if ((endC.getTime()).before(startC.getTime())) {
+						Log.d("validate", "error: end time is before start time");
+						tv.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+					} else {
+						tv.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+					}
 				}
 				updateTimes();
 			}
@@ -450,16 +474,13 @@ public class CreateGameActivity extends Activity implements
 	            public void onClick(View v) {
 	            	boolean succeeded = createGame();
 	            	
-	            	AlertDialog dialog;
 	            	if (succeeded) {
-	            		dialog = HelperFunction.createGameAlert(
-	            				R.string.alert_success_create, true, CreateGameActivity.this, loggedIn);
+	            		AlertDialog dialog = HelperFunction.createGameAlert(
+	            				R.string.alert_success_create, true, CreateGameActivity.this, loggedIn, true);
+	            		dialog.show();
 	            	} else {
-	            		dialog = HelperFunction.createGameAlert(
-	            				R.string.alert_fail_create, false, CreateGameActivity.this, loggedIn);
+	            		// We're already showing the error message
 	            	}
-	            	
-	            	dialog.show();
 	            }
 	        });
 		} else {
@@ -536,6 +557,12 @@ public class CreateGameActivity extends Activity implements
 		}
 	}
 	
+	/**
+	 * Validates all of the entered information to create a game
+	 * If successful, creates the game
+	 * If unsuccessful, shows an error dialog and marks all errors
+	 * @return boolean success
+	 */
 	private boolean createGame() {
 		if(readableLocation.equals("")) {
 			return false;
@@ -546,7 +573,27 @@ public class CreateGameActivity extends Activity implements
 		
 		// Max number of players
 		final EditText editText = (EditText) findViewById(R.id.edittext_players);
-		int playerCount = Integer.parseInt(editText.getText().toString());
+		String count = editText.getText().toString();
+		if (!count.equals("")) {
+			playerCount = Integer.parseInt(count);
+		} else {
+			Log.d("validate", "error: player count is empty");
+			// No player count entered
+			AlertDialog.Builder builder = new AlertDialog.Builder(this)
+				.setTitle("Error")
+				.setMessage(R.string.create_error_message_player_count)
+				.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
+			builder.show();
+			
+			TextView playerTV = (TextView) findViewById(R.id.text_players_prompt);
+			playerTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+			return false;
+		}
         
         Log.d("create", "ability level: " + Integer.toString(abilityLevel));
         Log.d("create", "sport: " + sport);

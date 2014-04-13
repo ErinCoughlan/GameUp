@@ -112,7 +112,7 @@ public class HelperFunction {
 	}
 	
 	public static AlertDialog createGameAlert(int message, boolean success,
-				final Activity a, final boolean loggedIn) {
+				final Activity a, final boolean loggedIn, boolean returnToMain) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(a);
 		
 		// Get the layout inflater
@@ -131,15 +131,24 @@ public class HelperFunction {
     		tv.setText(message);
     	}
 	    
-    	builder.setView(v)
-    	       .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+	    builder.setView(v);
+	    
+	    if (returnToMain) {
+	    	builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+			           public void onClick(DialogInterface dialog, int id) {
+			        	   Intent result = new Intent();
+			        	   result.putExtra(AppConstant.LOGIN, loggedIn);
+			       		   a.setResult(Activity.RESULT_OK, result);
+			               a.finish();
+			           }
+	    	});
+	    } else {
+	    	builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {
-		        	   Intent result = new Intent();
-		        	   result.putExtra(AppConstant.LOGIN, loggedIn);
-		       		   a.setResult(Activity.RESULT_OK, result);
-		               a.finish();
+		        	   dialog.dismiss();
 		           }
-    	});
+	    	});
+	    }
     	
     	return builder.create();
 	}

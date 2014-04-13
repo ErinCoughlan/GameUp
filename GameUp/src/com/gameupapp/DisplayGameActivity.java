@@ -215,11 +215,11 @@ public class DisplayGameActivity extends Activity implements
 		            	boolean success = gameup.postUnjoinGame(GAME_PARSE);
 		            	if (success) {
 			            	AlertDialog dialog = HelperFunction.createGameAlert(
-			            			R.string.alert_success_unjoin, true, DisplayGameActivity.this, loggedIn);
+			            			R.string.alert_success_unjoin, true, DisplayGameActivity.this, loggedIn, true);
 			            	dialog.show();
 		            	} else {
 		            		AlertDialog dialog = HelperFunction.createGameAlert(
-			            			R.string.alert_fail_unjoin, false, DisplayGameActivity.this, loggedIn);
+			            			R.string.alert_fail_unjoin, false, DisplayGameActivity.this, loggedIn, true);
 		            		dialog.show();
 		            	}
 		            }
@@ -231,11 +231,11 @@ public class DisplayGameActivity extends Activity implements
 		            	boolean success = gameup.postJoinGame(GAME_PARSE);
 		            	if (success) {
 		            		AlertDialog dialog = HelperFunction.createGameAlert(
-			            			R.string.alert_success_join, true, DisplayGameActivity.this, loggedIn);
+			            			R.string.alert_success_join, true, DisplayGameActivity.this, loggedIn, true);
 			            	dialog.show();
 		            	} else {
 		            		AlertDialog dialog = HelperFunction.createGameAlert(
-		            				R.string.alert_fail_join, false, DisplayGameActivity.this, loggedIn);
+		            				R.string.alert_fail_join, false, DisplayGameActivity.this, loggedIn, true);
 		            		dialog.show();
 		            	}
 		            }
