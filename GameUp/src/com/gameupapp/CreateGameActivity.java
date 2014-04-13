@@ -3,12 +3,15 @@ package com.gameupapp;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import com.gameupapp.AddVenueFragment.AddVenueDialogListener;
@@ -25,6 +28,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -35,6 +39,7 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -42,6 +47,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.AutoCompleteTextView.Validator;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -59,6 +65,7 @@ public class CreateGameActivity extends Activity implements
 	
 	private GameUpInterface gameup;
 	private int abilityLevel;
+	private int playerCount;
 	private String sport;
 	private Calendar startC;
 	private Calendar endC;
@@ -147,7 +154,7 @@ public class CreateGameActivity extends Activity implements
 		AutoCompleteTextView sportDropdown = (AutoCompleteTextView) findViewById(R.id.sport_dropdown);
 
 		// Custom choices
-		List<String> choices = new ArrayList<String>();
+		final List<String> choices = new ArrayList<String>();
 
 		for (Sport sport : gameup.getAllSports()) {
 			choices.add(sport.getName());
@@ -163,11 +170,66 @@ public class CreateGameActivity extends Activity implements
 
 		// Set the adapter to the spinner
 		sportDropdown.setAdapter(adapter);
+		
+		// Add a validator to make sure the entered text is a sport in the dropdown
+		sportDropdown.setValidator(new Validator() {
+			
+			@Override
+			public boolean isValid(CharSequence text) {
+				TextView sportTV = (TextView) findViewById(R.id.text_sport);
+				
+				String[] choicesArr = choices.toArray(new String[choices.size()]);
+				String possibleSport = text.toString();
+				// See if the text is in the list, ignoring case
+				if (Arrays.binarySearch(choicesArr, possibleSport, new Comparator<String>() {
+					
+							@Override
+							public int compare(String lhs, String rhs) {
+								return lhs.compareToIgnoreCase(rhs);
+							}
+						}) > 0) {
+					
+					sport = possibleSport;
+					sportTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+	                return true;
+	            }
+				
+				// Show an error icon
+				sport = null;
+				sportTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+	            return false;
+			}
+			
+			@Override
+			public CharSequence fixText(CharSequence invalidText) {
+				// Don't fix anything
+				return invalidText;
+			}
+		});
+		
+		// Run validation if we remove focus from the dropdown
+		sportDropdown.setOnFocusChangeListener(new OnFocusChangeListener() {
+			
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if (v.getId() == R.id.sport_dropdown && !hasFocus) {
+					((AutoCompleteTextView)v).performValidation();
+				}
+			}
+		});
+		
+		// Clicking on a list item will always be valid
 		sportDropdown.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
 				sport = (String) parent.getItemAtPosition(pos);
+				
+				// Remove any error messages that used to exist
+				TextView sportTV = (TextView) findViewById(R.id.text_sport);
+				sportTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+				
+				// Remove focus
 				releaseFocus();
 			}
 		});
@@ -236,39 +298,41 @@ public class CreateGameActivity extends Activity implements
 			
 				// Refresh venues
 				initLocationSpinner();
+				
+				// Remove any error icons
+				TextView venueTV = (TextView) findViewById(R.id.text_location);
+				venueTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 				dialog.dismiss();
 			} else {
+				// There's an error, so show error icon
+				TextView venueTV = (TextView) findViewById(R.id.text_location);
+				venueTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+				
 				dialog.dismiss();
 				
-				AlertDialog.Builder builder = new AlertDialog.Builder(this)
-						.setTitle("Error")
-						.setMessage(R.string.location_error_message)
-						.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								dialog.dismiss();
-							}
-						});
-				builder.show();
+				HelperFunction.errorAlert(R.string.location_error_message, this);
 			}
 		} else {
 			// There is no play services
 			// We shouldn't even show the add new button, but just in case...
-			AlertDialog.Builder builder = new AlertDialog.Builder(this)
-				.setTitle("Error")
-				.setMessage(R.string.play_services_error_message_add_new)
-				.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
-			builder.show();
+			TextView venueTV = (TextView) findViewById(R.id.text_location);
+			venueTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+			HelperFunction.errorAlert(R.string.play_services_error_message_add_new, this);
 		}
 	}
 	
 	private void initLocationSpinner() {
 		final Spinner locationSpinner = (Spinner) findViewById(R.id.location_spinner);
+		
+		locationSpinner.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				InputMethodManager imm = (InputMethodManager) getSystemService(
+					Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+				return false;
+			}
+		});
 
 		// Custom choices
 		List<String> choices = new ArrayList<String>();
@@ -281,7 +345,7 @@ public class CreateGameActivity extends Activity implements
 		
 		// Only people with Google Play Services can add new locations
 		if (gameup.CAN_CONNECT) {
-			choices.add("Add New");
+			choices.add(getResources().getString(R.string.add_new));
 		}
 
 		// Create an ArrayAdapter with custom choices
@@ -302,7 +366,7 @@ public class CreateGameActivity extends Activity implements
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
 				String selectedItem = locationSpinner.getSelectedItem().toString();
-				if (selectedItem.equals("Add New")) {
+				if (selectedItem.equals(getResources().getString(R.string.add_new))) {
 					DialogFragment dialogFrag = new AddVenueFragment();
 					dialogFrag.show(getFragmentManager(), "AddVenueFragment");
 				} else {
@@ -310,6 +374,10 @@ public class CreateGameActivity extends Activity implements
 						if (selectedItem.equals(venue.getName())) {
 							ImmutablePair<Double, Double> location = 
 									venue.getLocation();
+							
+							TextView venueTV = (TextView) findViewById(R.id.text_location);
+							venueTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+							
 							readableLocation = venue.getReadableLocation();
 							latitude = location.left;
 							longitude = location.right;
@@ -371,6 +439,20 @@ public class CreateGameActivity extends Activity implements
 			@Override
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 				if (actionId == EditorInfo.IME_ACTION_DONE) {
+					String count = v.getText().toString();
+					if (!count.equals("")) {
+						playerCount = Integer.parseInt(count);
+						
+						// Remove any error messages that used to exist
+						TextView playerTV = (TextView) findViewById(R.id.text_players_prompt);
+						playerTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+						
+					} else {
+						TextView playerTV = (TextView) findViewById(R.id.text_players_prompt);
+						playerTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+					}
+					
+					// Clear focus
 					editText.clearFocus();
 					releaseFocus();
 				}
@@ -399,6 +481,15 @@ public class CreateGameActivity extends Activity implements
 				} else if (v.getId() == R.id.end_time_picker) {
 					endC.set(Calendar.HOUR_OF_DAY, hourOfDay);
 					endC.set(Calendar.MINUTE, minute);
+					
+					// Display error is end time is before start time
+					TextView tv = (TextView) findViewById(R.id.end_text_time);
+					if ((endC.getTime()).before(startC.getTime())) {
+						Log.d("validate", "error: end time is before start time");
+						tv.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+					} else {
+						tv.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+					}
 				}
 				updateTimes();
 			}
@@ -430,6 +521,15 @@ public class CreateGameActivity extends Activity implements
 					endC.set(Calendar.YEAR, year);
 					endC.set(Calendar.MONTH, month);
 					endC.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+					
+					// Display error is end time is before start time
+					TextView tv = (TextView) findViewById(R.id.end_text_time);
+					if ((endC.getTime()).before(startC.getTime())) {
+						Log.d("validate", "error: end time is before start time");
+						tv.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+					} else {
+						tv.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+					}
 				}
 				updateTimes();
 				
@@ -437,42 +537,6 @@ public class CreateGameActivity extends Activity implements
 		}, year, monthOfYear, dayOfMonth);
 		
 		diag.show();
-	}
-	
-	private void updateView() {
-		// Set up the create button
-		final Button button = (Button) findViewById(R.id.createButton);
-		ParseUser user = ParseUser.getCurrentUser();
-		final boolean loggedIn = (user != null);
-		if (loggedIn) {
-			button.setText(R.string.create);
-	        button.setOnClickListener(new View.OnClickListener() {
-	            public void onClick(View v) {
-	            	boolean succeeded = createGame();
-	            	
-	            	AlertDialog dialog;
-	            	if (succeeded) {
-	            		dialog = HelperFunction.createGameAlert(
-	            				R.string.alert_success_create, true, CreateGameActivity.this, loggedIn);
-	            	} else {
-	            		dialog = HelperFunction.createGameAlert(
-	            				R.string.alert_fail_create, false, CreateGameActivity.this, loggedIn);
-	            	}
-	            	
-	            	dialog.show();
-	            }
-	        });
-		} else {
-			button.setText(R.string.sign_up);
-			button.setOnClickListener(new View.OnClickListener() {
-	            public void onClick(View v) {
-	            	// Go to a new activity for logging in and out
-	        		Intent intent = new Intent();
-	        		intent.setClass(CreateGameActivity.this, LoginActivity.class);
-	        		startActivityForResult(intent, AppConstant.LOGIN_ID);
-	            }
-	        });
-		}
 	}
 	
 	private void updateTimes() {
@@ -527,6 +591,40 @@ public class CreateGameActivity extends Activity implements
 		});
 	}
 	
+
+	private void updateView() {
+		// Set up the create button
+		final Button button = (Button) findViewById(R.id.createButton);
+		ParseUser user = ParseUser.getCurrentUser();
+		final boolean loggedIn = (user != null);
+		if (loggedIn) {
+			button.setText(R.string.create);
+	        button.setOnClickListener(new View.OnClickListener() {
+	            public void onClick(View v) {
+	            	boolean succeeded = createGame();
+	            	
+	            	if (succeeded) {
+	            		AlertDialog dialog = HelperFunction.createGameAlert(
+	            				R.string.alert_success_create, true, CreateGameActivity.this, loggedIn, true);
+	            		dialog.show();
+	            	} else {
+	            		// We're already showing the error message
+	            	}
+	            }
+	        });
+		} else {
+			button.setText(R.string.sign_up);
+			button.setOnClickListener(new View.OnClickListener() {
+	            public void onClick(View v) {
+	            	// Go to a new activity for logging in and out
+	        		Intent intent = new Intent();
+	        		intent.setClass(CreateGameActivity.this, LoginActivity.class);
+	        		startActivityForResult(intent, AppConstant.LOGIN_ID);
+	            }
+	        });
+		}
+	}
+	
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == Activity.RESULT_OK) {
 			switch (requestCode) {
@@ -536,31 +634,110 @@ public class CreateGameActivity extends Activity implements
 		}
 	}
 	
+	/**
+	 * Validates all of the entered information to create a game
+	 * If successful, creates the game
+	 * If unsuccessful, shows an error dialog and marks all errors
+	 * @return boolean success
+	 */
 	private boolean createGame() {
-		if(readableLocation.equals("")) {
-			return false;
+		boolean allCorrect = true;
+		boolean shownError = false;
+		
+		// Validate sport
+		AutoCompleteTextView tv = (AutoCompleteTextView) findViewById(R.id.sport_dropdown);
+		String textSport = tv.getText().toString();
+		if (textSport.equals("")) {
+			Log.d("validate", "error: sport not entered");
+			if (!shownError) {
+				HelperFunction.errorAlert(R.string.create_error_message_sport, this);
+				shownError = true;
+			}
+			
+			TextView sportTV = (TextView) findViewById(R.id.text_sport);
+			sportTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+			allCorrect = false;
 		}
 		
+		if (sport == null) {
+			Log.d("validate", "error: sport not valid");
+			if (!shownError) {
+				HelperFunction.errorAlert(R.string.create_error_message_sport_valid, this);
+				shownError = true;
+			}
+				
+			TextView sportTV = (TextView) findViewById(R.id.text_sport);
+			sportTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+			allCorrect = false;
+			
+		}
+		
+		// Validate start and end dates
 		Date startDate = startC.getTime();
 		Date endDate = endC.getTime();
+		if (endDate.before(startDate)) {
+			Log.d("validate", "error: end date before start date");
+			if (!shownError) {
+				HelperFunction.errorAlert(R.string.create_error_message_time, this);
+				shownError = true;
+			}
+        	
+        	TextView timeTV = (TextView) findViewById(R.id.end_text_time);
+			timeTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+			allCorrect = false;
+		}
 		
-		// Max number of players
-		final EditText editText = (EditText) findViewById(R.id.edittext_players);
-		int playerCount = Integer.parseInt(editText.getText().toString());
-        
-        Log.d("create", "ability level: " + Integer.toString(abilityLevel));
-        Log.d("create", "sport: " + sport);
-        Log.d("create", "playerCount: " + Integer.toString(playerCount));
+		// Validate venue
+        if (readableLocation.equals("") ||
+        			readableLocation.equals(getResources().getString(R.string.add_new))) {
+        	
+        	Log.d("validate", "error: readable location not defined");
+			if (!shownError) {
+				HelperFunction.errorAlert(R.string.create_error_message_venue, this);
+				shownError = true;
+			}
+        	
+        	TextView venueTV = (TextView) findViewById(R.id.text_location);
+			venueTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+			allCorrect = false;
+		}
         
         if (latitude < -180) {
         	latitude = 0;
         	longitude = 0;
         }
-    	boolean succeeded = gameup.createGame(startDate, endDate, 
-    			abilityLevel, playerCount, readableLocation, latitude, 
-    			longitude, sport);
-    	
-    	return succeeded;
+		
+		// Validate max number of players
+		final EditText editText = (EditText) findViewById(R.id.edittext_players);
+		String count = editText.getText().toString();
+		if (!count.equals("")) {
+			playerCount = Integer.parseInt(count);
+		} else {
+			Log.d("validate", "error: player count is empty");
+			if (!shownError) {
+				HelperFunction.errorAlert(R.string.create_error_message_player_count, this);
+				shownError = true;
+			}
+			
+			TextView playerTV = (TextView) findViewById(R.id.text_players_prompt);
+			playerTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+			allCorrect = false;
+		}
+		
+		// Validate ability level - not needed because spinner
+        if (allCorrect) {
+	    	boolean succeeded = gameup.createGame(startDate, endDate, 
+	    			abilityLevel, playerCount, readableLocation, latitude, 
+	    			longitude, sport);
+	    	
+	    	if (!succeeded) {
+	    		HelperFunction.errorAlert(R.string.create_error_message_server, this);
+	    	}
+	    	
+	    	return succeeded;
+        } else {
+        	return false;
+        }
 	}
 	
 	private void releaseFocus() {
