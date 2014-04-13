@@ -1,5 +1,8 @@
 package com.gameupapp;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import com.parse.ParseClassName;
@@ -38,6 +41,15 @@ public class Venue extends ParseObject {
 	
 	public void setName(String name) {
 		put("name", name);
+		saveEventually();
+	}
+	
+	public Date getAccessDate() {
+		return getDate("lastUsed");
+	}
+	
+	public void setAccessDate(Calendar cal) {
+		put("lastUsed", cal.getTime());
 		saveEventually();
 	}
 }

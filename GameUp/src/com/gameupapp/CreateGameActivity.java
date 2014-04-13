@@ -10,12 +10,17 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import com.gameupapp.AddVenueFragment.AddVenueDialogListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
+import com.parse.FindCallback;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.ParseException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -91,11 +96,12 @@ public class CreateGameActivity extends Activity implements
         endC.add(Calendar.HOUR,  1);
         updateTimes();
         locationClient = new LocationClient(this, this, this);
-        venues = new ArrayList<Venue>();
+        venues = new ArrayList<Venue>();/*
         venues.add(new Venue(34.099204, -117.705262, "Biszantz Tennis Center", "Biszantz"));
         venues.add(new Venue(34.062431, -117.673231, "Ontario Ice Skating Center", "Ontario Ice"));
         venues.add(new Venue(34.228108, -118.449804, "LA Kings Valley Ice Center", "LA Kings"));
-        venues.add(new Venue(34.053186, -117.658522, "Cyprus Avenue Park", "Cyprus Ave"));
+        venues.add(new Venue(34.053186, -117.658522, "Cyprus Avenue Park", "Cyprus Ave"));*/
+        
 	}
 	
 	@Override
@@ -225,8 +231,26 @@ public class CreateGameActivity extends Activity implements
 				double venueLatitude = address.getLatitude();
 				double venueLongitude = address.getLongitude();
 				
-				Venue addedVenue = new Venue(venueLatitude, venueLongitude, 
-						readableLocation, venueName);
+				Venue addedVenue = new Venue();/*new Venue(venueLatitude, venueLongitude, 
+						readableLocation, venueName);*/
+				ImmutablePair<Double, Double> addedLocation = 
+						new ImmutablePair<Double, Double>(venueLatitude,
+								venueLongitude);
+				
+				addedVenue.setLocation(addedLocation);
+				addedVenue.setReadableLocation(venueName);
+				addedVenue.setName(venueName);
+				addedVenue.setAccessDate(Calendar.getInstance());
+				if(addedVenue.isDirty()) {
+					try {
+						addedVenue.save();
+					} catch (ParseException e) {
+						Log.e("Adding Venue", "Unable to save venue", e);
+					}
+				}
+				ParseUser.getCurrentUser().addUnique("venues", 
+						addedVenue.getObjectId());
+				
 				
 				readableLocation = venueName;
 				latitude = venueLatitude;
@@ -462,6 +486,31 @@ public class CreateGameActivity extends Activity implements
 	            	dialog.show();
 	            }
 	        });
+	        
+
+	        //TODO this query should be in gameupinterface
+	        ParseUser currentUser = ParseUser.getCurrentUser();
+	        JSONArray JSONVenues = currentUser.getJSONArray("venues");
+	        List<String> venuesList = new ArrayList<String>();
+	        
+	        for(int i = 0; JSONVenues != null && i < JSONVenues.length(); i++) {
+	        	try {
+					venuesList.add(JSONVenues.getString(i));
+				} catch (JSONException e) {
+					Log.d("Venues", "Malformed JSONArray returned", e);
+				}
+	        }
+	        ParseQuery<Venue> venueQuery = ParseQuery.getQuery(Venue.class);
+	        venueQuery.whereContainedIn("objectId", venuesList);
+	        venueQuery.findInBackground(new FindCallback<Venue>() {
+	    	   @Override public void done(List<Venue> venueList, ParseException e) {
+	    		   if(e == null) {
+	    			   venues = venueList;
+	    		   } else {
+	    			   Log.d("Venues", "Error getting venues", e);
+	    		   }
+	    	   }
+	       });
 		} else {
 			button.setText(R.string.sign_up);
 			button.setOnClickListener(new View.OnClickListener() {
