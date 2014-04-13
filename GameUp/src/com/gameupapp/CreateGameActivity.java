@@ -344,7 +344,6 @@ public class CreateGameActivity extends Activity implements
 		Collections.sort(choices);
 		
 		// Only people with Google Play Services can add new locations
-		choices.add(getResources().getString(R.string.add_new));
 		if (gameup.CAN_CONNECT) {
 			choices.add(getResources().getString(R.string.add_new));
 		}
