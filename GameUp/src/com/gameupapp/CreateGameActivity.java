@@ -298,8 +298,16 @@ public class CreateGameActivity extends Activity implements
 			
 				// Refresh venues
 				initLocationSpinner();
+				
+				// Remove any error icons
+				TextView venueTV = (TextView) findViewById(R.id.text_location);
+				venueTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 				dialog.dismiss();
 			} else {
+				// There's an error, so show error icon
+				TextView venueTV = (TextView) findViewById(R.id.text_location);
+				venueTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+				
 				dialog.dismiss();
 				
 				HelperFunction.errorAlert(R.string.location_error_message, this);
@@ -307,16 +315,9 @@ public class CreateGameActivity extends Activity implements
 		} else {
 			// There is no play services
 			// We shouldn't even show the add new button, but just in case...
-			AlertDialog.Builder builder = new AlertDialog.Builder(this)
-				.setTitle("Error")
-				.setMessage(R.string.play_services_error_message_add_new)
-				.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
-			builder.show();
+			TextView venueTV = (TextView) findViewById(R.id.text_location);
+			venueTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+			HelperFunction.errorAlert(R.string.play_services_error_message_add_new, this);
 		}
 	}
 	
@@ -343,8 +344,9 @@ public class CreateGameActivity extends Activity implements
 		Collections.sort(choices);
 		
 		// Only people with Google Play Services can add new locations
+		choices.add(getResources().getString(R.string.add_new));
 		if (gameup.CAN_CONNECT) {
-			choices.add("Add New");
+			choices.add(getResources().getString(R.string.add_new));
 		}
 
 		// Create an ArrayAdapter with custom choices
@@ -365,7 +367,7 @@ public class CreateGameActivity extends Activity implements
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
 				String selectedItem = locationSpinner.getSelectedItem().toString();
-				if (selectedItem.equals("Add New")) {
+				if (selectedItem.equals(getResources().getString(R.string.add_new))) {
 					DialogFragment dialogFrag = new AddVenueFragment();
 					dialogFrag.show(getFragmentManager(), "AddVenueFragment");
 				} else {
@@ -373,6 +375,10 @@ public class CreateGameActivity extends Activity implements
 						if (selectedItem.equals(venue.getName())) {
 							ImmutablePair<Double, Double> location = 
 									venue.getLocation();
+							
+							TextView venueTV = (TextView) findViewById(R.id.text_location);
+							venueTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+							
 							readableLocation = venue.getReadableLocation();
 							latitude = location.left;
 							longitude = location.right;
@@ -442,13 +448,14 @@ public class CreateGameActivity extends Activity implements
 						TextView playerTV = (TextView) findViewById(R.id.text_players_prompt);
 						playerTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 						
-						// Clear focus
-						editText.clearFocus();
-						releaseFocus();
 					} else {
 						TextView playerTV = (TextView) findViewById(R.id.text_players_prompt);
 						playerTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
 					}
+					
+					// Clear focus
+					editText.clearFocus();
+					releaseFocus();
 				}
 				return false;
 			}
@@ -657,7 +664,17 @@ public class CreateGameActivity extends Activity implements
 		Date endDate = endC.getTime();
 		
 		// Validate venue
-        if (readableLocation.equals("")) {
+        if (readableLocation.equals("") ||
+        			readableLocation.equals(getResources().getString(R.string.add_new))) {
+        	
+        	Log.d("validate", "error: readable location not defined");
+			if (!shownError) {
+				HelperFunction.errorAlert(R.string.create_error_message_venue, this);
+				shownError = true;
+			}
+        	
+        	TextView venueTV = (TextView) findViewById(R.id.text_location);
+			venueTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
 			allCorrect = false;
 		}
         
