@@ -125,13 +125,19 @@ public class LoginActivity extends Activity {
 		Request.newMeRequest(session, new Request.GraphUserCallback() {
 			@Override
 			public void onCompleted(GraphUser user, Response response) {
-				Map<String, Object> map = user.asMap();
-				Object emailObj = map.get("email");
-				String email = emailObj.toString();
-				
 				ParseUser pUser = ParseUser.getCurrentUser();
-				pUser.setEmail(email);
-				pUser.put("firstname", user.getFirstName());
+				if (pUser != null) {
+					Map<String, Object> map = user.asMap();
+					Object emailObj = map.get("email");
+					if (emailObj != null) {
+						String email = emailObj.toString();
+						pUser.setEmail(email);
+					} else {
+						Log.d("login", "email is null");
+					}
+					
+					pUser.put("firstname", user.getFirstName());
+				}
 
 				Intent result = new Intent();
 				setResult(Activity.RESULT_OK, result);

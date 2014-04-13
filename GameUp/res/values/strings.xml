@@ -18,6 +18,7 @@
     <string name="menu_filter_distance">By distance from me</string>
     <string name="menu_filter_time">By time</string>
     <string name="menu_filter_ability">By ability level</string>
+    <string name="menu_filter_all">All filters</string>
     <string name="menu_filter_clear">Clear all filters</string>
     <string name="new_game">New Game</string>
     <string name="sign_up">Sign Up / Login</string>
@@ -41,6 +42,7 @@
     <string name="access_success">Success icon</string>
     <string name="access_failure">Failure icon</string>
     <string name="access_facebook">Facebook login</string>
+    <string name="access_no_game_help">No games are present. Try clearing any filters or creating a new game.</string>
     <string name="choose_sport_prompt">Sport:</string>
     <string name="choose_location_prompt">Venue:</string>
     <string name="choose_players_prompt">Number of Players:</string>
@@ -49,10 +51,16 @@
     <string name="choose_ability_prompt">Ability Level:</string>
     <string name="venue_name_hint">Save this venue as&#8230;</string>
     <string name="venue_addr_hint">Location (e.g. Parents Field or address)</string>
+    <string name="filter_title">Filter by:</string>
+    <string name="filter_sport_none">None</string>
     <string name="filter_sport_prompt">Choose a sport to filter on:</string>
     <string name="filter_ability_prompt">Choose an ability level to filter on:</string>
     <string name="filter_distance_prompt">Choose distance to filter on:</string>
+    <string name="filter_sport_prompt_short">Sport:</string>
+    <string name="filter_ability_prompt_short">Ability level:</string>
+    <string name="filter_distance_prompt_short">Distance:</string>
     <string name="sport_hint">Start typing to find sports</string>
+    <string name="clear_button">Clear the current text</string>
     
     <string name="unlink_prompt">Unlinking your account from Facebook will permanently delete all of your information from GameUp.</string>
 

@@ -15,6 +15,11 @@ public class AppConstant {
 	static final String LOGIN = "logged_in";
 	static final String SETTINGS = "settings";
 	
+	// Stored variables in Shared Preferences
+	static final String SPORT = "sport";
+	static final String ABILITY = "ability";
+	static final String DISTANCE = "distance";
+	
 	// Response from activities
 	static final int DETAIL_ID = 0;
 	static final int CREATE_ID = 1;
@@ -22,11 +27,12 @@ public class AppConstant {
 	static final int SETTINGS_ID = 3;
 	
 	// Types of filters
-	static final int FILTER_SPORT = 0;
-	static final int FILTER_LOCATION = 1;
-	static final int FILTER_TIME = 2;
-	static final int FILTER_ABILITY = 3;
-	static final int FILTER_DISTANCE = 4;
+	static final int FILTER_SPORT = 50;
+	static final int FILTER_LOCATION = 51;
+	static final int FILTER_TIME = 52;
+	static final int FILTER_ABILITY = 53;
+	static final int FILTER_DISTANCE = 54;
+	static final int FILTER_ALL = 55;
 	static final int FILTER_CLEAR = 500;
 	
 	// Initial List of Sports	
@@ -37,6 +43,8 @@ public class AppConstant {
 	// Ability Levels
 	static final List<String> ABILITY_LEVELS = Arrays.asList(
 			"Beginner", "Intermediate", "Advanced", "All Star");
+	static final List<String> ABILITY_LEVELS_ANY = Arrays.asList(
+			"Any", "Beginner", "Intermediate", "Advanced", "All Star");
 	
 	/*
      * Define a request code to send to Google Play services
