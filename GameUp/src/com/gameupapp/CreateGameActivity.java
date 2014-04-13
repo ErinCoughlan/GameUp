@@ -320,9 +320,14 @@ public class CreateGameActivity extends Activity implements
 									for(Venue venue : venues) {
 										choices.add(venue.getName());
 									}
+								} else {
+									Log.e("NoServicesVenues", 
+											"Couldn't get venues", e);
 								}
 							}
 						});
+					} else {
+						Log.e("NoServicesVenus", "Couldn't get location", e);
 					}
 				}
 				
