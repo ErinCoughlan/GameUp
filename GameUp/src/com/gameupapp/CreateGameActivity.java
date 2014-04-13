@@ -294,7 +294,9 @@ public class CreateGameActivity extends Activity implements
 		locationSpinner.setAdapter(adapter);
 		
 		// Select the current item
-		locationSpinner.setSelection(choices.indexOf(readableLocation), false);
+		if (readableLocation != null) {
+			locationSpinner.setSelection(choices.indexOf(readableLocation), false);
+		}
 		
 		locationSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
