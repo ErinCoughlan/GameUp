@@ -725,9 +725,13 @@ public class CreateGameActivity extends Activity implements
 	    	boolean succeeded = gameup.createGame(startDate, endDate, 
 	    			abilityLevel, playerCount, readableLocation, latitude, 
 	    			longitude, sport);
+	    	
+	    	if (!succeeded) {
+	    		HelperFunction.errorAlert(R.string.create_error_message_server, this);
+	    	}
+	    	
 	    	return succeeded;
         } else {
-        	HelperFunction.errorAlert(R.string.create_error_message_server, this);
         	return false;
         }
 	}
