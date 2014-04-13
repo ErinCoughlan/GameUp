@@ -30,6 +30,7 @@ public class GameFragment extends ListFragment {
 	@Override
 	public void onAttach(Activity a) {
 		super.onAttach(a);
+		Log.d("GameFragment", "Attached");
 		gameClickedListener = (OnGameClicked) a;
 	}
 
@@ -54,6 +55,7 @@ public class GameFragment extends ListFragment {
 			Bundle savedInstanceState) {
 
 		// Inflate the layout for this fragment
+		Log.d("GameFragment", "Creating list view");
 		ListView listView = (ListView) inflater.inflate(R.layout.game_fragment, container, false);
 
 		context = inflater.getContext();
@@ -75,6 +77,7 @@ public class GameFragment extends ListFragment {
 		// Must use clear and add for notifyDataSetChanged to work correctly
 		gameList.clear();
 		gameList.addAll(list);
+		Log.d("GameFragment", "Updating gameadapter");
 
 		adapter.notifyDataSetChanged();
 	}

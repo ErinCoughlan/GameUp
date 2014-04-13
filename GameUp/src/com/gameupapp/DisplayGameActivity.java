@@ -1,6 +1,7 @@
 package com.gameupapp;
 
 import java.text.DecimalFormat;
+import java.util.Locale;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -15,6 +16,7 @@ import com.parse.ParseUser;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -24,6 +26,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -101,6 +104,7 @@ public class DisplayGameActivity extends Activity implements
 		protected void onPostExecute(Void result) {
 			if(g != null) {
 				// Allow us to use the game within the class
+				Log.d("DisplayGame", "Got game async");
 				GAME_PARSE = g;
 				setGameInfo(g);
 				updateView();
@@ -150,6 +154,8 @@ public class DisplayGameActivity extends Activity implements
 		}
 		
 		if (sport != null) {
+			Object params[] = {g, sport};
+			new SetSportText().execute(params);
 			sport.setText(g.getSport());
 		}
 		
@@ -298,4 +304,28 @@ public class DisplayGameActivity extends Activity implements
 		// TODO Auto-generated method stub
 		
 	}
+	
+	private class SetSportText extends AsyncTask<Object, Integer, String> {
+		// Shadow copy for when the broader class is done executing
+		TextView sportText;
+		@Override
+		protected String doInBackground(Object... params) {
+			this.sportText = (TextView) params[1];
+			String sport = ((GameParse) params[0]).getSport();
+			
+			return sport;
+		}
+		
+		@Override
+		protected void onProgressUpdate(Integer...progress) {
+			// TODO set progress percent here
+		}
+		
+		@Override
+		protected void onPostExecute(String result) {
+			this.sportText.setText(result);
+		}
+	}
 }
+
+

@@ -228,6 +228,7 @@ public class MainActivity extends Activity implements OnGameClicked, FilterSport
 	}
 
 	public void displayGames() {
+		Log.d("displayGames", "ABOUT TO UPDATE GAMES");
 		GameFragment fragment = (GameFragment) getFragmentManager()
 				.findFragmentById(R.id.games);
 		if (fragment != null) {

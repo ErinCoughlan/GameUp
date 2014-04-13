@@ -199,7 +199,7 @@ public class GameUpInterface {
 		query.setTrace(AppConstant.SHOULD_TRACE);
 		
 		// We hit this too often not to use cache when we can.
-		query.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ONLY);
+		query.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
 		
 		query.include("sport");
 		query.whereEqualTo("objectId", gameId);

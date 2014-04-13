@@ -63,7 +63,7 @@ public class GameAdapter extends ArrayAdapter<GameParse> implements
 	 * list item will look.
 	 */
 	public View getView(final int position, View convertView, ViewGroup parent) {
-
+		Log.d("GameAdapter", "Called getView");
 		
 		// assign the view we are converting to a local variable
 		View v = convertView;
