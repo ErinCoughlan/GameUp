@@ -67,6 +67,7 @@
     <string name="location_error_message">We cannot find that location. Make sure your search is spelled correctly. Try adding a city, state, or zip code.</string>
     <string name="play_services_error_message_add_new">Google Play Services does not exist on your device. You cannot add new locations.</string>
     <string name="create_error_message_player_count">You must enter in the number of players to create a game.</string>
+    <string name="create_error_message_sport">You must select a sport to create a game.</string>
     
     <color name="nice_blue">#33b5e5</color>
     <color name="nice_blue_dark">#0099cc</color>

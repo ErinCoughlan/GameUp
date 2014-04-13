@@ -3,12 +3,15 @@ package com.gameupapp;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import com.gameupapp.AddVenueFragment.AddVenueDialogListener;
@@ -36,6 +39,7 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -43,6 +47,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.AutoCompleteTextView.Validator;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -149,7 +154,7 @@ public class CreateGameActivity extends Activity implements
 		AutoCompleteTextView sportDropdown = (AutoCompleteTextView) findViewById(R.id.sport_dropdown);
 
 		// Custom choices
-		List<String> choices = new ArrayList<String>();
+		final List<String> choices = new ArrayList<String>();
 
 		for (Sport sport : gameup.getAllSports()) {
 			choices.add(sport.getName());
@@ -165,11 +170,66 @@ public class CreateGameActivity extends Activity implements
 
 		// Set the adapter to the spinner
 		sportDropdown.setAdapter(adapter);
+		
+		// Add a validator to make sure the entered text is a sport in the dropdown
+		sportDropdown.setValidator(new Validator() {
+			
+			@Override
+			public boolean isValid(CharSequence text) {
+				TextView sportTV = (TextView) findViewById(R.id.text_sport);
+				
+				String[] choicesArr = choices.toArray(new String[choices.size()]);
+				String possibleSport = text.toString();
+				// See if the text is in the list, ignoring case
+				if (Arrays.binarySearch(choicesArr, possibleSport, new Comparator<String>() {
+					
+							@Override
+							public int compare(String lhs, String rhs) {
+								return lhs.compareToIgnoreCase(rhs);
+							}
+						}) > 0) {
+					
+					sport = possibleSport;
+					sportTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+	                return true;
+	            }
+				
+				// Show an error icon
+				sport = null;
+				sportTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+	            return false;
+			}
+			
+			@Override
+			public CharSequence fixText(CharSequence invalidText) {
+				// Don't fix anything
+				return invalidText;
+			}
+		});
+		
+		// Run validation if we remove focus from the dropdown
+		sportDropdown.setOnFocusChangeListener(new OnFocusChangeListener() {
+			
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if (v.getId() == R.id.sport_dropdown && !hasFocus) {
+					((AutoCompleteTextView)v).performValidation();
+				}
+			}
+		});
+		
+		// Clicking on a list item will always be valid
 		sportDropdown.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
 				sport = (String) parent.getItemAtPosition(pos);
+				
+				// Remove any error messages that used to exist
+				TextView sportTV = (TextView) findViewById(R.id.text_sport);
+				sportTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+				
+				// Remove focus
 				releaseFocus();
 			}
 		});
@@ -242,16 +302,7 @@ public class CreateGameActivity extends Activity implements
 			} else {
 				dialog.dismiss();
 				
-				AlertDialog.Builder builder = new AlertDialog.Builder(this)
-						.setTitle("Error")
-						.setMessage(R.string.location_error_message)
-						.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								dialog.dismiss();
-							}
-						});
-				builder.show();
+				HelperFunction.errorAlert(R.string.location_error_message, this);
 			}
 		} else {
 			// There is no play services
@@ -271,6 +322,16 @@ public class CreateGameActivity extends Activity implements
 	
 	private void initLocationSpinner() {
 		final Spinner locationSpinner = (Spinner) findViewById(R.id.location_spinner);
+		
+		locationSpinner.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				InputMethodManager imm = (InputMethodManager) getSystemService(
+					Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+				return false;
+			}
+		});
 
 		// Custom choices
 		List<String> choices = new ArrayList<String>();
@@ -564,50 +625,73 @@ public class CreateGameActivity extends Activity implements
 	 * @return boolean success
 	 */
 	private boolean createGame() {
-		if(readableLocation.equals("")) {
-			return false;
+		boolean allCorrect = true;
+		boolean shownError = false;
+		
+		// Validate sport
+		if (sport == null) {
+			Log.d("validate", "error: sport not entered");
+			if (!shownError) {
+				HelperFunction.errorAlert(R.string.create_error_message_sport, this);
+				shownError = true;
+			}
+				
+			TextView sportTV = (TextView) findViewById(R.id.text_sport);
+			sportTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+			allCorrect = false;
+			
+		} else if (sport.equals("")) {
+			Log.d("validate", "error: sport not entered");
+			if (!shownError) {
+				HelperFunction.errorAlert(R.string.create_error_message_sport, this);
+				shownError = true;
+			}
+			
+			TextView sportTV = (TextView) findViewById(R.id.text_sport);
+			sportTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
+			allCorrect = false;
 		}
 		
+		// Validate start and end dates
 		Date startDate = startC.getTime();
 		Date endDate = endC.getTime();
 		
-		// Max number of players
+		// Validate venue
+        if (readableLocation.equals("")) {
+			allCorrect = false;
+		}
+        
+        if (latitude < -180) {
+        	latitude = 0;
+        	longitude = 0;
+        }
+		
+		// Validate max number of players
 		final EditText editText = (EditText) findViewById(R.id.edittext_players);
 		String count = editText.getText().toString();
 		if (!count.equals("")) {
 			playerCount = Integer.parseInt(count);
 		} else {
 			Log.d("validate", "error: player count is empty");
-			// No player count entered
-			AlertDialog.Builder builder = new AlertDialog.Builder(this)
-				.setTitle("Error")
-				.setMessage(R.string.create_error_message_player_count)
-				.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
-			builder.show();
+			if (!shownError) {
+				HelperFunction.errorAlert(R.string.create_error_message_player_count, this);
+				shownError = true;
+			}
 			
 			TextView playerTV = (TextView) findViewById(R.id.text_players_prompt);
 			playerTV.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.error, 0);
-			return false;
+			allCorrect = false;
 		}
-        
-        Log.d("create", "ability level: " + Integer.toString(abilityLevel));
-        Log.d("create", "sport: " + sport);
-        Log.d("create", "playerCount: " + Integer.toString(playerCount));
-        
-        if (latitude < -180) {
-        	latitude = 0;
-        	longitude = 0;
+		
+		// Validate ability level - not needed because spinner
+        if (allCorrect) {
+	    	boolean succeeded = gameup.createGame(startDate, endDate, 
+	    			abilityLevel, playerCount, readableLocation, latitude, 
+	    			longitude, sport);
+	    	return succeeded;
+        } else {
+        	return false;
         }
-    	boolean succeeded = gameup.createGame(startDate, endDate, 
-    			abilityLevel, playerCount, readableLocation, latitude, 
-    			longitude, sport);
-    	
-    	return succeeded;
 	}
 	
 	private void releaseFocus() {

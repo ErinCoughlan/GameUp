@@ -111,6 +111,19 @@ public class HelperFunction {
 		return locationStr;
 	}
 	
+	public static void errorAlert(int message, final Activity a) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(a)
+			.setTitle("Error")
+			.setMessage(message)
+			.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+				}
+			});
+		builder.show();
+	}
+	
 	public static AlertDialog createGameAlert(int message, boolean success,
 				final Activity a, final boolean loggedIn, boolean returnToMain) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(a);
