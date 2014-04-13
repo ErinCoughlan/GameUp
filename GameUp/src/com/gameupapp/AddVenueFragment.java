@@ -7,14 +7,9 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
 
 public class AddVenueFragment extends DialogFragment {
 	
@@ -23,51 +18,30 @@ public class AddVenueFragment extends DialogFragment {
 	}
 	
 	private AddVenueDialogListener mListener;
-	
-	
-	/*private void initVenueNameEditText() {
-		View view = getView();
-		getView().findViewById(R.id.edittext_venuename);
-		final EditText nameText = (EditText) getView().findViewById(R.id.edittext_venuename);
-		nameText.setOnEditorActionListener(new OnEditorActionListener() {        
-			@Override
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-				if (actionId == EditorInfo.IME_ACTION_DONE) {
-					nameText.clearFocus();
-				}
-				return false;
-			}
-		});
-	}
-	
-	private void initVenueLocationEditText() {
-		final EditText locationText = (EditText) getView().findViewById(R.id.edittext_venuelocation);
-		locationText.setOnEditorActionListener(new OnEditorActionListener() {        
-			@Override
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-				if (actionId == EditorInfo.IME_ACTION_DONE) {
-					locationText.clearFocus();
-				}
-				return false;
-			}
-		});
-	}*/
+	private String name;
+	private String location;
+
 	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		LayoutInflater inflater = getActivity().getLayoutInflater();
-		builder.setView(inflater.inflate(R.layout.add_venue, null));
+		View v = inflater.inflate(R.layout.add_venue, null);
+		final EditText locationET = (EditText) v.findViewById(R.id.venue_location);
+		final EditText nameET = (EditText) v.findViewById(R.id.venue_name);
 		
-		 builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+		builder.setView(v);
+		
+		builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
 		        @Override
 		        public void onClick(DialogInterface dialog, int which) {
+		        	location = locationET.getText().toString();
+		            name = nameET.getText().toString();
 		        	mListener.onDialogPositiveClick(AddVenueFragment.this);
-		            //save info where you want it
 		        }
-		 });
+		});
 		 
-		 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {	
+		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {	
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
@@ -80,11 +54,6 @@ public class AddVenueFragment extends DialogFragment {
 	}
 	
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-	}
-	
-	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 
@@ -92,6 +61,19 @@ public class AddVenueFragment extends DialogFragment {
 			mListener = (AddVenueDialogListener) activity;
 		} catch (ClassCastException e) {
 			Log.e("AddVenueDialogFragment", activity.toString() + " must implement AddVenueDialogListener");
+		}
+	}
+	
+	public String getLocation() {
+		return location;
+	}
+	
+	public String getName() {
+		// Name is optional, so if there is not name, return the location instead
+		if (!name.equals("")) {
+			return name;
+		} else {
+			return location;
 		}
 	}
 }
