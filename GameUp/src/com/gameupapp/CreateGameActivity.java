@@ -23,6 +23,7 @@ import android.app.DatePickerDialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -175,33 +176,12 @@ public class CreateGameActivity extends Activity implements
 	
 	@Override
 	public void onDialogPositiveClick(AddVenueFragment dialog) {
-		String venueName = null;
 		
-		// Make sure the current object knows about the dialog, otherwise we get
-		// null pointer exceptions all over :(
-		getFragmentManager().executePendingTransactions();
-		final EditText venueNameText = (EditText) dialog.getDialog().findViewById(
-				R.id.edittext_venuename);
+		String venueName = dialog.getName();
+		readableLocation = dialog.getLocation();
+		Log.d("locationAddNew", "name: " + venueName + " location: " + readableLocation);
 		
-		final EditText venueLocationText = 
-				(EditText) dialog.getDialog().findViewById(
-						R.id.edittext_venuelocation);
-		
-		// If either of these is null, we can't make a new venue so we return
-		if(!venueNameText.getText().toString().equals("")) {
-			venueName = venueNameText.getText().toString();
-		} else {
-			dialog.dismiss();
-			return;
-		}
-		if(!venueLocationText.getText().toString().equals("")) {
-			readableLocation = venueLocationText.getText().toString();
-		} else {
-			dialog.dismiss();
-			return;
-		}
-		
-		if(gameup.CAN_CONNECT) {
+		if (gameup.CAN_CONNECT) {
 			// Get current user location so we can create a lat/long box for 
 			// the Geocoder
 			Location currentLocation = locationClient.getLastLocation();
@@ -216,7 +196,7 @@ public class CreateGameActivity extends Activity implements
 			double upperRightLongitude = localLongitude + 1;
 			
 			//TODO Locale
-			Locale locale =Locale.ENGLISH;
+			Locale locale = Locale.ENGLISH;
 			Geocoder venueLocation = new Geocoder(this, locale);
 			
 			List<Address> addresses;
@@ -227,42 +207,64 @@ public class CreateGameActivity extends Activity implements
 								AppConstant.MAX_GEOCODER_RESULTS, lowerLeftLatitude, 
 								lowerLeftLongitude, upperRightLatitude, upperRightLongitude);
 			} catch (IOException e) {
-				
 				//TODO handle this gracefully
 				Log.e("getVenueLocation", "Getting venue location failed", e);
 				return;
 			}
 			
+			// Try and get the first address
 			Address address = addresses.get(0);
 			
-			Log.d("getVenueLocation", address.toString());
+			if (address != null) {
+				Log.d("getVenueLocation", address.toString());
+				
+				double venueLatitude = address.getLatitude();
+				double venueLongitude = address.getLongitude();
+				
+				Venue addedVenue = new Venue(venueLatitude, venueLongitude, 
+						readableLocation, venueName);
+				
+				readableLocation = venueName;
+				latitude = venueLatitude;
+				longitude = venueLongitude;
+				
+				venues.add(addedVenue);
 			
-			double venueLatitude = address.getLatitude();
-			double venueLongitude = address.getLongitude();
-			
-			Venue addedVenue = new Venue(venueLatitude, venueLongitude, 
-					readableLocation, venueName);
-			
-			venues.add(addedVenue);
-			
-			// Refresh venues
-			initLocationSpinner();
+				// Refresh venues
+				initLocationSpinner();
+				dialog.dismiss();
+			} else {
+				dialog.dismiss();
+				
+				AlertDialog.Builder builder = new AlertDialog.Builder(this)
+						.setTitle("Error")
+						.setMessage(R.string.location_error_message)
+						.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								dialog.dismiss();
+							}
+						});
+				builder.show();
+			}
+		} else {
+			// There is no play services
+			// We shouldn't even show the add new button, but just in case...
+			AlertDialog.Builder builder = new AlertDialog.Builder(this)
+				.setTitle("Error")
+				.setMessage(R.string.play_services_error_message_add_new)
+				.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
+			builder.show();
 		}
-		dialog.dismiss();
 	}
 	
 	private void initLocationSpinner() {
 		final Spinner locationSpinner = (Spinner) findViewById(R.id.location_spinner);
-		
-		locationSpinner.setOnTouchListener(new OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				InputMethodManager imm = (InputMethodManager) getSystemService(
-					Context.INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-				return false;
-			}
-		});
 
 		// Custom choices
 		List<String> choices = new ArrayList<String>();
@@ -272,7 +274,11 @@ public class CreateGameActivity extends Activity implements
 		
 		// TODO: Get choices from API and set up Add New interactions
 		Collections.sort(choices);
-		choices.add("Add New");
+		
+		// Only people with Google Play Services can add new locations
+		if (gameup.CAN_CONNECT) {
+			choices.add("Add New");
+		}
 
 		// Create an ArrayAdapter with custom choices
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.drawable.spinner_item, choices);
@@ -283,11 +289,13 @@ public class CreateGameActivity extends Activity implements
 		// Set the adapter to the spinner
 		locationSpinner.setAdapter(adapter);
 		
+		// Select the current item
+		locationSpinner.setSelection(choices.indexOf(readableLocation), false);
+		
 		locationSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
 				String selectedItem = locationSpinner.getSelectedItem().toString();
-				Log.d("locationSpinner", selectedItem);
 				if (selectedItem.equals("Add New")) {
 					DialogFragment dialogFrag = new AddVenueFragment();
 					dialogFrag.show(getFragmentManager(), "AddVenueFragment");

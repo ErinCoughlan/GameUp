@@ -64,6 +64,9 @@
     
     <string name="unlink_prompt">Unlinking your account from Facebook will permanently delete all of your information from GameUp.</string>
 
+    <string name="location_error_message">We cannot find that location. Make sure your search is spelled correctly. Try adding a city, state, or zip code.</string>
+    <string name="play_services_error_message_add_new">Google Play Services does not exist on your device. You cannot add new locations.</string>
+    
     <color name="nice_blue">#33b5e5</color>
     <color name="nice_blue_dark">#0099cc</color>
     <color name="transparent">#00000000</color>
